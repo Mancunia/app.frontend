@@ -1,0 +1,60 @@
+/* List trasitions */
+
+.list-enter-from {
+    opacity: 0;
+    transform: translateY(-5px);
+}
+
+.list-enter-active {
+    transition: all 0.3s ease;
+}
+
+.list-leave-to {
+    opacity: 0;
+    transform: translateY(4px);
+}
+
+.list-leave-active {
+    transition: all 0.4s ease;
+    position: absolute;
+}
+
+.list-move {
+    transition: transform 0.5s;
+}
+
+/* switch transitions */
+.switch-enter-from,
+.switch-leave-to {
+    opacity: 0;
+    transform: translateY(20px);
+}
+.switch-enter-active {
+    transition: all 0.2s ease;
+}
+.switch-leave-active {
+    transition: all 0.2s ease;
+    position: absolute;
+    width: 100%;
+}
+
+/* slide transitions */
+
+.slide-enter-active {
+    transition: transform 0.2s ease;
+}
+
+.slide-leave-active {
+    transition: transform 0.2s ease;
+    position: absolute;
+    width: 100%;
+}
+
+.slide-leave-to {
+    opacity: 0;
+    transform: translateX(-10%);
+}
+.slide-enter-from {
+    opacity: 0;
+    transform: translateX(10%);
+}
