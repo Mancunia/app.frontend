@@ -6,11 +6,13 @@ import { USER_ROLES } from "~/constants";
 const users = {
   user: "user",
   admin: "admin",
+  web: "web",
 };
 export const useAuthStore = defineStore("user", {
   state: () => ({
     user: useLocalStorage(users.user, {} as USER),
     admin: useLocalStorage(users.admin, {} as USER),
+    web3: useLocalStorage(users.web, {}),
   }),
 
   actions: {
@@ -22,15 +24,12 @@ export const useAuthStore = defineStore("user", {
     },
 
     logout(user: USER_ROLES) {
-      switch (user) {
-        case USER_ROLES.ADMIN:
-          this.admin = {} as USER;
-          this.clearLocalStorage(users.admin);
-          break;
-        default:
-          this.user = {} as USER;
-          this.clearLocalStorage(users.user);
-          break;
+      if (user === USER_ROLES.ADMIN) {
+        this.admin = {} as USER;
+        this.clearLocalStorage(users.admin);
+      } else {
+        this.user = {} as USER;
+        this.clearLocalStorage(users.user);
       }
     },
     clearLocalStorage(user: string = users.user) {
