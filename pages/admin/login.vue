@@ -1,4 +1,4 @@
-<template>{{ admin }}
+<template>
     <div class="background">
         <section class="card align-center">
             <form @submit.prevent="login">
@@ -25,8 +25,6 @@ const form = ref({
 });
 
 const {admin_login,loading}=useAuth();
-const store = useAuthStore();
-const admin = computed(() => store.getAdmin);
 
 const login = async () => {
     await admin_login(form.value);
@@ -55,6 +53,7 @@ form{
     display: flex;
     flex-direction: column;
     align-items: center;
+    width: 80%;
 
 }
 
@@ -68,6 +67,7 @@ form{
     display: flex;
     padding:12px;
     flex-direction: row;
+    width: 100%;
 }
 
 .input input{
