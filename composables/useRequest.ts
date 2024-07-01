@@ -9,7 +9,7 @@ function logout() {
 const authErrors = { code: [412], message: ["inspector not found"] };
 
 const { isInternetAvailable } = useUtils();
-const { addError,notify } = useNotification();
+const { addError, notify } = useNotification();
 
 export interface Response<T> {
   code: number;
@@ -30,31 +30,38 @@ export interface ExtendedAxiosResponse<T = any, D = any>
 
 export const useRequest = async <T>(
   options: AxiosRequestConfig,
-  toast:boolean = false,
+  app: USER_ROLES = USER_ROLES.USER,
+  toast: boolean = false,
   baseUrl?: string
 ): Promise<Response<T>> => {
   const config = useRuntimeConfig();
   const client = axios.create({});
   const defaultBaseUrl = config.public.apiBase;
-  // const user = useAuthStore().getUser;
+  const store = useAuthStore();
   client.defaults.baseURL = defaultBaseUrl;
-  // const token = user?.token;
-  // const authToken = `Bearer ${token}`;
 
-  // client.defaults.headers.common["Authorization"] = authToken;
+  const token = ref<string | null>(null);
+  if (store.getUser?.token !== null || store.getAdmin?.token !== null) {
+    if (app === USER_ROLES.ADMIN) {
+      token.value = store.getAdmin.token;
+    } else if (app === USER_ROLES.USER) {
+      token.value = store.getUser.token;
+    }
+    const authToken = `Bearer ${token.value}`;
+    client.defaults.headers.common["Authorization"] = authToken;
+  }
 
   const onSuccess = (response: ExtendedAxiosResponse<T>) => {
-    console.log({axiosResponse:response});
     return response.data;
   };
   const onError = (error: any) => {
- 
     if (error.response?.request?.responseURL?.includes(defaultBaseUrl)) {
-     //handle app related errors
+      //handle app related errors
     }
     addError(error.response.data.message);
     return Promise.reject(Error(error));
   };
+
   if (!isInternetAvailable()) {
     throw notify("noWifi");
   }

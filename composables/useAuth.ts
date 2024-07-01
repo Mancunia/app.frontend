@@ -1,5 +1,6 @@
 import { login, adminLogin } from "~/services/auth";
 import type { USER_LOGIN } from "~/types/auth";
+import routes from "~/routes";
 
 export const useAuth = () => {
   const resend = ref({
@@ -31,6 +32,8 @@ export const useAuth = () => {
         console.log(data);
         user.setAdmin(data);
         addSuccess("Login successful");
+        console.log('goto:',routes.admin.home);
+        navigateTo(routes.admin.home);
       }
     } finally {
       loading.value = false;
