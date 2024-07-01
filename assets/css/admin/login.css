@@ -1,0 +1,29 @@
+.background {
+    background-image: url('~/assets/images/bookShelve.png');
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.card {
+    background-color: #fff;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 400px;
+    margin: 20px;
+}
+form{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 80%;
+
+}
+
+.align-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
