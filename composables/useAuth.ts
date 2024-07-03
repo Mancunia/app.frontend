@@ -14,13 +14,15 @@ export const useAuth = () => {
   const user = useAuthStore();
   const user_login = async (credentials: USER_LOGIN) => {
     try {
+      loading.value = true;
       const { data } = await login(credentials);
       if (data) {
         user.setUser(data);
         addSuccess("Login successful");
+        navigateTo(routes.app.home);
       }
-    } catch (error) {
-      return error;
+    }finally{
+      loading.value = false;
     }
   };
 
@@ -29,10 +31,8 @@ export const useAuth = () => {
       loading.value = true;
       const {data} = await adminLogin(credentials);
       if (data) {
-        console.log(data);
         user.setAdmin(data);
         addSuccess("Login successful");
-        console.log('goto:',routes.admin.home);
         navigateTo(routes.admin.home);
       }
     } finally {

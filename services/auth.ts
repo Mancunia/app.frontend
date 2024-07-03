@@ -2,7 +2,7 @@ import { HTTP_METHODS } from "~/constants"
 import type { USER_LOGIN,USER_REGISTER,USER } from "~/types/auth"
 
 export const login = async (crendentials:USER_LOGIN) => useRequest<USER>({
-    url: '/login',
+    url: '/user/login',
     method: HTTP_METHODS.POST,
     data: crendentials
 })
