@@ -47,6 +47,9 @@ export const useRequest = async <T>(
     } else if (app === USER_ROLES.USER) {
       token.value = store.getUser.token;
     }
+    else{
+      token.value = '';
+    }
     const authToken = `Bearer ${token.value}`;
     client.defaults.headers.common["Authorization"] = authToken;
   }

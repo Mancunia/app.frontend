@@ -51,8 +51,8 @@ const fetchBooks = async () => {
     }
 };
 const fetchChapters = async () => {
-    console.log('fetching chapters')
     try {
+        if(!selectedBook.value) return;
         loading.value = true;
         const { data } = await getChapters(selectedBook.value._id,USER_ROLES.ADMIN);
         if (data) {
