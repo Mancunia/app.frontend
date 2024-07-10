@@ -1,12 +1,22 @@
 <template>
     <div class="player">
-
+        
     </div>
 </template>
 
 <script setup lang="ts">
-
+const props = defineProps({
+    file:{
+        type: String,
+        required: true,
+        default: 'https://anansesemfie.com/1630456838250-Digital-stuff/Chapter-2.mp3'
+    }
+})
+const player = document.createElement('audio')
+player.src = props.file
+const { playAudio, pauseAudio, stopAudio, setVolume, muteAudio, unmuteAudio, } = usePlayer()
 </script>
+
 
 <style scoped>
 .player {

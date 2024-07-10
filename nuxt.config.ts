@@ -6,10 +6,15 @@ export default defineNuxtConfig({
     host: "0.0.0.0",
     port: 3080,
   },
-  ssr:false,
+  ssr: false,
   app: {
     head: {
-      link: [],
+      link: [
+        {
+          href: "https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css",
+          rel: "stylesheet",
+        },
+      ],
     },
   },
   runtimeConfig: {

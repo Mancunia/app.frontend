@@ -6,7 +6,6 @@ import relativeTime from "dayjs/plugin/relativeTime";
 dayjs.extend(relativeTime);
 import { isValidPhoneNumber } from "libphonenumber-js";
 
-
 export const useUtils = () => {
   const formatMobileNumber = (number: string) => {
     if (number?.length === 12 && number?.startsWith("233")) {
@@ -81,9 +80,6 @@ export const useUtils = () => {
     return paymentTypes[type.toLowerCase()] || "Other";
   };
 
-
-
-
   const getOSName = (): string => {
     const userAgent = window.navigator.userAgent;
     const platform = window.navigator.platform;
@@ -137,34 +133,7 @@ export const useUtils = () => {
       return e;
     };
   }
-  function formatMobileMoneyWallet(phoneNumber: string): string {
-    phoneNumber = phoneNumber.replace(/^\+/, "");
 
-    // Check for country code and replace with '0'
-    if (phoneNumber.length > 10) {
-      phoneNumber = phoneNumber.replace(/^233/, "0");
-    }
-    const firstThreeDigits = phoneNumber.slice(0, 3);
-
-    switch (firstThreeDigits) {
-      case "024":
-      case "054":
-      case "055":
-      case "059":
-        return networkProvidersListObj.MTN.name;
-      case "020":
-      case "050":
-      case "056":
-        return networkProvidersListObj.Telecel.name;
-      case "027":
-      case "057":
-        return networkProvidersListObj.AT.name;
-      case "026":
-        return "Glo";
-      default:
-        return "Unknown";
-    }
-  }
   function formatNumberPlate(number: string): string {
     if (!number) {
       return "";
@@ -238,7 +207,11 @@ export const useUtils = () => {
     return `Up to ${formattedNumber}`;
   };
 
-  const reduceImageSize = async (file: File, maxWidth: number, maxHeight: number): Promise<{ file: File, base64Url: string }> => {
+  const reduceImageSize = async (
+    file: File,
+    maxWidth: number,
+    maxHeight: number
+  ): Promise<{ file: File; base64Url: string }> => {
     const img = new Image();
     const reader = new FileReader();
 
@@ -254,7 +227,12 @@ export const useUtils = () => {
       });
     };
 
-    const createResizedImage = (canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, width: number, height: number) => {
+    const createResizedImage = (
+      canvas: HTMLCanvasElement,
+      ctx: CanvasRenderingContext2D,
+      width: number,
+      height: number
+    ) => {
       return new Promise<Blob>((resolve, reject) => {
         canvas.toBlob(
           (blob) => {
@@ -270,7 +248,12 @@ export const useUtils = () => {
       });
     };
 
-    const resizeImage = (canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, width: number, height: number) => {
+    const resizeImage = (
+      canvas: HTMLCanvasElement,
+      ctx: CanvasRenderingContext2D,
+      width: number,
+      height: number
+    ) => {
       canvas.width = width;
       canvas.height = height;
       ctx.drawImage(img, 0, 0, width, height);
@@ -330,15 +313,14 @@ export const useUtils = () => {
     getOSName,
     debounce,
     isValidLocalNumber,
-    formatMobileMoneyWallet,
     formatNumberPlate,
     isInternetAvailable,
-    internet,
+    internet: internet.value,
     getOrdinalSuffix,
     isAccountNumber,
     getAcronym,
     validateFile,
     formatNumberRange,
-    reduceImageSize
+    reduceImageSize,
   };
 };

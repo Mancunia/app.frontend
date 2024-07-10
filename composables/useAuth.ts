@@ -1,4 +1,4 @@
-import { login, adminLogin } from "~/services/auth";
+import { login, adminLogin, logout } from "~/services/auth";
 import type { USER_LOGIN } from "~/types/auth";
 import routes from "~/routes";
 
@@ -21,7 +21,7 @@ export const useAuth = () => {
         addSuccess("Login successful");
         navigateTo(routes.app.home);
       }
-    }finally{
+    } finally {
       loading.value = false;
     }
   };
@@ -29,7 +29,7 @@ export const useAuth = () => {
   const admin_login = async (credentials: USER_LOGIN) => {
     try {
       loading.value = true;
-      const {data} = await adminLogin(credentials);
+      const { data } = await adminLogin(credentials);
       if (data) {
         user.setAdmin(data);
         addSuccess("Login successful");
@@ -40,9 +40,32 @@ export const useAuth = () => {
     }
   };
 
+  const user_logout = async () => {
+    try {
+      await logout(USER_ROLES.USER);
+      user.logout(USER_ROLES.USER);
+      addSuccess("Logout successful");
+      navigateTo(routes.app.login);
+    } catch (error) {
+      addError("Error logging out");
+    }
+  };
+  const admin_logout = async () => {
+    try {
+      await logout(USER_ROLES.ADMIN);
+      user.logout(USER_ROLES.ADMIN);
+      addSuccess("Logout successful");
+      navigateTo(routes.admin.login);
+    } catch (error) {
+      addError("Error logging out");
+    }
+  };
+
   return {
     user_login,
     admin_login,
+    user_logout,
+    admin_logout,
     loading,
   };
 };

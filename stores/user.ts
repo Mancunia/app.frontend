@@ -12,7 +12,8 @@ export const useAuthStore = defineStore("user", {
   state: () => ({
     user: useLocalStorage(users.user, {} as USER),
     admin: useLocalStorage(users.admin, {} as USER),
-    web3: useLocalStorage(users.web, {}),
+    web: useLocalStorage(users.web, {}),
+    playing: useLocalStorage("playing", {}),
   }),
 
   actions: {
@@ -21,6 +22,9 @@ export const useAuthStore = defineStore("user", {
     },
     setAdmin(admin: USER) {
       this.admin = admin;
+    },
+    setPlaying(playing: any) {
+      this.playing = playing;
     },
 
     logout(user: USER_ROLES) {
@@ -42,6 +46,9 @@ export const useAuthStore = defineStore("user", {
     },
     getAdmin(state) {
       return state.admin;
+    },
+    getPlaying(state) {
+      return state.playing;
     },
   },
 });

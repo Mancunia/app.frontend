@@ -6,6 +6,7 @@ export type USER = {
   dp: string;
   bio: string;
   token: string;
+  role:number;
   subscription: {
     active: boolean;
     id: string;

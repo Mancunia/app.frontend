@@ -19,7 +19,8 @@ export const register = async (crendentials:USER_REGISTER) => useRequest({
     data: crendentials
 })
 
-export const logout = async (token:string) => useRequest({
-    url: `/logout/${token}`,
-    method: HTTP_METHODS.GET
-})
+export const logout = async ( app: USER_ROLES = USER_ROLES.USER) =>
+  useRequest({
+    url: `/user/logout/`,
+    method: HTTP_METHODS.GET,
+  },app);
