@@ -8,7 +8,7 @@ function logout() {
 }
 const authErrors = { code: [412], message: ["inspector not found"] };
 
-const { isInternetAvailable } = useUtils();
+const { internet } = useUtils();
 const { addError, notify } = useNotification();
 
 export interface Response<T> {
@@ -46,9 +46,8 @@ export const useRequest = async <T>(
       token.value = store.getAdmin.token;
     } else if (app === USER_ROLES.USER) {
       token.value = store.getUser.token;
-    }
-    else{
-      token.value = '';
+    } else {
+      token.value = "";
     }
     const authToken = `Bearer ${token.value}`;
     client.defaults.headers.common["Authorization"] = authToken;
@@ -64,8 +63,7 @@ export const useRequest = async <T>(
     addError(error.response.data.message);
     return Promise.reject(Error(error));
   };
-
-  if (!isInternetAvailable()) {
+  if (!internet) {
     throw notify("noWifi");
   }
   return client(options).then(onSuccess).catch(onError);

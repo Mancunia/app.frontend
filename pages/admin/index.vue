@@ -1,29 +1,14 @@
 <template>
-    <div class="page-content">
-        <div>
-            <UiAdminButton style="align-self: center;">
-                Add Book
-            </UiAdminButton>
-            <div class="viewBooksCollection">
-                <UiLoader v-if="loading" />
-                <div v-else>
-                    <div v-for="(book, index) in books" :key="index">
-                        <UiAdminBookView :book="book" @click="selectedBook = book" />
-                    </div>
+    <main>
+        <h1>Expandable Sidebar</h1>
+        <p>
+            Lorem ipsum dolor, sit amet consectetur adipisicing elit. Autem ab non
+            dolorem reiciendis harum quasi inventore a eum soluta. Suscipit id
+            asperiores libero veritatis ducimus sapiente minus reprehenderit
+            eligendi pariatur.
+        </p>
+    </main>
 
-                </div>
-            </div>
-        </div>
-
-        <div>
-            <div class="book">
-                {{ chapters }}
-            </div>
-            <UiAdminPlayer />
-        </div>
-
-
-    </div>
 
 </template>
 <script setup lang="ts">
@@ -52,9 +37,9 @@ const fetchBooks = async () => {
 };
 const fetchChapters = async () => {
     try {
-        if(!selectedBook.value) return;
+        if (!selectedBook.value) return;
         loading.value = true;
-        const { data } = await getChapters(selectedBook.value._id,USER_ROLES.ADMIN);
+        const { data } = await getChapters(selectedBook.value._id, USER_ROLES.ADMIN);
         if (data) {
             console.log({ data })
             chapters.value = data;
@@ -75,7 +60,8 @@ onMounted(() => {
 
 definePageMeta({
     title: 'Admin',
-    middleware: 'admin'
+    middleware: 'admin',
+    layout: 'admin-layout',
 })
 </script>
 
