@@ -14,6 +14,7 @@ const emit = defineEmits(['click'])
 
 <style scoped>
 button {
+    width: 50%;
     display: inline-flex;
     padding: 8px 22px;
     flex-direction: column;
