@@ -1,6 +1,6 @@
 // This file should be used to define constants that are used throughout the application
 import routes from "~/routes";
-export const APP_BASE_URL = "http://localhost:3000";
+export const APP_BASE_URL = "https://anansesemfie.com";
 export const APPS = {
   ADMIN: "admin",
   WEB: "web",
@@ -43,16 +43,6 @@ export const adminNavigationItems: {
     title: "Contact",
     url: "/contact",
     icon: "bx bx-envelope",
-  },
-  {
-    title: "Login",
-    url: "/login",
-    icon: "bx bx-log-in",
-  },
-  {
-    title: "Register",
-    url: "/register",
-    icon: "bx bx-user-plus",
   },
   {
     title: "Profile",

@@ -1,6 +1,6 @@
 <template>
-    <section class="card align-center">
-        <form @submit.prevent="login">
+    <section>
+        <form class="card align-center" @submit.prevent="login">
             <h2>Login</h2>
             <UiAdminInputField placeHolder="Email" v-model="form.email" />
             <UiAdminInputField placeHolder="Password" v-model="form.password" type="password" />
@@ -26,10 +26,29 @@ const login = async () => {
 
 definePageMeta({
     title: 'Login',
-    middleware: 'app'
+    middleware: 'app',
+    layout: 'app-auth'
 })
 </script>
-
 <style scoped>
+form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 40% 20%;
+}
 
+
+@media (min-width: 768px) {
+    form {
+        padding: 40% 20%;
+    }
+}
+
+@media (min-width: 1024px) {
+    form {
+        padding: 40% 20%;
+    }
+}
 </style>
