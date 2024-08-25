@@ -20,11 +20,16 @@ section {
     flex-direction: row;
     width: 100%;
     height: 100vh;
+    background-image: url('/assets/images/bookShelve.png');
 }
 
 section .form {
     width: 100%;
+    height: 80vh;
     align-items: center;
+    background: #FFF;
+    margin-top:50%;
+    border-radius: 33px;
 }
 
 form {
@@ -43,11 +48,15 @@ form {
 @media (min-width: 768px) {
     section {
         flex-direction: row;
+        background-image: unset;
     }
 
     section .form {
         width: 50%;
         align-items: center;
+        height: unset;
+        margin: unset;
+        border: unset;
     }
 
     form {
@@ -75,6 +84,7 @@ form {
     section .form {
         width: 50%;
         align-items: center;
+
     }
 
     form {

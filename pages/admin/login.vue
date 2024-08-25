@@ -1,17 +1,20 @@
 <template>
-    <div class="background">
-        <section class="card align-center">
-            <form @submit.prevent="login">
-                <h2>Login</h2>
-                <UiAdminInputField placeHolder="Email" v-model="form.email" />
-                <UiAdminInputField placeHolder="Password" v-model="form.password" type="password" />
-                <UiAdminButton>
-                    <UiLoader v-if="loading" />
-                    Login
-                </UiAdminButton>
-            </form>
-        </section>
+    <div class="admin-container">
+        <div class="auth-container">
+            <div class="auth-login">
+                <div class="auth-card">
+                    <h2>Login</h2>
+                    <UiAdminInputField @update:model-value="form.email = $event" label="Email" />
+                    <UiAdminInputField @update:model-value="form.password = $event" label="Password" />
+                    <UiAdminButton @click="login">
+                        <UiLoader v-if="loading" :theme="{ color: '#fff' }" />
+                        Login
+                    </UiAdminButton>
+                </div>
+            </div>
+        </div>
     </div>
+
 </template>
 
 <script setup lang="ts">
@@ -20,7 +23,7 @@ const form = ref({
     password: ''
 });
 
-const {admin_login,loading}=useAuth();
+const { admin_login, loading } = useAuth();
 
 const login = async () => {
     await admin_login(form.value);
@@ -28,11 +31,11 @@ const login = async () => {
 
 definePageMeta({
     title: 'Admin Login',
-    middleware:'admin'
+    middleware: 'admin'
 })
 
 </script>
 
 <style scoped>
-@import url("~/assets/css/admin/login.css");
+@import url('@/assets/css/admin/styles.css');
 </style>

@@ -1,13 +1,14 @@
 <template>
     <section>
         <form class="card align-center" @submit.prevent="login">
-            <h2>Login</h2>
-            <UiAdminInputField placeHolder="Email" v-model="form.email" />
-            <UiAdminInputField placeHolder="Password" v-model="form.password" type="password" />
-            <UiAdminButton>
+            <h2 class="title">Login</h2>
+            <UiAdminInputField :style="'appAuthInput'" placeHolder="Email" v-model="form.email" />
+            <UiAdminInputField :style="'appAuthInput'" placeHolder="Password" v-model="form.password" type="password" />
+            <UiAdminButton class="appAuthButton">
                 <UiLoader v-if="loading" />
                 Login
             </UiAdminButton>
+            <NuxtLink to="/app/signup" class="signup">Back to SignUp</NuxtLink>
         </form>
     </section>
 </template>
@@ -36,9 +37,25 @@ form {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding: 40% 20%;
+    padding: 30% 20%;
 }
 
+form .title {
+    font-family: "Rammetto One";
+    font-size: 1.5rem;
+}
+
+form .signup {
+    margin-top:10% ;
+    color: #4D2316;
+    font-family: "Rammetto One";
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    text-transform: uppercase;
+    text-decoration: none;
+}
 
 @media (min-width: 768px) {
     form {

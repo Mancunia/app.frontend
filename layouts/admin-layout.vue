@@ -15,7 +15,8 @@
 
 </script>
 
-<style scoped>
+<style>
+@import url('@/assets/css/admin/styles.css');
 .page {
     display: flex;
     flex-direction: row;
@@ -30,7 +31,7 @@
 
 .body {
     padding: 20px;
-    width: 80%;
+    width: 90%;
     height: 100%;
 }
 </style>

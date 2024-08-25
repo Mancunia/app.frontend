@@ -1,4 +1,4 @@
-import { login, adminLogin, logout } from "~/services/auth";
+import { login, adminLogin, logout, register } from "~/services/auth";
 import type { USER_LOGIN } from "~/types/auth";
 import routes from "~/routes";
 
@@ -19,6 +19,23 @@ export const useAuth = () => {
       if (data) {
         user.setUser(data);
         addSuccess("Login successful");
+        navigateTo(routes.app.home);
+      }
+    } finally {
+      loading.value = false;
+    }
+  };
+  const user_register = async (credentials: {
+    email: string;
+    password: string;
+    username: string;
+    account: USER_ROLES;
+  }) => {
+    try {
+      loading.value = true;
+      const { data } = await register(credentials);
+      if (data) {
+        addSuccess("Register successful");
         navigateTo(routes.app.home);
       }
     } finally {
@@ -63,6 +80,7 @@ export const useAuth = () => {
 
   return {
     user_login,
+    user_register,
     admin_login,
     user_logout,
     admin_logout,

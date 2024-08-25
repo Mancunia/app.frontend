@@ -1,10 +1,13 @@
-import type { BOOK,CHAPTER } from "~/types/book";
+import type { BOOK, CHAPTER } from "~/types/book";
 
-export const getBooks = async (app: USER_ROLES = USER_ROLES.USER) =>
-  useRequest<BOOK[]>(
+export const getBooks = async (app: USER_ROLES = USER_ROLES.USER, page: {}) =>
+  useRequest<PaginatedResponse<BOOK[]>>(
     {
-      url: "/book",
+      url: `/book?${new URLSearchParams(page).toString()}`,
       method: HTTP_METHODS.GET,
+      data: {
+        app,
+      },
     },
     app
   );
@@ -37,11 +40,17 @@ export const deleteBook = async (id: string) =>
     url: `/book/${id}`,
     method: HTTP_METHODS.DELETE,
   });
-export const getChapters = async (book: string, app: USER_ROLES = USER_ROLES.USER) =>
-  useRequest<CHAPTER[]>({
-    url: `/book/chapter/all/${book}`,
-    method: HTTP_METHODS.GET,
-  }, app);
+export const getChapters = async (
+  book: string,
+  app: USER_ROLES = USER_ROLES.USER
+) =>
+  useRequest<CHAPTER[]>(
+    {
+      url: `/book/chapter/all/${book}`,
+      method: HTTP_METHODS.GET,
+    },
+    app
+  );
 export const getChapter = async (id: string) =>
   useRequest<CHAPTER>({
     url: `/chapter/${id}`,
