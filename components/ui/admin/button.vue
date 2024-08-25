@@ -1,5 +1,5 @@
 <template>
-    <button @click="emit('click')">
+    <button :class="style" @click="emit('click')">
         <div class="content">
             <slot></slot>
         </div>
@@ -8,18 +8,27 @@
 </template>
 
 <script setup lang="ts">
+const props = defineProps({
+    style: {
+        type: String,
+        default: 'button'
+    }
+})
 const emit = defineEmits(['click'])
 
 </script>
 
 <style scoped>
 button {
-    width: 50%;
     display: inline-flex;
-    padding: 8px 22px;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+}
+
+.button {
+    width: 50%;
+    padding: 8px 22px;
     color: #fff;
     border-radius: 4px;
     background: #6E4C29;
@@ -31,7 +40,7 @@ button {
     flex-direction: row;
 }
 
-button:hover {
+.button:hover {
     background: #4d3319;
 }
 </style>

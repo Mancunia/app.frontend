@@ -1,7 +1,10 @@
 <template>
-    <div class="input">
-        <input :type="type" :required="required" :placeholder="placeHolder" v-model="inputField" 
-            @input="$emit('update:modelValue', $event.target.value)" />
+    <div class="input-container">
+        <div class="label">
+            <h4>{{ label }}</h4>
+        </div>
+        <input :type="type" :required="required" :placeholder="placeHolder" v-model="inputField"
+            @input="$emit('update:modelValue', inputField)" />
     </div>
 </template>
 
@@ -9,7 +12,7 @@
 const props = defineProps({
     placeHolder: {
         type: String,
-        default: 'Enter Text Here'
+        default: ''
     },
     value: {
         type: String,
@@ -22,30 +25,16 @@ const props = defineProps({
     type: {
         type: String,
         default: 'text'
+    },
+    style: {
+        type: String,
+        default: 'input'
+    },
+    label: {
+        type: String,
+        default: ''
     }
 })
 const emits = defineEmits(['update:modelValue'])
 const inputField = ref(props.value)
 </script>
-
-<style scoped>
-.input {
-    display: flex;
-    padding: 12px;
-    flex-direction: row;
-    width: 100%;
-    height: 80px;
-}
-
-.input input {
-    width: inherit;
-    padding: 10px;
-    margin: 10px 0;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-}
-input:focus {
-    outline: none;
-    border-color: #007bff;
-}
-</style>

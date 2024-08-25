@@ -19,10 +19,8 @@ export interface Response<T> {
   subCode: string;
 }
 export interface PaginatedResponse<T> {
-  pageIndex: number;
-  pageSize: number;
-  totalCount: number;
-  totalPages: number;
+  page: number;
+  records: number;
   results: T;
 }
 export interface ExtendedAxiosResponse<T = any, D = any>

@@ -15,17 +15,16 @@ export type BOOK = {
   uploader: string;
   __v: number;
   collections: string[];
+  languages: string[];
+  category: string[];
   createdAt: string;
   associates: string[];
   updatedAt: string;
 };
 export type CHAPTER = {
-  createdAt: string;
-  _id: string;
+  id: string;
   title: string;
-  moment: string;
-  description: string;
-  book: string;
-  file: string;
-  mimetype: string;
+  content: string;
+  book: BOOK;
+  createdAt: string;
 };

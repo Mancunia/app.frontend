@@ -16,7 +16,7 @@ const emit = defineEmits(['more'])
 const props = defineProps({
 
     options: {
-        type: Object
+        type: Object,
     }
 
 })

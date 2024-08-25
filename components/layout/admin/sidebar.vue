@@ -3,7 +3,7 @@
         <nav>
             <ul>
                 <li v-for="(nav, index) in navItems" :key="index">
-                    <a href="#" :class="{active:nav.url === activeRoute}">
+                    <a href="#" :class="{ active: nav.url === activeRoute }">
                         <i :class="nav.icon"></i>
                         <span>{{ nav.title }}</span>
                     </a>
@@ -20,8 +20,8 @@
 </template>
 <script setup lang="ts">
 import routes from '~/routes';
-const {navItems,activeRoute} = useNavigation()
-const {admin_logout}= useAuth()
+const { navItems, activeRoute } = useNavigation()
+const { admin_logout } = useAuth()
 
 
 </script>
@@ -59,7 +59,7 @@ aside {
 
     inset: 0 auto 0 0;
     padding: 1rem;
-    width: 10%;
+    width: 17%;
     background-image: linear-gradient(#464748, #1f1e1f, #030303);
     transition: width 0.5s ease-in-out;
 }
@@ -67,6 +67,7 @@ aside {
 nav {
     height: 100%;
 }
+
 nav .app-logo {
     width: 70px;
     height: 35px;
@@ -76,7 +77,7 @@ nav .app-logo {
 nav ul {
     list-style: none;
     height: 100%;
-    width:100%;
+    width: 100%;
     display: flex;
     flex-flow: column;
     gap: 0.25rem;
@@ -106,6 +107,7 @@ nav a:focus-visible {
     color: #000000;
     background-color: #fff;
 }
+
 nav a.active span,
 nav a:hover span {
     color: #000000;
@@ -113,9 +115,7 @@ nav a:hover span {
 
 nav a span {
     font-size: 0.875rem;
-    opacity: 1;
-    /* visibility: hidden; */
-    color:#fff;
+    visibility: hidden;
     transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
 }
 
@@ -126,5 +126,25 @@ nav a span {
 
 .sb-expanded aside .bx-chevrons-right {
     rotate: 180deg;
+}
+
+@media (min-width: 768px) {
+    aside {
+        width: 10%;
+    }
+
+    nav a span {
+        font-size: 0.875rem;
+        opacity: 1;
+        visibility: unset;
+        color: #fff;
+        transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+    }
+}
+
+@media (min-width: 1024px) {
+    aside {
+        width: 10%;
+    }
 }
 </style>
