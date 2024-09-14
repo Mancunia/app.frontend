@@ -4,7 +4,7 @@ export type BOOK = {
     views: number;
     comments: number;
   };
-  _id: string;
+  _id?: string | null;
   status: number;
   authors: string[];
   cover: string;

@@ -1,4 +1,4 @@
-import type { SignedUrlRequest} from "~/types/common";
+import type { SignedUrlRequest } from "~/types/common";
 import { getSignedUrl } from "~/services/admin/book";
 
 export const useAWS = (app: USER_ROLES = USER_ROLES.USER) => {
@@ -12,9 +12,14 @@ export const useAWS = (app: USER_ROLES = USER_ROLES.USER) => {
   };
 
   const uploadFile = async (file: File, signedUrl: string) => {
+    const formData = new FormData();
+    formData.append("file", file);
     const response = await fetch(signedUrl, {
-      method: "PUT",
-      body: file,
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+      method: HTTP_METHODS.PUT,
+      body: formData,
     });
     return await response.json();
   };

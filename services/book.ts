@@ -21,13 +21,6 @@ export const getBook = async (id: string, app: USER_ROLES = USER_ROLES.USER) =>
     app
   );
 
-export const createBook = async (book: BOOK) =>
-  useRequest<BOOK>({
-    url: "/book",
-    method: HTTP_METHODS.POST,
-    data: book,
-  });
-
 export const updateBook = async (id: string, book: BOOK) =>
   useRequest<BOOK>({
     url: `/book/${id}`,
