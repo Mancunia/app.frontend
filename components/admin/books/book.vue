@@ -31,10 +31,10 @@
                         v-model="selectedBook.description"></textarea>
                 </div>
                 <div class="input-container-btn">
-                    <UiSelectDropDown :data-list="Langs.data ?? []" placeHolder="languages"
+                    <UiSelectDropDown :data-list="Langs.data ?? []" placeHolder="languages" generic="array"
                         @selected="selectedBook.languages = $event" :selected-option="selectedBook.languages" />
                     <UiLoader v-if="Langs.loading" />
-                    <UiSelectDropDown :data-list="Cates.data ?? []" placeHolder="Categories"
+                    <UiSelectDropDown :data-list="Cates.data ?? []" placeHolder="Categories" generic="array"
                         @selected="selectedBook.category = $event" :selected-option="selectedBook.category" />
                     <UiLoader v-if="Cates.loading" />
 
@@ -55,8 +55,9 @@
 <script setup lang="ts">
 import type { BOOK } from '~/types/book';
 import type { Languages, Categories } from '~/types/common';
-import { getBook, createBook } from '~/services/book';
+import { getBook } from '~/services/book';
 import { getLanguages, getCategories } from '~/services/common';
+import { createBook, updateBook } from '~/services/admin/book';
 
 const State = {
     VIEW: 'view',
@@ -96,7 +97,6 @@ const selectedBook = ref<BOOK>({
         views: 0,
         comments: 0
     },
-    _id: '',
     status: 0,
     authors: [],
     cover: '',
@@ -143,15 +143,16 @@ const bookCategories = computed(() => {
 
 const postBook = async () => {
     try {
+        selectedBook.value._id = null
         uploading.value.loading = true
         if (imageData.value) {
             uploading.value.message = 'Uploading image'
             uploading.value.progress = 20
             const response = await generateSignedUrl(imageData.value.file)
-            console.log({ response });
             if (response) {
+                console.log({ file: imageData.value.file });
                 const imgLink = await uploadFile(imageData.value.file, response.signedURL)
-                console.log({ imgLink });
+
                 if (imgLink) {
                     uploading.value.progress = 50
                     selectedBook.value.cover = imgLink
@@ -164,16 +165,51 @@ const postBook = async () => {
         if (data) {
             uploading.value.message = 'Book created'
             uploading.value.progress = 100
+            selectedBook.value = data
             router.push({ query: { bookId: data._id, action: 'view' } })
-            emit('submit')
         }
     } finally {
         uploading.value.loading = false
     }
 }
 
+const putBook = async () => {
+    try {
+        uploading.value.loading = true
+        if (imageData.value) {
+            uploading.value.message = 'Uploading image'
+            uploading.value.progress = 20
+            const response = await generateSignedUrl(imageData.value.file)
+            if (response) {
+                const imgLink = await uploadFile(imageData.value.file, response.signedURL)
+                console.log({ imgLink });
+                if (imgLink) {
+                    uploading.value.progress = 50
+                    selectedBook.value.cover = imgLink
+                }
+            }
+        }
+        uploading.value.message = 'Updating book'
+        uploading.value.progress = 70
+        const { data } = await updateBook(selectedBook.value)
+        if (data) {
+            uploading.value.message = 'Book updated'
+            uploading.value.progress = 100
+            router.push({ query: { bookId: data._id, action: 'view' } })
+        }
+    } finally {
+        uploading.value.loading = false
+    }
+
+}
+
 const submit = () => {
-    postBook()
+    if (selectedBook.value._id) {
+        putBook()
+    }
+    else {
+        postBook()
+    }
 }
 const fetchLanguages = async () => {
     try {
