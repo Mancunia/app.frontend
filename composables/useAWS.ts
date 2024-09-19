@@ -2,6 +2,7 @@ import type { SignedUrlRequest } from "~/types/common";
 import { getSignedUrl } from "~/services/admin/book";
 
 export const useAWS = (app: USER_ROLES = USER_ROLES.USER) => {
+  
   const generateSignedUrl = async (file: File) => {
     const request: SignedUrlRequest = {
       file: file.name,
@@ -12,16 +13,23 @@ export const useAWS = (app: USER_ROLES = USER_ROLES.USER) => {
   };
 
   const uploadFile = async (file: File, signedUrl: string) => {
-    const formData = new FormData();
-    formData.append("file", file);
+    try {
+
     const response = await fetch(signedUrl, {
       headers: {
-        "Content-Type": "multipart/form-data",
+        "Content-Type": file.type,
       },
       method: HTTP_METHODS.PUT,
-      body: formData,
+      body: file,
     });
-    return await response.json();
+    if(!response.ok)
+      return null
+
+    return signedUrl.split('?')[0];
+  }catch(error){
+    console.error('Error during file upload:', error);
+    return null
+  }
   };
 
   return {
