@@ -2,11 +2,14 @@
 export default defineNuxtConfig({
   css: ["~/assets/css/main.css"],
   devtools: { enabled: true },
+
   devServer: {
     host: "0.0.0.0",
     port: 3080,
   },
+
   ssr: false,
+
   app: {
     head: {
       link: [
@@ -17,14 +20,19 @@ export default defineNuxtConfig({
       ],
     },
   },
+
   runtimeConfig: {
     public: {
       apiBase: "http://localhost:3030",
       defaultToken: "",
     },
   },
+
   modules: ["@pinia/nuxt"],
+
   imports: {
     dirs: ["stores", "composables", "constants"],
   },
+
+  compatibilityDate: "2024-09-14",
 });
