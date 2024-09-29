@@ -1,6 +1,9 @@
 // This file should be used to define constants that are used throughout the application
 import routes from "~/routes";
-export const APP_BASE_URL = "https://anansesemfie.com";
+export const APP_BASE_URL =
+  process.env.NODE_ENV === "production"
+    ? "https://anansesemfie.com"
+    : "http://localhost:3080";
 export const APPS = {
   ADMIN: "admin",
   WEB: "web",

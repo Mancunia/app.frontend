@@ -25,6 +25,12 @@
                 </div>
                 <div class="input-container">
                     <div class="label">
+                        <h4>Authors</h4>
+                    </div>
+                    <input type="text" placeholder="Emmanuel,Asabere" v-model="selectedBook.authors" />
+                </div>
+                <div class="input-container">
+                    <div class="label">
                         <h4>Description</h4>
                     </div>
                     <textarea type="text" placeholder="Enter Additional Information" rows="4" cols="100"

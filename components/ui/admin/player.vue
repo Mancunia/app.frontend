@@ -5,16 +5,78 @@
 </template>
 
 <script setup lang="ts">
+import { playChapter } from '~/services/play';
 const props = defineProps({
-    file:{
+    file: {
         type: String,
         required: true,
-        default: 'https://anansesemfie.com/1630456838250-Digital-stuff/Chapter-2.mp3'
+        default: '~/assets/test-audio.mp3'
     }
 })
-const player = document.createElement('audio')
-player.src = props.file
-const { playAudio, pauseAudio, stopAudio, setVolume, muteAudio, unmuteAudio, } = usePlayer()
+const store = useAuthStore()
+const seekTo = ref(5)
+const currentTime = ref(0)
+const duration = ref(0)
+
+const chapter = computed(() =>
+    store.getPlaying
+)
+const player = ref<HTMLAudioElement | null>(null)
+
+const ended = computed(() => currentTime.value === duration.value)
+
+const { toggleAudio, pauseAudio, stopAudio, setVolume, muteAudio, unmuteAudio, fastForwardAudio, rewindAudio, playerProps } = usePlayer()
+const play = () => {
+    console.log('play', props.file)
+    if (player.value) {
+        toggleAudio(player.value)
+    }
+}
+const fastForward = () => {
+    if (player.value)
+        fastForwardAudio(player.value, seekTo.value)
+}
+const rewind = () => {
+    if (player.value)
+        rewindAudio(player.value, seekTo.value)
+}
+
+const getChapter = async () => {
+    try {
+        const res = await playChapter(chapter.value._id)
+        console.log(res)
+    } finally {
+        console.log('done')
+    }
+}
+
+
+onMounted(() => {
+    getChapter()
+    if (player.value) {
+        player.value.addEventListener('loadedmetadata', () => {
+            if (player.value)
+                duration.value = player.value.duration
+        })
+        player.value.addEventListener('timeupdate', () => {
+            if (player.value)
+                currentTime.value = player.value.currentTime
+        })
+    }
+    onBeforeUnmount(() => {
+        if (player.value) {
+            player.value.removeEventListener('loadedmetadata', () => {
+                if (player.value)
+                    duration.value = player.value.duration
+            })
+            player.value.removeEventListener('timeupdate', () => {
+                if (player.value)
+                    currentTime.value = player.value.currentTime
+            })
+            document.body.removeChild(player.value)
+        }
+    })
+})
 </script>
 
 

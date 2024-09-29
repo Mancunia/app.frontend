@@ -31,6 +31,8 @@ const props = defineProps({
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
+    justify-content: center;
     gap: 10px;
+    width: 100%;
 }
 </style>

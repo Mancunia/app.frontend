@@ -41,13 +41,12 @@ const options = {
 
 const fetchBooks = async () => {
     try {
-        books.value.loading = true
         const { data } = await getBooks(store.getAdmin.role, pagination.value)
         if (data) {
             if (data.results.length < pagination.value.limit) {
                 canFetchMore.value = false
             }
-            if (books.value.data) {
+            if (books.value.data?.length) {
                 books.value.data.push(...data.results)
             } else {
                 books.value.data = data.results
@@ -69,5 +68,8 @@ const viewMore = () => {
     fetchBooks()
 }
 
-onMounted(() => fetchBooks())
+onMounted(() => {
+    books.value.loading = true
+    fetchBooks()
+})
 </script>

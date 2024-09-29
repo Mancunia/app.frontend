@@ -1,20 +1,49 @@
 <template>
     <div class="nav">
-        <div class="icon" :class="{'active':true}">
-            <img class="" alt="" src="@/assets/images/home.png" />
-        </div>
-        <div class="icon">
-            <img class="" alt="" src="@/assets/images/search.png" />
-        </div>
-        <div class="icon">
-            <img class="" alt="" src="@/assets/images/bookmark.png" />
-        </div>
-        <div class="icon">
-            <img class="" alt="" src="@/assets/images/profile.png" />
-        </div>
+        <NuxtLink :to="links.home.link" class="icon" :class="{ 'active': links.home.link == activeRoute }">
+            <img class="" alt="" width="30" height="30" src="@/assets/images/element-3.png" />
+        </NuxtLink>
+        <NuxtLink :to="links.search.link" class="icon" :class="{ 'active': links.search.link == activeRoute }">
+            <img class="" alt="" width="30" height="30" src="@/assets/images/search-normal.png" />
+        </NuxtLink>
+        <NuxtLink :to="links.library.link" class="icon" :class="{ 'active': links.library.link == activeRoute }">
+            <img class="" alt="" width="30" height="30" src="@/assets/images/book.png" />
+        </NuxtLink>
+        <NuxtLink :to="links.profile.link" class="icon" :class="{ 'active': links.profile.link == activeRoute }">
+            <img class="" alt="" width="30" height="30" src="@/assets/images/profile.png" />
+        </NuxtLink>
     </div>
 </template>
 <script setup lang="ts">
+const links = {
+    home: {
+        name: 'Home',
+        icon: 'element-3.png',
+        link: '/app/',
+        active: true
+    },
+    search: {
+        name: 'Search',
+        icon: 'search-normal.png',
+        link: '/app/search',
+        active: false
+    },
+    library: {
+        name: 'Library',
+        icon: 'book.png',
+        link: '/app/library',
+        active: false
+    },
+    profile: {
+        name: 'Profile',
+        icon: 'profile.png',
+        link: '/app/profile',
+        active: false
+    }
+}
+
+const { activeRoute } = useNavigation()
+
 
 </script>
 
@@ -23,12 +52,13 @@
     display: flex;
     width: 345px;
     height: 70px;
-    padding: 13px;
     justify-content: space-evenly;
     align-items: center;
     flex-shrink: 0;
     border-radius: 33px;
     background: #191413;
+    bottom: 0;
+    transition-duration: 1s;
 }
 
 .nav .icon {
@@ -39,12 +69,19 @@
     align-items: center;
     flex-shrink: 0;
 }
-.nav .icon :hover {
-    background: #2d2d2d;
-    border-radius: 20%;
+
+.nav .icon.active {
+    border: 2px solid #fff;
+    padding: 2%;
+    border-radius: 5px;
+    transition-duration: 0.5s;
 }
-.active {
-    background: #2d2d2d;
-    border-radius: 20%;
+
+@media only screen and (min-width: 750px) {
+    .nav .icon :hover {
+        border-bottom: 2px solid #fff;
+        border-radius: 1px;
+        transition-duration: 0.5s;
+    }
 }
 </style>

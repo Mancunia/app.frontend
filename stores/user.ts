@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
 import { useLocalStorage } from "@vueuse/core";
 import { type USER } from "@/types/auth";
+import type { CHAPTER } from "~/types/book";
 import { USER_ROLES } from "~/constants";
 
 const users = {
@@ -13,7 +14,7 @@ export const useAuthStore = defineStore("user", {
     user: useLocalStorage(users.user, {} as USER),
     admin: useLocalStorage(users.admin, {} as USER),
     web: useLocalStorage(users.web, {}),
-    playing: useLocalStorage("playing", {}),
+    playing: useLocalStorage("playing", {} as CHAPTER),
   }),
 
   actions: {

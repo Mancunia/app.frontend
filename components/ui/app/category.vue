@@ -13,9 +13,11 @@ const props = defineProps({
 
 <style scoped>
 .chip {
+    display: inline-block;
     width: 100px;
-    padding: 8px;
-    border-radius: 60px;
+    padding: 15px;
+    margin-right:10px;
+    border-radius: 10px;
     background-color: #d9d9d9;
     color: #000;
     font-size: 14px;
