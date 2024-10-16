@@ -1,11 +1,14 @@
 <template>
-    <button class="card">
-        <img :src="`${APP_BASE_URL}${book.cover}` ?? '@/assets/images/placeHolder.png'" alt="">
-        <div class="description">
-            <h2 class="title">{{ book.title }}</h2>
-            <h3 class="author">{{ String(book.authors) }}</h3>
+    <NuxtLink v-if="book" style="text-decoration: none;" :to="`/app/book/${props.book._id}`" @click="selectBook = book">
+        <div class="card">
+            <img :src="`${book.cover}` || '@/assets/images/placeHolder.png'" alt="">
+            <div class="description">
+                <h2 class="title">{{ book.title }}</h2>
+                <h3 class="author">{{ String(book.authors) }}</h3>
+            </div>
         </div>
-    </button>
+
+    </NuxtLink>
 </template>
 
 <script setup lang="ts">
@@ -18,6 +21,7 @@ const props = defineProps({
     }
 
 })
+const selectBook = useState<BOOK | null>('appBook', () => null)
 </script>
 
 <style scoped>
@@ -25,7 +29,6 @@ const props = defineProps({
     width: 12rem;
     display: flex;
     align-items: center;
-    justify-content: center;
     flex-direction: column;
     background-color: transparent;
     border: none;
@@ -34,12 +37,10 @@ const props = defineProps({
 
 .card .description {
     width: 100%;
-    text-align: center;
+    text-align: left;
     display: flex;
+    justify-content: center;
     flex-direction: column;
-    padding-left: 20px;
-    margin-top: -10px;
-
 }
 
 .card img {
@@ -61,7 +62,7 @@ const props = defineProps({
 }
 
 .card .author {
-    font-size: 14px;
+    font-size: 10px;
     font-weight: 500;
     color: #000;
     max-width: 200px;

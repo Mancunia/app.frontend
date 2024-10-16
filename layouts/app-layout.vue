@@ -6,19 +6,20 @@
             <div class="container">
                 <div class="items-container">
                     <slot />
-                    <div class="bottom-bar-container">
-                        <UiAppNavigator />
-                    </div>
                 </div>
-
                 <div class="divider-container">
                     <div class="divider">
                     </div>
                 </div>
 
                 <div class="details-container">
-                    <UiAppPlayer />
+                    <UiAppPlayerDetails class="details" />
                 </div>
+                <div class="bottom-bar-container">
+                    <UiAppPlayer class="player" />
+                    <UiAppNavigator class="navigator" />
+                </div>
+
             </div>
 
         </div>
@@ -31,18 +32,17 @@
 </script>
 
 <style scoped>
+.body {
+    width: 100%;
+    height: 100%;
+}
+
 .page {
     display: flex;
     flex-direction: row;
     height: 100%;
     width: 100%;
     background-color: #f5f5f5;
-}
-
-
-.body {
-    width: 100%;
-    height: 100%;
 }
 
 .container {
@@ -54,28 +54,26 @@
 
 .items-container {
     position: relative;
-    width: 60%;
-    height: 100%;
+    width: 100%;
+    height: 100vh;
     display: flex;
     align-items: center;
     flex-direction: column;
     padding: 0 20px;
+    margin-bottom: 5%;
     overflow: scroll;
 }
 
 .divider-container {
-    height: 100%;
-    width: 8px;
-    display: flex;
-    align-items: center;
-    border: 1px solid #d9d9d9;
+    display: none;
 }
 
 .divider-container .divider {
-    background-color: #d9d9d9;
-    width: 100%;
-    height: 80%;
-    border-radius: 10px;
+    display: none;
+}
+
+.details-container {
+    position: absolute;
 }
 
 .bottom-bar-container {
@@ -83,8 +81,62 @@
     bottom: 0;
     width: 100%;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    gap: 10px;
     align-items: center;
-    padding: 10px;
+    padding: 10px 0px;
+}
+
+.bottom-bar-container .player {
+    width: 100%;
+}
+
+@media only screen and (min-width: 750px) {
+    .bottom-bar-container {
+        flex-direction: row-reverse;
+        justify-content: space-around;
+        align-items: flex-end;
+        padding: 10px 5%;
+    }
+
+    .bottom-bar-container div {
+        bottom: 0;
+    }
+
+    .bottom-bar-container .player {
+        width: unset;
+    }
+
+    .items-container {
+        position: relative;
+        width: 60%;
+        height: 100vh;
+        overflow-y: auto;
+    }
+
+    .divider-container {
+        height: 100%;
+        width: 8px;
+        display: flex;
+        align-items: center;
+        border: 1px solid #d9d9d9;
+    }
+
+    .divider-container .divider {
+        background-color: #d9d9d9;
+        width: 100%;
+        height: 80%;
+        border-radius: 10px;
+    }
+
+    .details-container {
+        position: relative;
+        width: 40%;
+        align-content: center;
+    }
+
+    .details-container :only-child {
+        padding: 0% 5%;
+    }
 }
 </style>

@@ -2,12 +2,7 @@
     <div class="px-4 py-4">
         <div class="d-flex" style="gap: 20px">
             <!-- Open Modal Usage -->
-            <button
-                type="button"
-                class="btn btn-primary"
-                data-bs-toggle="modal"
-                @click="displayModal"
-            >
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal">
                 Modal
             </button>
 
@@ -15,11 +10,7 @@
             <button type="button" class="btn btn-primary" @click="showError()">
                 Add Error
             </button>
-            <button
-                type="button"
-                class="btn btn-primary"
-                @click="showSuccess()"
-            >
+            <button type="button" class="btn btn-primary" @click="showSuccess()">
                 Add Success
             </button>
 
@@ -36,35 +27,16 @@
 
         <div>
             <!-- Pagination Component -->
-            <CommonPagination
-                :page-index="1"
-                :total-pages="10"
-                :total-records="100"
-                @on-page-change="goto($event)"
-            />
+            <CommonPagination :page-index="1" :total-pages="10" :total-records="100" @on-page-change="goto($event)" />
         </div>
 
         <!-- Modal Component -->
         <CommonModal id="test">
-            <div
-                class="progress modal-progress position-absolute w-100"
-                style="top: 0px"
-            >
-                <div
-                    class="progress-bar"
-                    role="progressbar"
-                    aria-valuenow="25"
-                    aria-valuemin="0"
-                    aria-valuemax="100"
-                    style="width: 100%"
-                />
+            <div class="progress modal-progress position-absolute w-100" style="top: 0px">
+                <div class="progress-bar" role="progressbar" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"
+                    style="width: 100%" />
             </div>
-            <button
-                type="button"
-                class="close"
-                data-bs-dismiss="modal"
-                aria-label="Close"
-            >
+            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                 <i class="fas fa-times" />
             </button>
             <div class="modal-body">
@@ -72,18 +44,13 @@
             </div>
         </CommonModal>
 
-        <CommonInfiniteScroll
-            :options="{ root: null, rootMargin: '0px', threshold: 1.0 }"
-            @intersect="loadMore"
-        />
+        <CommonInfiniteScroll :options="{ root: null, rootMargin: '0px', threshold: 1.0 }" @intersect="loadMore" />
     </div>
 </template>
 
 <script setup lang="ts">
 const { addError, addSuccess } = useToast();
-const displayModal = () => {
-    showModal("test", { backdrop: "static" });
-};
+const { formatCurrency, formatDate } = useUtils();
 
 const goto = (page: number) => {
     addSuccess("Navigating to page " + page);

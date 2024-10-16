@@ -1,12 +1,11 @@
 import type { AxiosRequestConfig, AxiosResponse } from "axios";
 import axios from "axios";
-import { useAuthStore } from "~/stores/user";
+import { useAuthStore } from "~/stores";
 
 function logout() {
   localStorage.clear();
   window.location.replace("/login");
 }
-const authErrors = { code: [412], message: ["inspector not found"] };
 
 const { internet } = useUtils();
 const { addError, notify } = useNotification();
@@ -61,8 +60,8 @@ export const useRequest = async <T>(
     addError(error.response.data.message);
     return Promise.reject(Error(error));
   };
-  if (!internet) {
-    throw notify("noWifi");
-  }
+  // if (!internet) {
+  //   throw notify("Connection lost");
+  // }
   return client(options).then(onSuccess).catch(onError);
 };

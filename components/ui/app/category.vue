@@ -1,5 +1,5 @@
 <template>
-    <button class="chip">{{ title }}</button>
+    <button class="chip" :title="title">{{ title }}</button>
 </template>
 
 <script setup lang="ts">
@@ -13,18 +13,22 @@ const props = defineProps({
 
 <style scoped>
 .chip {
+    display: inline-block;
     width: 100px;
-    padding: 8px;
-    border-radius: 60px;
+    padding: 10px;
+    /* margin-right:10px; */
+    border-radius: 10px;
     background-color: #d9d9d9;
     color: #000;
     font-size: 14px;
     font-family: Pontano Sans;
     font-weight: 400;
-    word-wrap: break-word;
+    white-space: nowrap;
     text-align: center;
     border: none;
     cursor: pointer;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .chip:hover {

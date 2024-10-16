@@ -1,6 +1,6 @@
 import { computed } from "vue";
 import { useRoute } from "nuxt/app";
-import { useAuthStore } from "~/stores/user";
+import { useAuthStore } from "~/stores";
 
 export function useNavigation() {
   const store = useAuthStore();
@@ -10,7 +10,7 @@ export function useNavigation() {
   });
 
   const navItems = computed(() => {
-    return adminNavigationItems
+    return adminNavigationItems;
   });
 
   const updateSearchParams = ({

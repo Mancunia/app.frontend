@@ -1,20 +1,42 @@
 <template>
     <div class="player">
-        
+
     </div>
 </template>
 
 <script setup lang="ts">
+import { playChapter } from '~/services/play';
 const props = defineProps({
-    file:{
+    file: {
         type: String,
         required: true,
-        default: 'https://anansesemfie.com/1630456838250-Digital-stuff/Chapter-2.mp3'
+        default: '~/assets/test-audio.mp3'
     }
 })
-const player = document.createElement('audio')
-player.src = props.file
-const { playAudio, pauseAudio, stopAudio, setVolume, muteAudio, unmuteAudio, } = usePlayer()
+const store = useAuthStore()
+
+const chapter = computed(() =>
+    store.getPlaying
+)
+
+const { toggleAudio, pauseAudio, stopAudio, setVolume, muteAudio, unmuteAudio, fastForwardAudio, rewindAudio } = usePlayer()
+
+const getChapter = async () => {
+    try {
+        const res = await playChapter(chapter.value.id)
+        console.log(res)
+    } finally {
+        console.log('done')
+    }
+}
+
+
+onMounted(() => {
+    getChapter()
+    onBeforeUnmount(() => {
+      
+    })
+})
 </script>
 
 
