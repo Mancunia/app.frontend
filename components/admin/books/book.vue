@@ -37,10 +37,10 @@
                         v-model="selectedBook.description"></textarea>
                 </div>
                 <div class="input-container-btn">
-                    <UiSelectDropDown :data-list="Langs.data ?? []" placeHolder="languages" generic="array"
+                    <UiSelectDropDown :data-list="languages ?? []" placeHolder="languages" generic="array"
                         @selected="selectedBook.languages = $event" :selected-option="selectedBook.languages" />
                     <UiLoader v-if="Langs.loading" />
-                    <UiSelectDropDown :data-list="Cates.data ?? []" placeHolder="Categories" generic="array"
+                    <UiSelectDropDown :data-list="categories ?? []" placeHolder="Categories" generic="array"
                         @selected="selectedBook.category = $event" :selected-option="selectedBook.category" />
                     <UiLoader v-if="Cates.loading" />
 
@@ -56,13 +56,15 @@
     <div v-else>
         <h1>No book selected</h1>
     </div>
+    <CommonModal v-model="isModalOpen">
+        <CommonProgress v-if="uploading.loading" :progress="uploading.progress" :message="uploading.message" />
+    </CommonModal>
 </template>
 
 <script setup lang="ts">
 import type { BOOK } from '~/types/book';
 import type { Languages, Categories } from '~/types/common';
 import { getBook } from '~/services/book';
-import { getLanguages, getCategories } from '~/services/common';
 import { createBook, updateBook } from '~/services/admin/book';
 
 const State = {
@@ -73,6 +75,8 @@ const State = {
 const route = useRoute()
 const router = useRouter()
 const store = useAuthStore()
+const { languages, categories } = useCommon()
+const { isOpen: isModalOpen, open: openModal, close: closeModal } = useModal();
 
 const defaultBook = {
     meta: {
@@ -135,14 +139,14 @@ const edit = () => {
 const bookId = computed(() => route.query.bookId as string)
 const bookLanguages = computed(() => {
     if (selectedBook.value.languages) {
-        return Langs.value.data?.filter((lang: { id: any; }) => selectedBook.value?.languages.includes(lang.id)).map((lang: { name: any; }) => lang.name).join(', ')
+        return languages.value?.filter((lang: { id: any; }) => selectedBook.value?.languages.includes(lang.id)).map((lang: { name: any; }) => lang.name).join(', ')
     }
     return 'none'
 })
 
 const bookCategories = computed(() => {
     if (selectedBook.value.category) {
-        return Cates.value.data?.filter((cate: { id: any; }) => selectedBook.value?.category.includes(cate.id)).map((cate: { name: any; }) => cate.name).join(', ')
+        return categories.value?.filter((cate: { id: any; }) => selectedBook.value?.category.includes(cate.id)).map((cate: { name: any; }) => cate.name).join(', ')
     }
     return 'none'
 })
@@ -151,12 +155,12 @@ const postBook = async () => {
     try {
         selectedBook.value._id = null
         uploading.value.loading = true
+        openModal()
         if (imageData.value) {
             uploading.value.message = 'Uploading image'
             uploading.value.progress = 20
             const response = await generateSignedUrl(imageData.value.file)
             if (response) {
-                console.log({ file: imageData.value.file });
                 const imgLink = await uploadFile(imageData.value.file, response.signedURL)
 
                 if (imgLink) {
@@ -174,21 +178,25 @@ const postBook = async () => {
             selectedBook.value = data
             router.push({ query: { bookId: data._id, action: 'view' } })
         }
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            console.error('Error uploading book')
+        }
     } finally {
-        uploading.value.loading = false
+        imageData.value = null
     }
 }
 
 const putBook = async () => {
     try {
         uploading.value.loading = true
+        openModal()
         if (imageData.value) {
             uploading.value.message = 'Uploading image'
             uploading.value.progress = 20
             const response = await generateSignedUrl(imageData.value.file)
             if (response) {
                 const imgLink = await uploadFile(imageData.value.file, response.signedURL)
-                console.log({ imgLink });
                 if (imgLink) {
                     uploading.value.progress = 50
                     selectedBook.value.cover = imgLink
@@ -203,8 +211,13 @@ const putBook = async () => {
             uploading.value.progress = 100
             router.push({ query: { bookId: data._id, action: 'view' } })
         }
-    } finally {
-        uploading.value.loading = false
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            console.error('Error uploading book')
+        }
+    }
+    finally {
+        imageData.value = null
     }
 
 }
@@ -215,29 +228,6 @@ const submit = () => {
     }
     else {
         postBook()
-    }
-}
-const fetchLanguages = async () => {
-    try {
-        Langs.value.loading = true
-        const { data } = await getLanguages()
-        if (data) {
-            Langs.value.data = data
-        }
-    } finally {
-        Langs.value.loading = false
-    }
-}
-
-const fetchCategories = async () => {
-    try {
-        Cates.value.loading = true
-        const { data } = await getCategories()
-        if (data) {
-            Cates.value.data = data
-        }
-    } finally {
-        Cates.value.loading = false
     }
 }
 
@@ -263,7 +253,6 @@ const dropImage = () => {
 }
 
 watchEffect(() => {
-    console.log('state', state.value, bookId.value)
     fetchBook()
 })
 watch(imageData, () => {
@@ -275,7 +264,6 @@ onMounted(() => {
     if (state.value !== State.NEW) {
         fetchBook()
     }
-    Promise.all([fetchLanguages(), fetchCategories()])
 })
 
 </script>

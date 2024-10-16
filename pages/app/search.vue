@@ -45,6 +45,7 @@ definePageMeta({
     display: flex;
     flex-direction: column;
     align-items: center;
+    padding:2%;
     gap: 20px;
 }
 

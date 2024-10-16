@@ -1,5 +1,5 @@
 <template>
-    <div class="bookDetails">
+    <div class="bookDetails" :class="{ show: showDetails }">
         <div class="nav">
             <button>
                 <img src="@/assets/images/player/previous.png" alt="previous button" />
@@ -9,15 +9,16 @@
             </button>
         </div>
         <div class="bookCover">
-            <img src="@/assets/images/Rectangle_433.png" alt="book art" />
-            <div class="bookInfo">
-                <p>1</p>
-                <p>2</p>
-                <p>3</p>
-            </div>
+            <img :src="book.book.cover" alt="book art" />
+        </div>
+        <div class="bookInfo">
+            <div><img src="@/assets/images/playerDetails/star.png" />{{ book.book.meta.views }}</div>
+            <div v-if="book.book.languages.length"><img src="@/assets/images/playerDetails/language-circle.png" />{{
+                languages.find((lang) => lang.id == book.book.languages[0])?.name }}</div>
+            <div><img src="@/assets/images/playerDetails/microphone-2.png" />{{ book.book.meta.comments }}</div>
         </div>
         <div class="bookTitle">
-            <h2>title</h2>
+            <h2>{{ book.title }}</h2>
         </div>
 
     </div>
@@ -25,9 +26,28 @@
 
 <script setup lang="ts">
 
+const store = useAuthStore();
+const { languages } = useCommon()
+const book = computed(() => store.getPlaying)
+const showDetails = computed(() => store.getPlayer.showDetails)
+
 </script>
 
 <style scoped>
+.bookDetails {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    background-color: rgba(255, 255, 255, 0.805);
+    padding: 20px 5%;
+    border-radius: 20px;
+    transition: all 1s ease-in-out;
+}
+
+.show {
+    display: none;
+}
+
 .bookDetails .nav {
     display: flex;
     width: 100%;
@@ -36,6 +56,8 @@
 }
 
 .bookDetails .bookCover {
+    width: 90%;
+    height: 100%;
     justify-content: center;
 }
 
@@ -45,12 +67,18 @@
     object-fit: cover;
 }
 
-.bookDetails .bookCover .bookInfo {
+.bookDetails .bookInfo {
     width: 100%;
     height: 100%;
     display: flex;
     flex-direction: row;
     justify-content: space-evenly;
+}
+
+.bookDetails .bookInfo div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .bookDetails .bookTitle {
@@ -60,9 +88,15 @@
     align-items: center;
 }
 
+
 @media only screen and (min-width: 750px) {
     .bookDetails {
         background: rgba(255, 255, 255, 0.2);
+        width: 80%;
     }
+        .bookDetails .bookCover {
+            width: 90%;
+            align-self: center;
+        }
 }
 </style>

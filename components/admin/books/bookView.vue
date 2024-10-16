@@ -1,7 +1,6 @@
 <template>
     <div class="content">
         <AdminBooksBook />
-        <div class=""></div>
         <div class="chapter-card-container">
             <div v-if="action.toLowerCase() === 'view'" class="header">
                 <button class="btn" :class="{ black: tab === Tabs.CHAPTERS }"
@@ -31,6 +30,6 @@ const setTab = (currentTab: Tabs) => tab.value = currentTab
 .content {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    justify-content: space-between;
 }
 </style>

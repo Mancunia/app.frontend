@@ -10,7 +10,7 @@
         <div class="controls-book-chapter-btns">
             <img class="controls-book-chapter-btns-img" src="@/assets/images/Component 29.png" alt="" srcset="">
             <img class="controls-book-chapter-btns-img" src="@/assets/images/forward-10.png" alt="" srcset="">
-            <img class="controls-book-chapter-btns-img" src="@/assets/images/pause1.png" alt="" srcset="">
+            <img class="controls-book-chapter-btns-img" src="@/assets/images/player/pause1.png" alt="" srcset="">
             <img class="controls-book-chapter-btns-img" src="@/assets/images/next-10.png" alt="" srcset="">
             <img class="controls-book-chapter-btns-img" src="@/assets/images/Component 28.png" alt="" srcset="">
         </div>
@@ -22,7 +22,7 @@
                 </div>
             </div>
 
-            <img src="@/assets/images/playlist.png" class="book-image">
+            <img src="@/assets/images/player/playlist.png" class="book-image">
         </div>
     </div>
 </template>

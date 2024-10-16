@@ -1,7 +1,7 @@
 <template>
-    <NuxtLink style="text-decoration: none;" :to="`/app/book/${props.book._id}`">
+    <NuxtLink v-if="book" style="text-decoration: none;" :to="`/app/book/${props.book._id}`" @click="selectBook = book">
         <div class="card">
-            <img :src="`${book.cover}` ?? '@/assets/images/placeHolder.png'" alt="">
+            <img :src="`${book.cover}` || '@/assets/images/placeHolder.png'" alt="">
             <div class="description">
                 <h2 class="title">{{ book.title }}</h2>
                 <h3 class="author">{{ String(book.authors) }}</h3>
@@ -21,6 +21,7 @@ const props = defineProps({
     }
 
 })
+const selectBook = useState<BOOK | null>('appBook', () => null)
 </script>
 
 <style scoped>

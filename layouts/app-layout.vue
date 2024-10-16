@@ -13,7 +13,7 @@
                 </div>
 
                 <div class="details-container">
-                    <UiAppPlayerDetails v-if="true" class="details" />
+                    <UiAppPlayerDetails class="details" />
                 </div>
                 <div class="bottom-bar-container">
                     <UiAppPlayer class="player" />
@@ -60,6 +60,7 @@
     align-items: center;
     flex-direction: column;
     padding: 0 20px;
+    margin-bottom: 5%;
     overflow: scroll;
 }
 
@@ -135,7 +136,7 @@
     }
 
     .details-container :only-child {
-        padding: 0% 10%;
+        padding: 0% 5%;
     }
 }
 </style>

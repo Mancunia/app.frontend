@@ -28,3 +28,12 @@ export type CHAPTER = {
   book: BOOK;
   createdAt: string;
 };
+
+export type PLAYER = {
+  showDetails: boolean;
+  playing: boolean;
+  autoplay: boolean;
+  loop: boolean;
+  muted: boolean;
+  volume: number;
+};

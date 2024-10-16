@@ -21,8 +21,8 @@
         </div>
         <div v-else class="list-card-container">
             <UiAppBook v-for="(book, index) in books" :key="index" :book="book" />
-            <UiInfiniteScroll @more="viewMore" :options="options" />
         </div>
+        <UiInfiniteScroll @more="viewMore" :options="options" />
         <div class="list-card-container" v-if="fetchingMore">
             <UiAppLoadersBook />
             <UiAppLoadersBook />
@@ -50,6 +50,7 @@ const options = {
 } as const
 
 const store = useAuthStore()
+const { setCommon } = useCommon()
 
 const fetchBooks = async () => {
     try {
@@ -82,7 +83,7 @@ const viewMore = () => {
 
 onMounted(() => {
     loading.value = true;
-    fetchBooks();
+    Promise.all([fetchBooks(), setCommon()]);
 })
 definePageMeta({
     title: 'Login',
@@ -119,7 +120,7 @@ definePageMeta({
 
 .list-card-container {
     width: 100%;
-    margin-bottom: 60%;
+    /* margin-bottom: 60%; */
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
@@ -150,9 +151,10 @@ definePageMeta({
 }
 
 @media only screen and (min-width: 750px) {
+
     .list-card-container {
         margin-bottom: 10%;
-        justify-content: space-between;
+        justify-content: space-evenly;
     }
 }
 </style>

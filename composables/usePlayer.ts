@@ -1,56 +1,76 @@
+import type { PLAYER } from "~/types/book";
+
 export const usePlayer = () => {
-    const playerProps = ref({
-        playing: false,
-        autoplay: false,
-        loop: false,
-        muted: false,
-        volume: 1,
-    });
-    const toggleAudio = (audio: HTMLAudioElement) => {
-      if (playerProps.value.playing) {
-        pauseAudio(audio);
-        playerProps.value.playing = false;
-      } else {
-        playAudio(audio);
-        playerProps.value.playing = true;
+  const audio = useState<HTMLAudioElement>("player", () => new Audio());
+
+  const store = useAuthStore();
+  const init = async (audioFile: string) => {
+    let file = audioFile;
+     stopAudio();
+    if (!file.includes("s3")) {
+      if (file.startsWith("//")) {
+        file = file.replace("//", "/");
       }
-    };
-  const playAudio = (audio: HTMLAudioElement) => {
-    audio.play();
-    return playerProps.value.playing = true;
+      file = `https://anansesemfie.com${file}`;
+      console.log("has AWS:", audioFile.includes("aws"), file);
+    }
+    audio.value.src = file;
+    if (audio.value.src) {
+      await audio.value.load();
+      await playAudio();
+    }
+  };
+  const toggleAudio = async () => {
+    if (store.getPlayer.playing) {
+      await pauseAudio();
+      await playerDetails({ playing: false });
+    } else {
+      await playAudio();
+      await playerDetails({ playing: true });
+    }
+  };
+  const playAudio = () => {
+    audio.value.play();
+    playerDetails({ playing: true });
   };
 
-  const pauseAudio = (audio: HTMLAudioElement) => {
-    audio.pause();
+  const pauseAudio = () => {
+    audio.value.pause();
   };
 
-  const stopAudio = (audio: HTMLAudioElement) => {
-    audio.pause();
-    audio.currentTime = 0;
+  const stopAudio = () => {
+    audio.value.pause();
+    audio.value.currentTime = 0;
   };
 
-  const muteAudio = (audio: HTMLAudioElement) => {
-    audio.muted = true;
+  const muteAudio = () => {
+    audio.value.muted = true;
   };
 
-  const unmuteAudio = (audio: HTMLAudioElement) => {
-    audio.muted = false;
+  const unmuteAudio = () => {
+    audio.value.muted = false;
   };
 
-  const setVolume = (audio: HTMLAudioElement, volume: number) => {
-    audio.volume = volume;
+  const setVolume = (volume: number) => {
+    audio.value.volume = volume;
   };
 
-const fastForwardAudio = (audio: HTMLAudioElement, seconds: number) => {
-    audio.currentTime += seconds;
-};
+  const fastForwardAudio = (seconds: number) => {
+    audio.value.currentTime += seconds;
+  };
 
-const rewindAudio = (audio: HTMLAudioElement, seconds: number) => {
-    audio.currentTime -= seconds;
-};
+  const rewindAudio = (seconds: number) => {
+    audio.value.currentTime -= seconds;
+  };
 
+  const playerDetails = (details: Partial<PLAYER>) => {
+    store.setPlayer({
+      ...details,
+    });
+  };
 
   return {
+    init,
     toggleAudio,
     playAudio,
     pauseAudio,
@@ -60,6 +80,6 @@ const rewindAudio = (audio: HTMLAudioElement, seconds: number) => {
     setVolume,
     fastForwardAudio,
     rewindAudio,
-    playerProps
+    playerDetails,
   };
 };

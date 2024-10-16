@@ -71,14 +71,13 @@ const { activeRoute } = useNavigation()
 }
 
 .nav .icon.active {
-    border: 2px solid #fff;
+    border-bottom: 2px solid #fff;
     padding: 2%;
-    border-radius: 5px;
     transition-duration: 0.5s;
 }
 
 @media only screen and (min-width: 750px) {
-    .nav .icon :hover {
+    .nav .icon:hover {
         border-bottom: 2px solid #fff;
         border-radius: 1px;
         transition-duration: 0.5s;

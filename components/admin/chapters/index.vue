@@ -15,6 +15,15 @@
             <h1>No chapters found</h1>
         </div>
     </div>
+
+    <div class="add-chapter">
+        <button @click="openModal">Open Modal</button>
+    </div>
+
+    
+    <CommonModal v-model="isModalOpen">
+        <AdminChaptersForm :bookId="bookId" />
+    </CommonModal>
 </template>
 
 <script setup lang="ts">
@@ -23,7 +32,12 @@ import type { CHAPTER } from '~/types/book';
 const route = useRoute();
 const chapters = ref<{ data: CHAPTER[] | null, loading: boolean }>({ data: null, loading: false });
 
+
+
+const { isOpen: isModalOpen, open: openModal, close: closeModal } = useModal();
+
 const bookId = computed(() => route.query.bookId as string);
+
 const fetchChapters = async () => {
     if (!bookId.value) {
         chapters.value.data = null;
@@ -44,3 +58,5 @@ watchEffect(() => {
     fetchChapters();
 });
 </script>
+
+<style scoped></style>

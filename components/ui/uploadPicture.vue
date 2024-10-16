@@ -5,12 +5,12 @@
             <i class='bx bxs-image-add' v-else-if="type === 'image'"></i>
             <i class='bx bxs-cloud-upload' v-else></i>Select {{ type === 'image' ? 'an Image' : 'a File' }}
         </label>
-        <input id='input-file' type='file' accept="image/*" @change="handleFileChange">
+        <input id='input-file' type='file' :accept="accept" @change="handleFileChange">
     </div>
 </template>
 
 <script setup lang="ts">
-const { allowedExt, maxSize } = defineProps({
+const props = defineProps({
     allowedExt: {
         type: Array as PropType<string[]>,
         default: ['jpg', 'jpeg', 'png']
@@ -21,6 +21,10 @@ const { allowedExt, maxSize } = defineProps({
     },
     type: {
         type: String as PropType<'image' | 'audio'>,
+    },
+    accept: {
+        type: String,
+        default: 'image/*'
     }
 })
 const emit = defineEmits(['submit'])
@@ -31,12 +35,12 @@ const fileData = ref<{} | string | null>(null)
 const handleFileChange = async (event: any) => {
     try {
         const file = event.target.files[0]
-        const isValid = validateFile(file, allowedExt)
+        const isValid = validateFile(file, props.allowedExt)
         if (isValid) {
             throw new Error(isValid)
         }
         if (file) {
-            if (file.size > maxSize) {
+            if (file.size > props.maxSize && props.type === 'image') {
                 fileData.value = await reduceImageSize(file, 300, 300)
             } else {
                 const reader = new FileReader()

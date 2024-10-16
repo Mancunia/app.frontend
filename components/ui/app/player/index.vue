@@ -4,30 +4,33 @@
 
         <div class="rectangleParent">
             <div class="book-art">
-                <img src="@/assets/images/player/picture.png" alt="book art" />
+                <img :src="store.getPlaying.book.cover" alt="book art" />
             </div>
             <div class="controls">
                 <div class="player-item">
                     <button>
                         <img src="@/assets/images/player/previous.png" alt="previous button" />
                     </button>
-                    <button @click="rewind">
+                    <button @click="rewindAudio(5)">
                         <img src="@/assets/images/player/backward.png" alt="backward button" />
                     </button>
 
                     <div class="play-button">
-                        <button @click="play">
-                            <img v-if="playerProps.playing" src="@/assets/images/player/pause.png"
+                        <button @click="toggleAudio">
+                            <img v-if="store.getPlayer.playing" src="@/assets/images/player/pause.png"
                                 alt="forward button" />
                             <img v-else src="@/assets/images/player/backward.png" alt="backward button" />
                         </button>
                     </div>
 
-                    <button @click="fastForward">
+                    <button @click="fastForwardAudio(5)">
                         <img src="@/assets/images/player/forward.png" alt="play button" />
                     </button>
                     <button>
                         <img src="@/assets/images/player/next.png" alt="forward button" />
+                    </button>
+                    <button @click="playerDetails({ showDetails: !store.getPlayer.showDetails,playing:store.getPlayer.playing })">
+                        <img src="@/assets/images/player/playlist.png" alt="forward button" />
                     </button>
                 </div>
             </div>
@@ -46,32 +49,13 @@ const props = defineProps({
     }
 })
 const store = useAuthStore()
-const seekTo = ref(5)
-const currentTime = ref(0)
-const duration = ref(0)
 
 const chapter = computed(() =>
     store.getPlaying
 )
-const player = ref<HTMLAudioElement | null>(null)
 
-const ended = computed(() => currentTime.value === duration.value)
+const { toggleAudio,stopAudio, setVolume, muteAudio, unmuteAudio, fastForwardAudio, rewindAudio, playerDetails } = usePlayer()
 
-const { toggleAudio, pauseAudio, stopAudio, setVolume, muteAudio, unmuteAudio, fastForwardAudio, rewindAudio, playerProps } = usePlayer()
-const play = () => {
-    console.log('play', props.file)
-    if (player.value) {
-        toggleAudio(player.value)
-    }
-}
-const fastForward = () => {
-    if (player.value)
-        fastForwardAudio(player.value, seekTo.value)
-}
-const rewind = () => {
-    if (player.value)
-        rewindAudio(player.value, seekTo.value)
-}
 
 const getChapter = async () => {
     try {
@@ -83,30 +67,16 @@ const getChapter = async () => {
 }
 
 
+
+
 onMounted(() => {
     getChapter()
-    if (player.value) {
-        player.value.addEventListener('loadedmetadata', () => {
-            if (player.value)
-                duration.value = player.value.duration
-        })
-        player.value.addEventListener('timeupdate', () => {
-            if (player.value)
-                currentTime.value = player.value.currentTime
-        })
+    if (store.getPlayer.playing) {
+        toggleAudio()
     }
+
     onBeforeUnmount(() => {
-        if (player.value) {
-            player.value.removeEventListener('loadedmetadata', () => {
-                if (player.value)
-                    duration.value = player.value.duration
-            })
-            player.value.removeEventListener('timeupdate', () => {
-                if (player.value)
-                    currentTime.value = player.value.currentTime
-            })
-            document.body.removeChild(player.value)
-        }
+
     })
 })
 
@@ -120,6 +90,21 @@ onMounted(() => {
     justify-content: center;
     width: 100%;
     height: 100%;
+}
+
+.book-art {
+    width: 43px;
+    height: 41px;
+    flex-shrink: 0;
+    background: lightgray 50% / cover no-repeat;
+    box-shadow: 3px 4px 8.8px 0px rgba(0, 0, 0, 0.25);
+}
+
+.book-art img {
+    width: 100%;
+    height: 100%;
+    border-radius: 20%;
+    object-fit: cover;
 }
 
 /* book details */
@@ -157,6 +142,7 @@ onMounted(() => {
     display: flex;
     flex-direction: row;
     position: relative;
+    padding: 0px 0px;
     gap: 10px;
     /* width: 10px;
     height: 59px; */
@@ -182,6 +168,11 @@ onMounted(() => {
 @media only screen and (min-width: 750px) {
     .bookDetails {
         background: rgba(255, 255, 255, 0.2);
+    }
+
+    .player-item>button:hover {
+        border-bottom: 2px solid #F1EEE3;
+        cursor: pointer;
     }
 }
 </style>

@@ -1,6 +1,6 @@
 <template>
     <div class="player">
-        
+
     </div>
 </template>
 
@@ -14,36 +14,16 @@ const props = defineProps({
     }
 })
 const store = useAuthStore()
-const seekTo = ref(5)
-const currentTime = ref(0)
-const duration = ref(0)
 
 const chapter = computed(() =>
     store.getPlaying
 )
-const player = ref<HTMLAudioElement | null>(null)
 
-const ended = computed(() => currentTime.value === duration.value)
-
-const { toggleAudio, pauseAudio, stopAudio, setVolume, muteAudio, unmuteAudio, fastForwardAudio, rewindAudio, playerProps } = usePlayer()
-const play = () => {
-    console.log('play', props.file)
-    if (player.value) {
-        toggleAudio(player.value)
-    }
-}
-const fastForward = () => {
-    if (player.value)
-        fastForwardAudio(player.value, seekTo.value)
-}
-const rewind = () => {
-    if (player.value)
-        rewindAudio(player.value, seekTo.value)
-}
+const { toggleAudio, pauseAudio, stopAudio, setVolume, muteAudio, unmuteAudio, fastForwardAudio, rewindAudio } = usePlayer()
 
 const getChapter = async () => {
     try {
-        const res = await playChapter(chapter.value._id)
+        const res = await playChapter(chapter.value.id)
         console.log(res)
     } finally {
         console.log('done')
@@ -53,28 +33,8 @@ const getChapter = async () => {
 
 onMounted(() => {
     getChapter()
-    if (player.value) {
-        player.value.addEventListener('loadedmetadata', () => {
-            if (player.value)
-                duration.value = player.value.duration
-        })
-        player.value.addEventListener('timeupdate', () => {
-            if (player.value)
-                currentTime.value = player.value.currentTime
-        })
-    }
     onBeforeUnmount(() => {
-        if (player.value) {
-            player.value.removeEventListener('loadedmetadata', () => {
-                if (player.value)
-                    duration.value = player.value.duration
-            })
-            player.value.removeEventListener('timeupdate', () => {
-                if (player.value)
-                    currentTime.value = player.value.currentTime
-            })
-            document.body.removeChild(player.value)
-        }
+      
     })
 })
 </script>
