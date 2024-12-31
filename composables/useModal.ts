@@ -1,8 +1,7 @@
-export function useModal() {
+export const useModal = () => {
   const isOpen = ref(false);
 
   const open = () => {
-    console.log('open modal')
     isOpen.value = true;
   };
 
@@ -20,4 +19,4 @@ export function useModal() {
     close,
     toggle,
   };
-}
+};

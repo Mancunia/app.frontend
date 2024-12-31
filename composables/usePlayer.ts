@@ -6,19 +6,28 @@ export const usePlayer = () => {
   const store = useAuthStore();
   const init = async (audioFile: string) => {
     let file = audioFile;
-     stopAudio();
+    stopAudio();
     if (!file.includes("s3")) {
       if (file.startsWith("//")) {
         file = file.replace("//", "/");
       }
       file = `https://anansesemfie.com${file}`;
-      console.log("has AWS:", audioFile.includes("aws"), file);
     }
     audio.value.src = file;
     if (audio.value.src) {
       await audio.value.load();
       await playAudio();
     }
+
+    audio.value.addEventListener("ended", async () => {
+      await playerDetails({ playing: false });
+    });
+    audio.value.addEventListener("pause", async () => {
+      await playerDetails({ playing: false });
+    });
+    audio.value.addEventListener("play", async () => {
+      await playerDetails({ playing: true });
+    });
   };
   const toggleAudio = async () => {
     if (store.getPlayer.playing) {
@@ -45,14 +54,18 @@ export const usePlayer = () => {
 
   const muteAudio = () => {
     audio.value.muted = true;
+    playerDetails({ volume: 0 });
   };
 
   const unmuteAudio = () => {
     audio.value.muted = false;
+    playerDetails({ volume: audio.value.volume });
   };
 
   const setVolume = (volume: number) => {
-    audio.value.volume = volume;
+    if (!audio.value) return; // Check for null audio element
+    const normalizedVolume = Math.max(0, Math.min(1, volume / 100));
+    audio.value.volume = normalizedVolume;
   };
 
   const fastForwardAudio = (seconds: number) => {
@@ -81,5 +94,6 @@ export const usePlayer = () => {
     fastForwardAudio,
     rewindAudio,
     playerDetails,
+    player: audio,
   };
 };

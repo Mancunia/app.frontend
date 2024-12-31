@@ -3,35 +3,71 @@
         <div class="search">
             <div class="search-box">
                 <input class="search-input" type="search" name="search" id="search" placeholder="Search"
-                    control-id="ControlID-3">
-                <img class="icon" src="@/assets/images/search.png" alt="">
+                    control-id="ControlID-3" v-model="searchOptions.search">
+                <img @click="search" class="icon" src="@/assets/images/search.png" alt="">
             </div>
 
-            <div class="filter-container mt10">
-                <select class="select" id="category" name="category" control-id="ControlID-4">
-                    <option value="categoryOption1">Category 1</option>
-                    <option value="categoryOption2">Category 2</option>
-                    <option value="categoryOption3">Category 3</option>
-                    <option value="categoryOption4">Category 4</option>
-                </select>
+            <div class="filter-container">
+                <UiSelectDropDown :data-list="categories ?? [{ id: '', name: 'Select Categories' }]"
+                    place-holder="Categories" @selected="searchOptions.categories = $event" />
 
-                <select class="select" id="language" name="language" control-id="ControlID-5">
-                    <option value="languageOption1">Language 1</option>
-                    <option value="languageOption2">Language 2</option>
-                    <option value="languageOption3">Language 3</option>
-                    <option value="languageOption4">Language 4</option>
-                </select>
+                <UiSelectDropDown :data-list="languages ?? [{ id: '', name: 'Select Categories' }]"
+                    place-holder="Languages" @selected="searchOptions.languages = $event" />
             </div>
         </div>
 
         <div class="books">
-            <!-- <UiAppSearchItem /> -->
+            <UiAppSearchItem v-for="(book, index) in books" :key="index" :book="book" />
         </div>
     </div>
 
 </template>
 
 <script setup lang="ts">
+import { filterBooks } from '~/services/book';
+import type { BOOK } from '~/types/book';
+const books = ref<BOOK[] | null>(null);
+
+const { languages, categories } = useCommon()
+
+const searchOptions = ref<{ page: number, limit: number, search: string, categories: string[], languages: string[] }>({
+    page: 1,
+    limit: 10,
+    search: '',
+    categories: [],
+    languages: []
+})
+
+const { debounce } = useUtils();
+
+const filter = async () => {
+    try {
+        const { data } = await filterBooks(searchOptions.value as Object, USER_ROLES.USER);
+        if (data) {
+            books.value = data;
+        }
+    } catch (error) {
+        console.log(error);
+    }
+}
+const search = () => {
+    console.log('search')
+    books.value = null
+    filter()
+}
+const searchDebounced = debounce(search, 500);
+
+watch(() => searchOptions.value.search, () => {
+    if (searchOptions.value.search) {
+        searchDebounced()
+    }
+})
+
+onMounted(() => {
+    filter();
+})
+
+
 
 definePageMeta({
     title: 'Search',
@@ -45,7 +81,7 @@ definePageMeta({
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding:2%;
+    padding: 2%;
     gap: 20px;
 }
 
@@ -79,6 +115,11 @@ definePageMeta({
     display: flex;
     flex-direction: column;
     justify-content: center;
+    gap: 10px;
+}
+
+.filter-container {
+    display: flex;
     gap: 10px;
 }
 

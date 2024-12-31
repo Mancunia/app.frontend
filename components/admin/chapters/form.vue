@@ -1,6 +1,6 @@
 <template>
     <div>
-        <CommonProgress v-if="uploading.isUploading" :progress="uploading.progress" />
+        <CommonProgress v-if="uploading.isUploading" :progress="uploading.progress" :message="uploading.message" />
         <div v-else class="chapter-form">
 
             <div v-if="audioData">
@@ -10,7 +10,7 @@
                     <audio :src="audioData?.base64Url" controls></audio>
                 </div>
 
-                <button class="save-btn">Save</button>
+                <button class="save-btn" @click="save">Save</button>
             </div>
             <UiUploadPicture v-else @submit="audioData = $event" type="audio" :allowed-ext="acceptedFormats"
                 accept="audio/*" />
@@ -22,7 +22,9 @@
 </template>
 
 <script setup lang="ts">
-
+import { createChapter } from '~/services/admin/chapter';
+import { type CHAPTER_REQUEST } from '~/types/book';
+const emits = defineEmits(['done'])
 const props = defineProps({
     bookId: {
         type: String,
@@ -31,18 +33,55 @@ const props = defineProps({
 })
 const acceptedFormats = ['mp3', 'wav']
 const audioData = ref()
-const uploading = ref<{ isUploading: boolean, progress: number }>({ isUploading: false, progress: 0 })
-const form = ref({
-    bookID: props.bookId,
+const uploading = ref<{ isUploading: boolean, progress: number, message: string }>({ isUploading: false, progress: 0, message: "" })
+const form = ref<CHAPTER_REQUEST>({
+    bookId: props.bookId,
     content: null,
     title: null
 })
 
+const { generateSignedUrl, uploadFile } = useAWS()
+
 const clear = () => audioData.value = null
+
+const save = async () => {
+    try {
+        if (!audioData.value) {
+            throw new Error('Please select an audio file')
+        }
+        uploading.value.isUploading = true
+        uploading.value.progress = 10
+        uploading.value.message = 'Uploading audio file'
+        const response = await generateSignedUrl(audioData.value.file)
+        if (response) {
+            uploading.value.progress = 20
+            const fileLoc = await uploadFile(audioData.value.file, response.signedURL)
+            if (fileLoc) {
+                form.value.content = fileLoc
+                uploading.value.progress = 30
+            }
+
+        }
+        uploading.value.progress = 40
+        uploading.value.message = 'Creating chapter'
+        const { data } = await createChapter(form.value)
+        if (data) {
+            uploading.value.progress = 100
+            uploading.value.message = 'Chapter created successfully'
+            emits('done')
+        }
+        clear()
+        useNotification().addSuccess('Chapter created successfully')
+
+    } catch (error: any) {
+        uploading.value.progress = 0
+        useNotification().addError(error.message)
+    }
+}
 
 watch(audioData, () => {
     if (audioData.value) {
-        form.value.title = audioData.value?.file?.name.replace('mp3', '')
+        form.value.title = audioData.value?.file?.name.replace(['.', 'mp3'], '')
     }
 
 })

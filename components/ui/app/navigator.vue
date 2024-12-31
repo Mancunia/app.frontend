@@ -19,7 +19,7 @@ const links = {
     home: {
         name: 'Home',
         icon: 'element-3.png',
-        link: '/app/',
+        link: '/app',
         active: true
     },
     search: {

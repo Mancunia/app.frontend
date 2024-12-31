@@ -16,13 +16,12 @@
         </div>
     </div>
 
-    <div class="add-chapter">
-        <button @click="openModal">Open Modal</button>
-    </div>
+    <button v-if="chapters.data" class="add-chapter" @click="openModal">Add Chapter</button>
 
-    
+
+
     <CommonModal v-model="isModalOpen">
-        <AdminChaptersForm :bookId="bookId" />
+        <AdminChaptersForm :bookId="bookId" @done="fetchChapters" />
     </CommonModal>
 </template>
 
@@ -59,4 +58,21 @@ watchEffect(() => {
 });
 </script>
 
-<style scoped></style>
+<style scoped>
+.add-chapter {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+    padding: 2%;
+    width: 95%;
+    border: 0px;
+    background-color: #00000023;
+    border-radius: 10px;
+    transition: 0.5s ease-in-out;
+}
+
+.add-chapter:hover {
+    background-color: #fff;
+    box-shadow: inset -1px 1px 2px 0px #000000;
+}
+</style>

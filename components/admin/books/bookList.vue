@@ -28,7 +28,7 @@ import { getBooks } from "@/services/book"
 import { type BOOK } from "~/types/book";
 const searchTerm = ref<string | null>(null);
 const store = useAuthStore()
-const pagination = ref<{ page: number, limit: number }>({ page: 0, limit: 7 })
+const pagination = ref<{ page: number, limit: number }>({ page: 1, limit: 7 })
 const books = ref<{ data: BOOK[] | null, loading: boolean }>({ data: null, loading: false })
 const fetchingMore = ref<boolean>(false)
 const canFetchMore = ref<boolean>(true)

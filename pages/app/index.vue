@@ -41,7 +41,7 @@ const books = ref<BOOK[] | null>(null);
 const fetchingMore = ref<boolean>(false)
 const canFetchMore = ref<boolean>(true)
 
-const pagination = ref<{ page: number, limit: number }>({ page: 0, limit: 7 })
+const pagination = ref<{ page: number, limit: number }>({ page: 1, limit: 7 })
 
 const options = {
     root: null,

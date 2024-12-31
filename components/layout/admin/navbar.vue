@@ -14,11 +14,8 @@
 </template>
 
 <script setup lang="ts">
-import { checkConnection } from '~/services/common';
 
-const check = async () => {
-    await checkConnection();
-};
+
 </script>
 
 <style scoped>
@@ -28,6 +25,7 @@ nav {
     width: 100%;
     height: 51px;
 }
+
 .nav {
     display: flex;
     flex-direction: row;

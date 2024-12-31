@@ -22,13 +22,12 @@
             <div class="tab" :class="{ active: tab === TABS.CHAPTERS }" @click="tab = TABS.CHAPTERS">Chapters {{
                 tabData.chapters }}</div>
             <div class="tab" :class="{ active: tab === TABS.COMMENTS }" @click="tab = TABS.COMMENTS">Comments {{
-                tabData.comments }}</div>
+                book?.meta.comments }}</div>
         </div>
         <div class="tabPage">
             <div v-if="tab === TABS.CHAPTERS">
-                <div v-if="chapters.chapters">
-                    <UiAppChapter v-for="(chapter, index) in chapters.chapters" :key="index" :chapter="chapter">
-                    </UiAppChapter>
+                <div class="chapters" v-if="chapters.chapters">
+                    <UiAppChapter v-for="(chapter, index) in chapters.chapters" :key="index" :chapter="chapter" />
                 </div>
 
             </div>
@@ -87,8 +86,8 @@ onMounted(() => {
         fetchBook();
     }
     fetchChapters();
-
 })
+
 definePageMeta({
     title: 'Book',
     middleware: 'app',
@@ -153,6 +152,17 @@ definePageMeta({
     justify-content: center;
 }
 
+.tabs .chapters {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    padding: 10px;
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+    overflow: scroll;
+}
+
 .tabs .tab {
     padding: 10px;
     border-radius: 10px;
@@ -164,25 +174,31 @@ definePageMeta({
     background-color: #454343;
     color: #fff;
 }
+
 @media only screen and (min-width: 750px) {
-    .book{
+    .book {
         flex-direction: row;
-        height: max-content;
+        height: 20rem;
     }
-    .book-image{
+
+    .book-image {
+        width: 70%;
+        height: inherit;
+
+    }
+
+    .book-description {
         width: 100%;
         height: 100%;
     }
-    .book-description{
+
+    .tabPage {
         width: 100%;
-        height: 100%;
+        display: flex;
+        flex-direction: row;
+        gap: 10px;
+        padding: 10px;
+        box-sizing: border-box;
     }
 }
-/* .tabPage {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    padding: 10px;
-    box-sizing: border-box;
-} */</style>
+</style>

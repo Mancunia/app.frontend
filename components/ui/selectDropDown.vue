@@ -66,7 +66,12 @@ const active = ref<boolean>(false);
 
 const toggleActive = () => active.value = !active.value;
 const isAllChecked = computed(() => {
-    return props.dataList.length > 0 && checked.value.length === props.dataList.length;
+    if(props.dataList.length > 0){
+        return checked.value.length === props.dataList.length;
+    }else{
+        emit('search', searchTerm.value);
+        return []
+    }
 });
 
 const currentItems = computed(() => {
@@ -101,9 +106,6 @@ watch(checked, () => {
     }
 });
 
-watch(searchTerm, () => {
-    emit('search', searchTerm.value);
-});
 
 onMounted(() => {
     if (typeof props.selectedOption === 'string') {

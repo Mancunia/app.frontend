@@ -1,25 +1,26 @@
 <template>
     <div>
         <div class="comment-list">
-
-
+            <span v-for="(comment, index) in comments" :key="index">
+                {{ comment.comment }}
+                me:{{ comment.user.email === store.getUser.email }}
+            </span>
         </div>
         <div class="comment">
-            <form @submit.prevent="">
+            <form @submit.prevent="sendComment">
                 <div class="input-box">
-
                     <input type="text" v-model="comment.comment" name="comment" id="comment"
                         :placeholder="comment.placeholder" control-id="ControlID-3">
                     <button type="submit">send</button>
                 </div>
             </form>
-
         </div>
     </div>
-
 </template>
 
 <script setup lang="ts">
+import { postComment, getComments } from '~/services/book';
+import { type Comment } from '~/types/book';
 const props = defineProps({
     id: {
         type: String,
@@ -41,16 +42,57 @@ const placeholders = ['nice book....', 'write something...', 'your thoughts...',
 ];
 
 const comment = ref<{ comment: string | null, placeholder: string }>({ comment: null, placeholder: placeholders[0] });
+const comments = ref<Comment[] | null>(null)
+
+const { hasSpecialCharacters } = useUtils()
+const store = useAuthStore()
 
 const shufflePlaceholder = () => {
-
     comment.value.placeholder = placeholders[Math.floor(Math.random() * placeholders.length)];
 };
+
+
+const sendComment = async () => {
+    try {
+        if (!comment.value.comment || hasSpecialCharacters(comment.value.comment ?? '')) return
+        const { data } = await postComment(props.id, comment.value.comment ?? '')
+        if (data) {
+            comments.value?.push(data)
+            comment.value.comment = null
+        }
+    }
+    catch (error: unknown) {
+
+    } finally {
+
+    }
+}
+
+const fetchComments = async () => {
+    try {
+        const { data } = await getComments(props.id)
+        if (data) {
+            comments.value = data
+        }
+
+    }
+    catch (error: unknown) {
+
+    }
+    finally {
+
+    }
+}
+
+
 
 onMounted(() => {
     const interval = setInterval(() => {
         shufflePlaceholder();
+        fetchComments()
     }, 3000);
+
+    fetchComments()
 
     onBeforeUnmount(() => {
         clearInterval(interval);

@@ -1,22 +1,27 @@
 <template>
     <div class="book-card">
         <div class="img-box">
-            <img src="@/assets/images/book.jpeg" alt="">
+            <img :src="book.cover" alt="">
         </div>
         <div class="details">
             <span style="display: flex; flex-direction: row; justify-content: space-between;">
-                <p>In The End</p>
-                <span><img src="@/assets/playing.gif" width="30" height="15" /></span>
+                <p>{{ book.title }}</p>
+                <span v-if="store.getPlaying.book._id === book._id"><img src="@/assets/playing.gif" width="30"
+                        height="15" /></span>
             </span>
-            <p>Author: <span>Mcmillion Morfo</span></p>
-            <p>Rating: <span>4.5</span></p>
-            <p>Genre: <span>Drama</span></p>
-            <div class="link"><a href="">Details</a></div>
+            <p>Author: <span>{{ book.authors.toString() }}</span></p>
+            <p>Played: <span>{{ book.meta.played }}</span></p>
+            <!-- <p>Category: <span>{{ book.category.map((cate: string) => categories.find((cat) => cat.id === cate)?.name)
+                    }}</span></p> -->
+            <div class="link">
+                <NuxtLink :to="`${routes.app.book}${book._id}`">View</NuxtLink>
+            </div>
         </div>
     </div>
 </template>
 
 <script setup lang="ts">
+import routes from '~/routes';
 import type { BOOK } from '~/types/book';
 
 const props = defineProps({
@@ -26,6 +31,8 @@ const props = defineProps({
     }
 
 })
+
+const store = useAuthStore();
 
 </script>
 
