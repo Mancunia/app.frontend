@@ -1,5 +1,6 @@
 <template>
-    <NuxtLink v-if="book" style="text-decoration: none;" :to="`/app/book/${props.book._id}`" @click="selectBook = book">
+    <NuxtLink v-if="book" style="text-decoration: none;" :to="`${routes.app.book}${props.book._id}`"
+        @click="selectBook = book">
         <div class="card">
             <img :src="`${book.cover}` || '@/assets/images/placeHolder.png'" alt="">
             <div class="description">
@@ -12,6 +13,7 @@
 </template>
 
 <script setup lang="ts">
+import routes from '~/routes';
 import type { BOOK } from '~/types/book';
 
 const props = defineProps({

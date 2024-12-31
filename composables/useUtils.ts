@@ -300,6 +300,29 @@ export const useUtils = () => {
     return { file: resizedFile, base64Url };
   };
 
+  /**
+   * Converts milliseconds to days.
+   *
+   * @param milliseconds - The time in milliseconds to convert.
+   * @returns The equivalent time in days.
+   */
+  function millisecondsToDays(milliseconds: number): number {
+    if (typeof milliseconds !== "number" || milliseconds < 0) {
+      throw new Error("Input must be a non-negative number.");
+    }
+
+    const msInADay = 24 * 60 * 60 * 1000;
+    return Math.ceil(milliseconds / msInADay);
+  }
+
+  function hasSpecialCharacters(text: string): boolean {
+    // Define a regular expression pattern to match special characters
+    const specialCharsRegex = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/;
+
+    // Test if the text contains any special characters
+    return specialCharsRegex.test(text);
+  }
+
   return {
     formatMobileNumber,
     formatCurrency,
@@ -322,5 +345,7 @@ export const useUtils = () => {
     validateFile,
     formatNumberRange,
     reduceImageSize,
+    millisecondsToDays,
+    hasSpecialCharacters,
   };
 };

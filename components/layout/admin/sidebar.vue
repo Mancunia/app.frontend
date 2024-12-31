@@ -9,6 +9,10 @@
                     </a>
                 </li>
                 <li>
+                    <NuxtLink :to="routes.app.home">
+                        <i class="bx bx-left-arrow"></i>
+                        <span>App</span>
+                    </NuxtLink>
                     <a @click="admin_logout">
                         <i class="bx bx-log-out"></i>
                         <span>Log Out</span>

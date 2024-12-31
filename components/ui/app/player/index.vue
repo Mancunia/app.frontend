@@ -1,7 +1,5 @@
 <template>
     <div class="player">
-
-
         <div class="rectangleParent">
             <div class="book-art">
                 <img :src="store.getPlaying.book.cover" alt="book art" />
@@ -29,7 +27,8 @@
                     <button>
                         <img src="@/assets/images/player/next.png" alt="forward button" />
                     </button>
-                    <button @click="playerDetails({ showDetails: !store.getPlayer.showDetails,playing:store.getPlayer.playing })">
+                    <button
+                        @click="playerDetails({ showDetails: !store.getPlayer.showDetails, playing: store.getPlayer.playing })">
                         <img src="@/assets/images/player/playlist.png" alt="forward button" />
                     </button>
                 </div>
@@ -48,13 +47,14 @@ const props = defineProps({
         default: '~/assets/test-audio.mp3'
     }
 })
+const showControls = ref(false)
 const store = useAuthStore()
 
 const chapter = computed(() =>
     store.getPlaying
 )
 
-const { toggleAudio,stopAudio, setVolume, muteAudio, unmuteAudio, fastForwardAudio, rewindAudio, playerDetails } = usePlayer()
+const { toggleAudio, stopAudio, setVolume, muteAudio, unmuteAudio, fastForwardAudio, rewindAudio, playerDetails } = usePlayer()
 
 
 const getChapter = async () => {
@@ -88,7 +88,7 @@ onMounted(() => {
     gap: 10%;
     align-items: center;
     justify-content: center;
-    width: 100%;
+    width: 10%;
     height: 100%;
 }
 
@@ -115,11 +115,18 @@ onMounted(() => {
     flex-direction: row;
     gap: 10%;
     align-items: center;
+    margin-left: 5%;
     width: 351px;
     height: 59px;
     border-radius: 19px;
     background: #4D2316;
     padding: 5px 10px;
+    transition: 0.5s ease-in-out;
+    transform: translateX(85%)
+}
+
+.rectangleParent:hover {
+    transform: translateX(0%)
 }
 
 .rectangleParent .controls {
@@ -174,5 +181,10 @@ onMounted(() => {
         border-bottom: 2px solid #F1EEE3;
         cursor: pointer;
     }
+
+    .rectangleParent {
+        transform: translateX(0%)
+    }
+
 }
 </style>

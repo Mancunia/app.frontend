@@ -23,7 +23,7 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     public: {
-      apiBase: "http://localhost:3030",
+      apiBase: process.env.NUXT_BASE_URL,
       defaultToken: "",
     },
   },

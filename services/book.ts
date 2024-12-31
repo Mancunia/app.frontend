@@ -1,4 +1,4 @@
-import type { BOOK, CHAPTER } from "~/types/book";
+import type { BOOK, CHAPTER, Comment } from "~/types/book";
 
 export const getBooks = async (app: USER_ROLES = USER_ROLES.USER, page: {}) =>
   useRequest<PaginatedResponse<BOOK[]>>(
@@ -33,6 +33,38 @@ export const deleteBook = async (id: string) =>
     url: `/book/${id}`,
     method: HTTP_METHODS.DELETE,
   });
+
+export const filterBooks = async (
+  params: {},
+  app: USER_ROLES = USER_ROLES.USER
+) =>
+  useRequest<BOOK[]>(
+    {
+      url: `/book/filter/all`,
+      method: HTTP_METHODS.GET,
+      params,
+    },
+    app
+  );
+
+//comments
+export const postComment = async (bookID: string, text: string) =>
+  useRequest<Comment>({
+    url: "/book/comment",
+    method: HTTP_METHODS.POST,
+    data: {
+      comment: text,
+      bookId: bookID,
+    },
+  });
+
+export const getComments = async (id: string) =>
+  useRequest<Comment[]>({
+    url: `/book/comment/${id}`,
+    method: HTTP_METHODS.GET,
+  });
+
+//chapters
 export const getChapters = async (
   book: string,
   app: USER_ROLES = USER_ROLES.USER

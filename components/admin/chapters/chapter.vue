@@ -2,8 +2,8 @@
     <div class="grid-item" :title="chapter.title">
         <p class="typography">{{ chapter.title }}</p>
 
-        <button v-if="store.getPlaying.id === chapter.id" class="btn" @click="handlePlay">Playing...</button>
-        <button v-else class="btn" @click="handlePlay">Play</button>
+        <button v-if="store.getPlaying.id === chapter.id" class="btn" @click="pauseAudio">Playing...</button>
+        <button v-else class="btn" @click="play">Play</button>
         <div v-if="action === actions[1].id" class="">
             <UiSelect :data-list="actions">
                 <template v-slot:icon>
@@ -27,8 +27,10 @@ const props = defineProps({
 });
 
 const store = useAuthStore();
-
 const route = useRoute();
+
+
+const { init, playAudio,pauseAudio } = usePlayer()
 const action = computed(() => route.query.action as string || 'view');
 
 const actions = [{
@@ -39,12 +41,14 @@ const actions = [{
     id: 'delete', name: 'Delete'
 }]
 
-const handlePlay = () => {
-    store.setPlaying(props.chapter);
-}
 
-const handlePause = () => {
-    store.setPlaying(null);
+const play = async () => {
+    if (store.getPlaying.id !== props.chapter.id) {
+        store.setPlaying(props.chapter);
+    }
+    init(props.chapter?.content ?? '')
+    await playAudio()
+
 }
 </script>
 <style scoped>

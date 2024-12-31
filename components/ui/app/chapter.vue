@@ -4,7 +4,7 @@
             <img :src="chapter.book.cover" alt="chapter.title" />
         </div>
         <div class="description">
-            <h1>{{ chapter.title }}</h1>
+            <h3>{{ chapter.title }}</h3>
             <button v-if="store.getPlaying.id !== chapter.id || !store.getPlayer.playing" @click="play">
                 Play
             </button>
@@ -44,6 +44,11 @@ const play = async () => {
     flex-direction: row;
     justify-content: space-evenly;
     width: 100%;
+    padding: 10px;
+    border: 0px;
+    background-color: #d2d1d123;
+    border-radius: 10px;
+    transition: 0.5s ease-in-out;
     margin-bottom: 10%;
 }
 
@@ -67,6 +72,13 @@ const play = async () => {
     font-size: 14px;
     gap: 10px;
     width: 100%;
+}
+
+.description h3 {
+    width: 250px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
 .description button {

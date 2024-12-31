@@ -16,3 +16,16 @@ export type SignedUrlResponse = {
   signedURL: string;
   time: number;
 };
+
+export type Subscription = {
+  id: string;
+  name: string;
+  active: boolean;
+  visible: boolean;
+  duration: number;
+  users: number;
+  autorenew: boolean;
+  amount: number;
+  accent: string;
+  createdAt: string;
+};

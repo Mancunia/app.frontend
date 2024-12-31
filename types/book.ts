@@ -28,12 +28,27 @@ export type CHAPTER = {
   book: BOOK;
   createdAt: string;
 };
+export type CHAPTER_REQUEST = {
+  title: string | null;
+  content: string | null;
+  bookId: string;
+};
 
 export type PLAYER = {
   showDetails: boolean;
   playing: boolean;
   autoplay: boolean;
   loop: boolean;
-  muted: boolean;
   volume: number;
+};
+
+export type Comment = {
+  id: string;
+  user: {
+    id: string;
+    name: string;
+    picture: string;
+    email: string;
+  };
+  comment: string;
 };

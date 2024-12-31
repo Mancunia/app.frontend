@@ -1,26 +1,36 @@
 <template>
     <div v-if="chapter?.id" class="controls">
-        <div class="controls-book-chapter">
-            <img class="controls-book-chapter-img" :src="chapter.book.cover" alt="" srcset="">
-            <div class="controls-book-chapter-details">
+        <div class="details">
+            <img :src="chapter.book.cover" alt="" srcset="">
+            <div class="chapter">
                 <p class="typography">{{ chapter.title }}</p>
-                <p class="typography1">{{ chapter.book.authors.join(',') }}</p>
+                <p class="typography1">{{ chapter.book.title }}</p>
             </div>
         </div>
-        <div class="controls-book-chapter-btns">
-            <img class="controls-book-chapter-btns-img" src="@/assets/images/Component 29.png" alt="" srcset="">
-            <img class="controls-book-chapter-btns-img" src="@/assets/images/forward-10.png" alt="" srcset="">
-            <img class="controls-book-chapter-btns-img" src="@/assets/images/player/pause1.png" alt="" srcset="">
-            <img class="controls-book-chapter-btns-img" src="@/assets/images/next-10.png" alt="" srcset="">
-            <img class="controls-book-chapter-btns-img" src="@/assets/images/Component 28.png" alt="" srcset="">
+        <div class="media_controls">
+            <button>
+                <img class="controls-book-chapter-btns-img" src="@/assets/images/Component 29.png" alt="" srcset="">
+            </button>
+            <button @click="rewindAudio(10)">
+                <img class="controls-book-chapter-btns-img" src="@/assets/images/player/backward.png" alt="" srcset="">
+            </button>
+            <button @click="toggleAudio">
+                <img v-if="store.getPlayer.playing" class="controls-book-chapter-btns-img"
+                    src="@/assets/images/player/pause1.png" alt="" srcset="">
+                <img v-else class="controls-book-chapter-btns-img" src="@/assets/images/player/pause.png" alt=""
+                    srcset="">
+            </button>
+            <button @click="fastForwardAudio(10)">
+                <img class="controls-book-chapter-btns-img" src="@/assets/images/player/forward.png" alt="" srcset="">
+            </button>
+            <button>
+                <img class="controls-book-chapter-btns-img" src="@/assets/images/Component 28.png" alt="" srcset="">
+            </button>
+
         </div>
 
-        <div class="slider-container">
-            <div class="slider">
-                <div class="progress">
-                    <div class="circle"></div>
-                </div>
-            </div>
+        <div class="extra">
+            <input type="range" v-model="volume">
 
             <img src="@/assets/images/player/playlist.png" class="book-image">
         </div>
@@ -30,58 +40,38 @@
 <script setup lang="ts">
 import { playChapter } from '~/services/play';
 import type { CHAPTER } from '~/types/book'
-const props = defineProps({
-    file: {
-        type: String,
-        required: true,
-        default: '~/assets/test-audio.mp3'
-    }
-})
 const store = useAuthStore()
-const seekTo = ref(5)
+const volume = ref(store.getPlayer.volume ?? 0)
 const currentTime = ref(0)
 const duration = ref(0)
+const loading = ref(false)
 
 const chapter = computed<CHAPTER | null>(() => {
     return store.getPlaying || null
 })
-const player = useState<HTMLAudioElement | null>('PLAYING', () => null)
 
 const ended = computed(() => currentTime.value === duration.value)
 
-const { toggleAudio, pauseAudio, stopAudio, setVolume, muteAudio, unmuteAudio, fastForwardAudio, rewindAudio, playerProps } = usePlayer()
-const play = () => {
-    console.log('play', props.file)
-    if (player.value) {
-        toggleAudio(player.value)
-    }
-}
-const stop = () => {
-    if (player.value)
-        stopAudio(player.value)
-}
-const fastForward = () => {
-    if (player.value)
-        fastForwardAudio(player.value, seekTo.value)
-}
-const rewind = () => {
-    if (player.value)
-        rewindAudio(player.value, seekTo.value)
-}
+const { toggleAudio, pauseAudio, setVolume, fastForwardAudio, rewindAudio } = usePlayer()
+
 
 const getChapter = async () => {
     try {
         stop()
-        const { data } = await playChapter(chapter.value.id)
+        loading.value = true
+        const { data } = await playChapter(chapter.value?.id ?? '')
         if (data) {
-            player.value = new Audio(data.content)
-            play()
+
         }
 
     } finally {
-        console.log('done')
+        loading.value = false
     }
 }
+
+watchEffect(() => {
+    setVolume(volume.value)
+})
 
 watch(() => chapter, () => {
     getChapter()
@@ -89,30 +79,70 @@ watch(() => chapter, () => {
     immediate: true
 })
 
-
-onMounted(() => {
-    if (player.value) {
-        player.value.addEventListener('loadedmetadata', () => {
-            if (player.value)
-                duration.value = player.value.duration
-        })
-        player.value.addEventListener('timeupdate', () => {
-            if (player.value)
-                currentTime.value = player.value.currentTime
-        })
-    }
-    onBeforeUnmount(() => {
-        if (player.value) {
-            player.value.removeEventListener('loadedmetadata', () => {
-                if (player.value)
-                    duration.value = player.value.duration
-            })
-            player.value.removeEventListener('timeupdate', () => {
-                if (player.value)
-                    currentTime.value = player.value.currentTime
-            })
-            document.body.removeChild(player.value)
-        }
-    })
-})
 </script>
+
+<style scoped>
+.controls {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    align-items: center;
+    padding: 0 20px;
+    margin-top: 20px;
+}
+
+.controls .details {
+    width: 30%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.controls .details img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+}
+
+.controls .details .chapter {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    color: whitesmoke;
+    overflow-x: scroll;
+}
+
+.controls .media_controls {
+    width: 40%;
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    justify-content: center;
+    align-items: center;
+}
+
+.controls .media_controls button {
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.controls .extra {
+    width: 30%;
+    display: flex;
+    flex-direction: row;
+    gap: 20%;
+    justify-content: center;
+    align-items: center;
+}
+
+.controls .extra input[type="range"] {
+    width: 100%;
+    height: 10px;
+    border-radius: 10px;
+    background-color: #4D2316;
+    color: rgb(173, 38, 38);
+    cursor: pointer;
+}
+</style>

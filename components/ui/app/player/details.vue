@@ -94,9 +94,11 @@ const showDetails = computed(() => store.getPlayer.showDetails)
         background: rgba(255, 255, 255, 0.2);
         width: 80%;
     }
-        .bookDetails .bookCover {
-            width: 90%;
-            align-self: center;
-        }
+
+    .bookDetails .bookCover {
+        width: 50%;
+        height: 50%;
+        align-self: center;
+    }
 }
 </style>
