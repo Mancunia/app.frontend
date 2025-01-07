@@ -62,7 +62,11 @@ const getChapter = async () => {
         loading.value = true
         const { data } = await playChapter(chapter.value?.id ?? '')
         if (data) {
-
+            store.setPlayer({
+                ...data,
+                playing: true,
+                volume: volume.value
+            })
         }
 
     } finally {
