@@ -1,8 +1,8 @@
 <template>
-    <div class="player">
+    <div v-if="store.getPlaying.book" class="player">
         <div class="rectangleParent">
             <div class="book-art">
-                <img :src="store.getPlaying.book.cover" alt="book art" />
+                <img :src="store.getPlaying.book?.cover" alt="book art" />
             </div>
             <div class="controls">
                 <div class="player-item">
@@ -59,7 +59,7 @@ const { toggleAudio, stopAudio, setVolume, muteAudio, unmuteAudio, fastForwardAu
 
 const getChapter = async () => {
     try {
-        if(!chapter.value?.id) return
+        if (!chapter.value?.id) return
         const res = await playChapter(chapter.value.id)
     } finally {
         console.log('done')
@@ -185,6 +185,7 @@ onMounted(() => {
     .rectangleParent {
         transform: translateX(0%)
     }
+
 
 }
 </style>
