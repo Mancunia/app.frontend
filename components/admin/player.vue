@@ -57,11 +57,16 @@ const { toggleAudio, pauseAudio, setVolume, fastForwardAudio, rewindAudio } = us
 
 const getChapter = async () => {
     try {
+        if (!chapter.value?.id) return
         stop()
         loading.value = true
         const { data } = await playChapter(chapter.value?.id ?? '')
         if (data) {
-
+            store.setPlayer({
+                ...data,
+                playing: true,
+                volume: volume.value
+            })
         }
 
     } finally {

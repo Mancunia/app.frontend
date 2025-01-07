@@ -1,5 +1,5 @@
 <template>
-    <div class="bookDetails" :class="{ show: showDetails }">
+    <div v-if="book" class="bookDetails" :class="{ show: showDetails }">
         <div class="nav">
             <button>
                 <img src="@/assets/images/player/previous.png" alt="previous button" />

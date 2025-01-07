@@ -60,7 +60,6 @@ const { toggleAudio, stopAudio, setVolume, muteAudio, unmuteAudio, fastForwardAu
 const getChapter = async () => {
     try {
         const res = await playChapter(chapter.value.id)
-        console.log(res)
     } finally {
         console.log('done')
     }
