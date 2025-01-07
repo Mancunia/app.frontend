@@ -9,16 +9,16 @@
             </button>
         </div>
         <div class="bookCover">
-            <img :src="book.book.cover" alt="book art" />
+            <img :src="book.book?.cover" alt="book art" />
         </div>
         <div class="bookInfo">
-            <div><img src="@/assets/images/playerDetails/star.png" />{{ book.book.meta.views }}</div>
-            <div v-if="book.book.languages.length"><img src="@/assets/images/playerDetails/language-circle.png" />{{
+            <div><img src="@/assets/images/playerDetails/star.png" />{{ book.book?.meta?.views }}</div>
+            <div v-if="book.book?.languages.length"><img src="@/assets/images/playerDetails/language-circle.png" />{{
                 languages.find((lang) => lang.id == book.book.languages[0])?.name }}</div>
-            <div><img src="@/assets/images/playerDetails/microphone-2.png" />{{ book.book.meta.comments }}</div>
+            <div><img src="@/assets/images/playerDetails/microphone-2.png" />{{ book.book?.meta?.comments }}</div>
         </div>
         <div class="bookTitle">
-            <h2>{{ book.title }}</h2>
+            <h2>{{ book?.title }}</h2>
         </div>
 
     </div>
