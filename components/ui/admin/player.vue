@@ -23,6 +23,7 @@ const { toggleAudio, pauseAudio, stopAudio, setVolume, muteAudio, unmuteAudio, f
 
 const getChapter = async () => {
     try {
+    if(!chapter.value?.id) return
         const res = await playChapter(chapter.value.id)
         console.log(res)
     } finally {
