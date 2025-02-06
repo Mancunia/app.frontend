@@ -45,7 +45,7 @@
                     <UiLoader v-if="Cates.loading" />
 
                     <div class="save-btn">
-                        <button class="btn" @click="submit">SAVE</button>
+                        <UiAdminButton @click="submit">SAVE</UiAdminButton>
                     </div>
                 </div>
             </div>

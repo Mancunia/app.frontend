@@ -2,10 +2,11 @@
     <section>
         <form class="card align-center" @submit.prevent="signup">
             <h2 class="title">SignUp</h2>
-            <UiAdminInputField :style="'appAuthInput'" placeHolder="Email" v-model="form.email" />
+            <UiAdminInputField :style="'appAuthInput'" placeHolder="Email" v-model="form.email" type="email" />
             <UiAdminInputField :style="'appAuthInput'" placeHolder="Enter Username" v-model="form.username" />
             <UiAdminInputField :style="'appAuthInput'" placeHolder="Password" v-model="form.password" type="password" />
-            <UiAdminInputField :style="'appAuthInput'" placeHolder="Confirm Password" v-model="form.confirmPassword" type="password" />
+            <UiAdminInputField :style="'appAuthInput'" placeHolder="Confirm Password" v-model="form.confirmPassword"
+                type="password" />
             <UiAdminButton class="appAuthButton">
                 <UiLoader v-if="loading" />
                 Submit

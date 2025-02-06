@@ -57,7 +57,7 @@ export const useRequest = async <T>(
     if (error.response?.request?.responseURL?.includes(defaultBaseUrl)) {
       //handle app related errors
     }
-    addError(error.response.data.message);
+    addError(error.response?.data?.message ?? 'An error occurred');
     return Promise.reject(Error(error));
   };
   // if (!internet) {

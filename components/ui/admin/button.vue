@@ -1,10 +1,9 @@
 <template>
-    <button :class="style" @click="emit('click')">
-        <div class="content">
+    <div class="button">
+        <button :class="style" @click="emit('click')">
             <slot></slot>
-        </div>
-
-    </button>
+        </button>
+    </div>
 </template>
 
 <script setup lang="ts">
@@ -19,28 +18,25 @@ const emit = defineEmits(['click'])
 </script>
 
 <style scoped>
-button {
-    display: inline-flex;
-    flex-direction: column;
+.button {
+    width: 100%;
+    display: flex;
     justify-content: center;
     align-items: center;
+    padding: 6px 16px 6px 16px;
 }
 
-.button {
-    width: 50%;
-    padding: 8px 22px;
-    color: #fff;
-    border-radius: 4px;
-    background: #6E4C29;
-    box-shadow: 0px 1px 5px 0px rgba(0, 0, 0, 0.12), 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 3px 1px -2px rgba(0, 0, 0, 0.20);
+.button button {
+    font-family: "Rammetto One";
+    font-size: 1.5rem;
+    color: #ffffff;
+    background-color: #673305;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 22px;
 }
 
-.content {
-    display: flex;
-    flex-direction: row;
-}
-
-.button:hover {
-    background: #4d3319;
+button:hover {
+    background-color: #4d3319;
 }
 </style>

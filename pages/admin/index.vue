@@ -1,7 +1,7 @@
 <template>
     <div class="admin-main">
         <div class="sidebar">
-            <UiAdminButton @click="addBook" class="addbtn">ADD NEW BOOK</UiAdminButton>
+            <UiAdminButton @click="addBook">ADD NEW BOOK</UiAdminButton>
             <AdminBooksBookList />
         </div>
 
