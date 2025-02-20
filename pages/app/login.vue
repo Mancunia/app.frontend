@@ -8,7 +8,7 @@
                 <UiLoader v-if="loading" />
                 Login
             </UiAdminButton>
-            <NuxtLink to="/app/signup" class="signup">Back to SignUp</NuxtLink>
+            <NuxtLink to="/app/signup" class="signup">SignUp</NuxtLink>
         </form>
     </section>
 </template>

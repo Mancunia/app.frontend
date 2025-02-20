@@ -1,4 +1,12 @@
 <template>
+    <div class="subscription-form">
+        <form @submit.prevent="linkSub">
+            <label for="ref">@</label>
+            <input type="text" name="" placeholder="Enter Subscription Reference" v-model="reference.ref"/>
+            <UiAdminButton type="submit">apply</UiAdminButton>
+        </form>
+        
+    </div>
     <div v-if="loading" class="subscription-container">
         <UiAppLoadersSubscription />
     </div>
@@ -16,9 +24,10 @@
 
 <script setup lang="ts">
 import { type Subscription } from '~/types/common';
-import { getSubscriptions } from '~/services/subscription';
+import { getSubscriptions,linkSubscription } from '~/services/subscription';
 
 const subscription = ref<Subscription[] | null>(null)
+const reference = ref<{ref:string,loading:boolean}>({ref:'',loading:false})
 const loading = ref(true);
 
 const fetchSubscriptions = async () => {
@@ -36,6 +45,22 @@ const fetchSubscriptions = async () => {
         loading.value = false;
     }
 }
+
+const linkSub = async () => {
+    try {
+        reference.value.loading = true;
+        const { data } = await linkSubscription({ref:reference.value.ref});
+        if (data) {
+            console.log(data);
+        }
+
+    } catch (error: unknown) {
+        console.error(error);
+    }
+    finally {
+        reference.value.loading = false;
+    }
+}
 onMounted(() => {
     console.log('mounted');
     fetchSubscriptions()
@@ -50,6 +75,31 @@ definePageMeta({
 </script>
 
 <style scoped>
+.subscription-form {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 5%;
+}
+.subscription-form form {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width:100%;
+    gap: 10px;
+}
+.subscription-form label {
+    font-size: 1rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.subscription-form input {
+    padding: 15px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
 .subscription-container {
     display: flex;
     align-items: center;

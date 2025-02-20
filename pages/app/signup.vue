@@ -11,7 +11,7 @@
                 <UiLoader v-if="loading" />
                 Submit
             </UiAdminButton>
-            <NuxtLink to="/app/login" class="signup">Back to Login</NuxtLink>
+            <NuxtLink to="/app/login" class="signup">Login</NuxtLink>
         </form>
     </section>
 </template>
@@ -22,10 +22,10 @@ const form = ref({
     password: '',
     confirmPassword: '',
     username: '',
-    account:USER_ROLES.USER
+    account: USER_ROLES.USER
 });
 
-const {user_register, loading } = useAuth();
+const { user_register, loading } = useAuth();
 
 const signup = async () => {
     await user_register(form.value);

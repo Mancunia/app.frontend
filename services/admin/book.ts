@@ -1,4 +1,8 @@
-import type { SignedUrlResponse, SignedUrlRequest } from "~/types/common";
+import type {
+  SignedUrlResponse,
+  SignedUrlRequest,
+  Metrics,
+} from "~/types/common";
 import type { BOOK } from "~/types/book";
 
 export const getSignedUrl = async (
@@ -34,4 +38,12 @@ export const updateBook = async (book: BOOK) =>
     USER_ROLES.ADMIN
   );
 
- 
+export const getMetrics = async (id: string, params: {}) =>
+  useRequest<Metrics[]>(
+    {
+      url: `admin/book/metrics/${id}`,
+      method: HTTP_METHODS.GET,
+      params,
+    },
+    USER_ROLES.ADMIN
+  );

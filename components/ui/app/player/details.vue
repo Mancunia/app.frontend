@@ -1,6 +1,6 @@
 <template>
     <div v-if="book" class="bookDetails" :class="{ show: showDetails }">
-        <div class="nav">
+        <div v-if="false" class="nav">
             <button>
                 <img src="@/assets/images/player/previous.png" alt="previous button" />
             </button>
@@ -9,13 +9,13 @@
             </button>
         </div>
         <div class="bookCover">
-            <img :src="book.book?.cover" alt="book art" />
+            <img :src="book.cover" alt="book art" />
         </div>
         <div class="bookInfo">
-            <div><img src="@/assets/images/playerDetails/star.png" />{{ book.book?.meta?.views }}</div>
-            <div v-if="book.book?.languages.length"><img src="@/assets/images/playerDetails/language-circle.png" />{{
-                languages.find((lang) => lang.id == book.book.languages[0])?.name }}</div>
-            <div><img src="@/assets/images/playerDetails/microphone-2.png" />{{ book.book?.meta?.comments }}</div>
+            <div><img src="@/assets/images/playerDetails/star.png" />{{ book.meta?.views }}</div>
+            <div v-if="book.languages.length"><img src="@/assets/images/playerDetails/language-circle.png" />{{
+                languages.find((lang) => lang.id == book.languages[0])?.name}}</div>
+            <div><img src="@/assets/images/playerDetails/microphone-2.png" />{{ book.meta?.comments }}</div>
         </div>
         <div class="bookTitle">
             <h2>{{ book?.title }}</h2>
@@ -28,7 +28,7 @@
 
 const store = useAuthStore();
 const { languages } = useCommon()
-const book = computed(() => store.getPlaying)
+const book = computed(() => store.getPlaying.book)
 const showDetails = computed(() => store.getPlayer.showDetails)
 
 </script>
@@ -56,7 +56,7 @@ const showDetails = computed(() => store.getPlayer.showDetails)
 }
 
 .bookDetails .bookCover {
-    width: 90%;
+    width: inherit;
     height: 100%;
     justify-content: center;
 }
@@ -96,8 +96,8 @@ const showDetails = computed(() => store.getPlayer.showDetails)
     }
 
     .bookDetails .bookCover {
-        width: 50%;
-        height: 50%;
+        width: 28rem;
+        height: 30rem;
         align-self: center;
     }
 }

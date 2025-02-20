@@ -13,3 +13,23 @@ export const getSubscription = async (id: string) =>
     },
     USER_ROLES.USER
   );
+
+export const linkSubscription = async (data: { ref: string }) =>
+  useRequest<Subscription>(
+    {
+      url: `user/subscribe/link`,
+      method: HTTP_METHODS.PUT,
+      data,
+    },
+    USER_ROLES.USER
+  );
+
+export const activateSubscriptionByPayStack = async (params: { reference: string,trxref:string }) =>
+  useRequest<Subscription>(
+    {
+      url: `whcb/paystack`,
+      method: HTTP_METHODS.PUT,
+      params,
+    },
+    USER_ROLES.USER
+  );

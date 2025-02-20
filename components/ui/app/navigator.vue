@@ -10,7 +10,8 @@
             <img class="" alt="" width="30" height="30" src="@/assets/images/book.png" />
         </NuxtLink>
         <NuxtLink :to="links.profile.link" class="icon" :class="{ 'active': links.profile.link == activeRoute }">
-            <img class="" alt="" width="30" height="30" src="@/assets/images/profile.png" />
+            <img v-if="user.dp" width="30" height="30" :src="user.dp" alt="">
+            <img v-else width="30" height="30" src="@/assets/images/user.png" alt="profile" />
         </NuxtLink>
     </div>
 </template>
@@ -43,7 +44,7 @@ const links = {
 }
 
 const { activeRoute } = useNavigation()
-
+const user = useAuthStore().getUser
 
 </script>
 

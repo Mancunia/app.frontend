@@ -2,12 +2,12 @@
     <div class="profile">
         <div class="dp">
             <img v-if="user.dp" :src="user.dp" alt="">
-            <img v-else src="@/assets/images/profile.png" alt="profile" />
+            <img v-else src="@/assets/images/user.png" alt="profile" />
         </div>
         <div class="name">
             {{ user.username }}
         </div>
-        <div class="edit">
+        <div v-if="false" class="edit">
             <UiAdminButton @click="pageSettings.isEditFormOpen = true">edit</UiAdminButton>
         </div>
     </div>

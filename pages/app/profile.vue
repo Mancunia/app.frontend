@@ -4,6 +4,12 @@
             <AppProfile />
         </div>
         <div class="settings">
+            <div class="links">
+                <NuxtLink to="/app/subscription">
+                    <i class="n"></i>
+                    Subscription
+                </NuxtLink>
+            </div>
             <div class="logout">
                 <button @click="pageSettings.isLogoutOpen = true">
                     Logout
@@ -54,7 +60,7 @@ const logout = () => {
 .page {
     display: flex;
     flex-direction: column;
-    gap:calc(50px + 1vh);
+    gap: calc(50px + 1vh);
     justify-content: center;
     align-items: center;
 }
@@ -68,6 +74,19 @@ const logout = () => {
     align-items: center;
 }
 
+.links {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+.links a{
+    font-family: "Rammetto One";
+    font-size: 1rem;
+    color: #0a0a0a;
+    border: none;
+    border-radius: 22px;
+
+}
 .logout {
     width: 100%;
     display: flex;
