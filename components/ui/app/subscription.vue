@@ -1,9 +1,10 @@
 <template>
 
-    <label :for="String(id)" class="subscription__button">
+    <label :for="String(id)" class="subscription__button" @click="initSub">
         <h3 class="subscription__title subscription__title--enterprise">
             {{ subscription.name }}
-            <i class="subscription__icon fas fa-pepper-hot" :style="`background-color:${subscription.accent}; opacity:0.5`"></i>
+            <i class="subscription__icon fas fa-pepper-hot"
+                :style="`background-color:${subscription.accent}; opacity:0.5`"></i>
         </h3>
         <span class="subscription__price">${{ subscription.amount }} <span class="subscription__price-month">/ mo</span>
         </span>
@@ -24,12 +25,24 @@
             </li>
         </ul>
     </label>
+    <CommonModal v-model="modal">
+        <div class="logout_form">
+            <h1>Confirm Subscription creation</h1>
+            <div class="buttons">
+                <button @click="modal = false">No</button>
+                <button @click="initSubscription">Yes</button>
+            </div>
+        </div>
+    </CommonModal>
+
 </template>
 
 <script setup lang="ts">
 import type { PropType } from 'vue';
 import { type Subscription } from '~/types/common';
-defineProps({
+import { postSubscripition } from '~/services/user';
+
+const props = defineProps({
     subscription: {
         type: Object as PropType<Subscription>,
         required: true
@@ -40,7 +53,42 @@ defineProps({
     }
 })
 
+const loading = ref(false)
+const modal = ref(false);
+
 const { millisecondsToDays } = useUtils()
+
+const initSub = () => {
+    modal.value = true;
+}
+
+const openLink = (url: string) => {
+    if (window.open(url, '_blank', 'noopener,noreferrer')) {
+        console.log('Popup opened');
+    } else {
+        const link = document.createElement('a');
+        link.href = url;
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        link.click();
+    }
+}
+
+const initSubscription = async () => {
+    try {
+        loading.value = true;
+        const { data } = await postSubscripition({ subscription: props.subscription.id });
+        if (data) {
+            openLink(data.data.authorization_url);
+            modal.value = false;
+        }
+    } catch (error: unknown) {
+        console.error(error);
+    }
+    finally {
+        loading.value = false;
+    }
+}
 </script>
 
 <style scoped>
@@ -140,5 +188,50 @@ const { millisecondsToDays } = useUtils()
         border: solid 2px black;
         transition: .5s;
     }
+}
+
+.logout {
+    width: 100%;
+    display: flex;
+    padding: 10% 20%;
+}
+
+.logout button {
+    font-family: "Rammetto One";
+    font-size: 1.5rem;
+    color: #ffffff;
+    background-color: #0a0a0a;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 22px;
+}
+
+.logout_form {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10% 20%;
+}
+.logout_form h1 {
+    font-size: 2rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+    white-space: nowrap;
+}
+
+.logout_form .buttons {
+    display: flex;
+    gap: 20px;
+}
+
+.logout_form .buttons button {
+    font-family: "Rammetto One";
+    font-size: 1.5rem;
+    color: #ffffff;
+    background-color: #0a0a0a;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 22px;
 }
 </style>

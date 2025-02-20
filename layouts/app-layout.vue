@@ -124,7 +124,6 @@
 
     .divider-container {
         height: 100%;
-        width: 8px;
         display: flex;
         align-items: center;
         border: 1px solid #d9d9d9;
@@ -139,7 +138,7 @@
 
     .details-container {
         position: relative;
-        width: 40%;
+        width: 30%;
         align-content: center;
     }
 

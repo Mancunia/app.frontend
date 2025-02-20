@@ -17,7 +17,7 @@
                         <button @click="toggleAudio">
                             <img v-if="store.getPlayer.playing" src="@/assets/images/player/pause.png"
                                 alt="forward button" />
-                            <img v-else src="@/assets/images/player/backward.png" alt="backward button" />
+                            <img v-else src="@/assets/images/player/play.svg" alt="backward button" width="25" height="25" />
                         </button>
                     </div>
 

@@ -82,10 +82,7 @@ const fetchChapters = async () => {
 
 onMounted(() => {
     if (!id) navigateTo('/app/')
-    if (!book.value) {
-        fetchBook();
-    }
-    fetchChapters();
+    Promise.all([fetchChapters(), fetchBook()]);
 })
 
 definePageMeta({
@@ -117,8 +114,8 @@ definePageMeta({
 }
 
 .book-image {
-    width: 100%;
-    height: 40%;
+    width: inherit;
+    height: 70%;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -182,7 +179,7 @@ definePageMeta({
     }
 
     .book-image {
-        width: 70%;
+        width: 30rem;
         height: inherit;
 
     }

@@ -1,15 +1,10 @@
 <template>
     <nav>
         <div class="appbar">
-            <button class="imgbtn">
-                <img class="img" src="@/assets/images/Ellipse_9.png" alt="" />
-            </button>
+            <img class="img" width="60" height="30" src="@/assets/images/app_logo.png" alt="" />
+
             <p class="anansesem">ANANSESEM</p>
             <button class="imgbtn">
-                <img v-if="user.dp.length" class="img" :src="user.dp" alt="user_profile" />
-
-                <img v-else style="
-    background-color: orange;" class="img" src="@/assets/images/profile.png" alt="user_profile" />
 
 
             </button>

@@ -32,6 +32,10 @@ export default defineNuxtConfig({
     },
   },
 
+  routeRules: {
+    "/": { redirect: "/app" },
+  },
+
   modules: ["@pinia/nuxt"],
 
   imports: {

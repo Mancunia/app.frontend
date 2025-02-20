@@ -30,11 +30,6 @@ export const adminNavigationItems: {
     icon: "bx bx-home",
   },
   {
-    title: "About",
-    url: "/about",
-    icon: "bx bx-info-circle",
-  },
-  {
     title: "Services",
     url: "/services",
     icon: "bx bx-server",

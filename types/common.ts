@@ -29,3 +29,8 @@ export type Subscription = {
   accent: string;
   createdAt: string;
 };
+
+export type Metrics = {
+  label: string;
+  data: number;
+};
