@@ -11,7 +11,7 @@
         </div>
         <div v-else-if="book" class="book">
             <div class="book-image">
-                <img :src="book.cover" alt="book.title" />
+                <img :src="checkForOldFile(book.cover)" alt="book.title" />
             </div>
             <div class="book-description">
                 <h1>{{ book.title }}</h1>
@@ -54,6 +54,8 @@ const chapters = ref<{ chapters: CHAPTER[] | null, loading: boolean }>({ chapter
 const loading = ref<boolean>(false);
 
 const id = useRoute().params.id as string
+
+const { checkForOldFile } = useUtils()
 
 const fetchBook = async () => {
     try {

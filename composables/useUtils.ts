@@ -7,6 +7,7 @@ dayjs.extend(relativeTime);
 import { isValidPhoneNumber } from "libphonenumber-js";
 
 export const useUtils = () => {
+  const config = useRuntimeConfig();
   const formatMobileNumber = (number: string) => {
     if (number?.length === 12 && number?.startsWith("233")) {
       return "0" + number.slice(3);
@@ -322,7 +323,15 @@ export const useUtils = () => {
     // Test if the text contains any special characters
     return specialCharsRegex.test(text);
   }
-
+  const checkForOldFile = (file: string) => {
+    if (!file.includes("s3")) {
+      if (file.startsWith("//")) {
+        file = file.replace("//", "/");
+      }
+      file = `${config.public.oldResource}${file}`;
+    }
+    return file;
+  };
   return {
     formatMobileNumber,
     formatCurrency,
@@ -347,5 +356,6 @@ export const useUtils = () => {
     reduceImageSize,
     millisecondsToDays,
     hasSpecialCharacters,
+    checkForOldFile,
   };
 };

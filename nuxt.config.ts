@@ -29,6 +29,7 @@ export default defineNuxtConfig({
     public: {
       apiBase: process.env.NUXT_BASE_URL,
       defaultToken: "",
+      oldResource: process.env.NUXT_OLD_RESOURCE,
     },
   },
 

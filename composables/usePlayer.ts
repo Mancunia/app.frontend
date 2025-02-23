@@ -2,17 +2,11 @@ import type { PLAYER } from "~/types/book";
 
 export const usePlayer = () => {
   const audio = useState<HTMLAudioElement>("player", () => new Audio());
-
+  const {checkForOldFile} = useUtils();
   const store = useAuthStore();
   const init = async (audioFile: string) => {
-    let file = audioFile;
+    let file = checkForOldFile(audioFile);
     stopAudio();
-    if (!file.includes("s3")) {
-      if (file.startsWith("//")) {
-        file = file.replace("//", "/");
-      }
-      file = `https://anansesemfie.com${file}`;
-    }
     audio.value.src = file;
     if (audio.value.src) {
       await audio.value.load();
