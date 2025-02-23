@@ -2,7 +2,7 @@
     <div v-if="store.getPlaying.book" class="player">
         <div class="rectangleParent">
             <div class="book-art">
-                <img :src="store.getPlaying.book?.cover" alt="book art" />
+                <img :src="checkForOldFile(store.getPlaying.book?.cover)" alt="book art" />
             </div>
             <div class="controls">
                 <div class="player-item">
@@ -49,6 +49,7 @@ const props = defineProps({
 })
 const showControls = ref(false)
 const store = useAuthStore()
+const {checkForOldFile} = useUtils()
 
 const chapter = computed(() =>
     store.getPlaying

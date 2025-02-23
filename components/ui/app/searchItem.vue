@@ -1,7 +1,7 @@
 <template>
     <div class="book-card">
         <div class="img-box">
-            <img :src="book.cover" alt="">
+            <img :src="checkForOldFile(book.cover)" alt="">
         </div>
         <div class="details">
             <span style="display: flex; flex-direction: row; justify-content: space-between;">
@@ -33,7 +33,7 @@ const props = defineProps({
 })
 
 const store = useAuthStore();
-
+const { checkForOldFile } = useUtils()
 </script>
 
 <style scoped>
@@ -71,12 +71,12 @@ const store = useAuthStore();
     gap: 8px;
 }
 
-.details .link {
+.details .link a {
     color: black;
     font-size: 15px;
     font-family: Pontano Sans;
     font-weight: 400;
-    text-decoration: underline;
+    text-decoration: none;
     word-wrap: break-word;
     justify-content: end;
 }

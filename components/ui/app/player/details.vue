@@ -9,11 +9,11 @@
             </button>
         </div>
         <div class="bookCover">
-            <img :src="book.cover" alt="book art" />
+            <img :src="checkForOldFile(book.cover)" alt="book art" />
         </div>
         <div class="bookInfo">
             <div><img src="@/assets/images/playerDetails/star.png" />{{ book.meta?.views }}</div>
-            <div v-if="book.languages.length"><img src="@/assets/images/playerDetails/language-circle.png" />{{
+            <div v-if="book.languages?.length"><img src="@/assets/images/playerDetails/language-circle.png" />{{
                 languages.find((lang) => lang.id == book.languages[0])?.name}}</div>
             <div><img src="@/assets/images/playerDetails/microphone-2.png" />{{ book.meta?.comments }}</div>
         </div>
@@ -28,8 +28,10 @@
 
 const store = useAuthStore();
 const { languages } = useCommon()
-const book = computed(() => store.getPlaying.book)
+const book = computed(() => store.getPlaying.book ?? null)
 const showDetails = computed(() => store.getPlayer.showDetails)
+
+const { checkForOldFile } = useUtils()
 
 </script>
 

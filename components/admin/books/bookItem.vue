@@ -1,6 +1,6 @@
 <template>
     <div v-if="book" class="book-card" :class="{ active: route.query.bookId === book._id }" @click="takeAction('view')">
-        <img :src="book.cover" :alt="`${book.title}_cover`">
+        <img :src="checkForOldFile(book.cover)" :alt="`${book.title}_cover`">
         <div class="book-details">
             <p>Title: {{ book.title }}</p>
             <p>Author: {{ book.authors.toString() }}</p>
@@ -33,6 +33,7 @@ const actions = [{
 }]
 const router = useRouter()
 const route = useRoute()
+const { checkForOldFile } = useUtils()
 
 const view = () => {
     router.push({ query: { bookId: props.book._id, action: 'view' } })

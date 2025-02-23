@@ -42,7 +42,3 @@
 
 const emit = defineEmits(['submit'])
 </script>
-<style scoped>
-  
-
-</style>

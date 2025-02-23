@@ -1,7 +1,7 @@
 <template>
     <div v-if="chapter" class="chapter">
         <div class="cover">
-            <img :src="chapter.book.cover" alt="chapter.title" />
+            <img :src="checkForOldFile(chapter.book.cover)" alt="chapter.title" />
         </div>
         <div class="description">
             <h3>{{ chapter.title }}</h3>
@@ -25,6 +25,7 @@ const props = defineProps({
 })
 const store = useAuthStore();
 const { init, playAudio } = usePlayer()
+const { checkForOldFile } = useUtils()
 
 const play = async () => {
     if (store.getPlaying.id !== props.chapter.id) {

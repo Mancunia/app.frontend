@@ -1,7 +1,7 @@
 <template>
     <AdminBooksLoadersBookLoader v-if="loading" />
     <div v-else-if="state === State.VIEW" class="book-card-large">
-        <img v-if="selectedBook.cover" :src="selectedBook?.cover" class="book-image">
+        <img v-if="selectedBook.cover" :src="checkForOldFile(selectedBook?.cover)" class="book-image">
         <img v-else src="@/assets/images/imagePlaceholder.webp" class="book-image">
         <div class="book-details-large">
             <p>Title: {{ selectedBook?.title }}</p>
@@ -13,7 +13,8 @@
         <button class="btn" @click="edit">EDIT</button>
     </div>
     <div v-else-if="state === State.EDIT || state === State.NEW" class="book-card-large-new">
-        <img v-if="selectedBook.cover" :src="selectedBook?.cover" class="book-image" @click="dropImage">
+        <img v-if="selectedBook.cover" :src="checkForOldFile(selectedBook?.cover)" class="book-image"
+            @click="dropImage">
         <UiUploadPicture v-else @submit="imageData = $event" type="image" />
         <div class="book-details-large">
             <div class="book-details-large">
@@ -77,6 +78,7 @@ const router = useRouter()
 const store = useAuthStore()
 const { languages, categories } = useCommon()
 const { isOpen: isModalOpen, open: openModal, close: closeModal } = useModal();
+const { checkForOldFile } = useUtils()
 
 const defaultBook = {
     meta: {
