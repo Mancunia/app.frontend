@@ -22,7 +22,6 @@
         <div v-else class="list-card-container">
             <UiAppBook v-for="(book, index) in books" :key="index" :book="book" />
         </div>
-        <UiInfiniteScroll @more="viewMore" :options="options" />
         <div class="list-card-container" v-if="fetchingMore">
             <UiAppLoadersBook />
             <UiAppLoadersBook />
@@ -41,13 +40,8 @@ const books = ref<BOOK[] | null>(null);
 const fetchingMore = ref<boolean>(false)
 const canFetchMore = ref<boolean>(true)
 
-const pagination = ref<{ page: number, limit: number }>({ page: 1, limit: 7 })
+const pagination = ref<{ page: number, limit: number }>({ page: 1, limit: 100 })
 
-const options = {
-    root: null,
-    rootMargin: '0px',
-    threshold: 0,
-} as const
 
 const store = useAuthStore()
 const { setCommon } = useCommon()
@@ -72,13 +66,6 @@ const fetchBooks = async () => {
         fetchingMore.value = false;
     }
 
-}
-
-const viewMore = () => {
-    if (!canFetchMore.value) return
-    fetchingMore.value = true
-    pagination.value.page = Number(pagination.value.page) + 1
-    fetchBooks()
 }
 
 onMounted(() => {

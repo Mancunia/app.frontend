@@ -1,12 +1,10 @@
 <template>
-    <NuxtLink v-if="book" style="text-decoration: none;" :to="`${routes.app.book}${props.book._id}`"
+    <NuxtLink v-if="book" style="text-decoration: none; color:#000" :to="`${routes.app.book}${props.book._id}`"
         @click="selectBook = book">
-        <div class="card">
-            <img :src="checkForOldFile(book.cover)" alt="">
-            <div class="description">
-                <h2 class="title">{{ book.title }}</h2>
-                <h3 class="author">{{ String(book.authors) }}</h3>
-            </div>
+        <div class="story-item">
+            <div class="story-thumbnail"><img :src="checkForOldFile(book.cover)" alt="" class="thumb-n"></div>
+            <div class="story-title">{{ book.title }}</div>
+            <div class="writer">{{ String(book.authors) }}</div>
         </div>
 
     </NuxtLink>
@@ -28,49 +26,45 @@ const { checkForOldFile } = useUtils()
 </script>
 
 <style scoped>
-.card {
-    width: 12rem;
+.story-item {
     display: flex;
-    align-items: center;
     flex-direction: column;
-    background-color: transparent;
-    border: none;
-    padding: 2%
+    margin-bottom: 1rem;
 }
 
-.card .description {
-    width: 100%;
-    text-align: left;
-    display: flex;
-    justify-content: center;
-    flex-direction: column;
+.story-thumbnail {
+    width: 250px;
+    /* Set the width of the container */
+    height: 300px;
+    /* Set the height of the container */
+    overflow: hidden;
+    /* Hide any overflow */
+    border-radius: 20px;
+    margin-bottom: 10px;
 }
 
-.card img {
+.thumb-n {
     width: 100%;
-    height: 200px;
+    /* Make the image full width */
+    height: 100%;
+    /* Make the image full height */
     object-fit: cover;
-    border-radius: 10px;
+    /* Scale the image to cover the container */
+    transition: transform 0.5s;
+    /* Add a transition effect */
 }
 
-.card .title {
-    font-size: 16px;
+.thumb-n:hover {
+    transform: scale(1.1);
+    /* Scale the image on hover */
+}
+
+.story-title {
+    font-weight: 700;
+}
+
+.writer {
+    font-size: 12px;
     font-weight: 600;
-    color: #000;
-    max-width: 200px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    padding: unset;
-}
-
-.card .author {
-    font-size: 10px;
-    font-weight: 500;
-    color: #000;
-    max-width: 200px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-
 }
 </style>

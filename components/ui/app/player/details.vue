@@ -59,7 +59,7 @@ const { checkForOldFile } = useUtils()
 
 .bookDetails .bookCover {
     width: inherit;
-    height: 100%;
+    height: 26rem;
     justify-content: center;
 }
 

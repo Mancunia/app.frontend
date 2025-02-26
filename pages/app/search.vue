@@ -17,7 +17,7 @@
         </div>
 
         <div class="books">
-            <UiAppSearchItem v-for="(book, index) in books" :key="index" :book="book" />
+            <UiAppBook v-for="(book, index) in books" :key="index" :book="book" />
         </div>
     </div>
 
@@ -58,9 +58,8 @@ const search = () => {
 const searchDebounced = debounce(search, 500);
 
 watch(() => searchOptions.value.search, () => {
-    if (searchOptions.value.search) {
-        searchDebounced()
-    }
+    searchDebounced()
+
 })
 
 onMounted(() => {
@@ -92,7 +91,7 @@ definePageMeta({
     justify-content: space-between;
     align-items: center;
     padding: 10px;
-    width: 400px;
+    max-width: 400px;
     height: auto;
     border-radius: 10px;
     border: 2px solid #503519;

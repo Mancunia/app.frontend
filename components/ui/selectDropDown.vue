@@ -120,7 +120,7 @@ onMounted(() => {
 <style scoped>
 .select-menu {
     max-width: 330px;
-    margin: 50px auto;
+    margin: 20px auto;
 }
 
 .select-menu .select-btn {
