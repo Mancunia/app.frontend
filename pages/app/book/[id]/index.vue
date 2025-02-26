@@ -21,7 +21,7 @@
         <div class="tabs">
             <div class="tab" :class="{ active: tab === TABS.CHAPTERS }" @click="tab = TABS.CHAPTERS">Chapters {{
                 tabData.chapters }}</div>
-            <div class="tab" :class="{ active: tab === TABS.COMMENTS }" @click="tab = TABS.COMMENTS">Comments {{
+            <div class="tab" v-if="false" :class="{ active: tab === TABS.COMMENTS }" @click="tab = TABS.COMMENTS">Comments {{
                 book?.meta.comments }}</div>
         </div>
         <div class="tabPage">
@@ -112,6 +112,7 @@ definePageMeta({
     background-color: rgb(231, 231, 231);
     box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.1);
     border-radius: 20px;
+    transition-duration: 1s ease-in-out;
 
 }
 

@@ -1,5 +1,5 @@
 <template>
-    <button class="chip" :title="title">{{ title }}</button>
+    <button class="cat-tag" :title="title">{{ title }}</button>
 </template>
 
 <script setup lang="ts">
@@ -12,26 +12,32 @@ const props = defineProps({
 </script>
 
 <style scoped>
-.chip {
-    display: inline-block;
-    width: 100px;
-    padding: 10px;
-    /* margin-right:10px; */
-    border-radius: 10px;
+.cat-tag {
+    width: fit-content;
     background-color: #d9d9d9;
-    color: #000;
-    font-size: 14px;
-    font-weight: 400;
-    white-space: nowrap;
+    color: #190a06;
+    font-weight: 600;
+    padding: 10px 30px;
+    border-radius: 50px;
     text-align: center;
-    border: none;
     cursor: pointer;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    transition: all .5s linear;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+}
+.cat-tag button{
+    background: unset;
+    border: unset;
 }
 
-.chip:hover {
+.cat-tag.active {
     background-color: #4d2316;
-    color: #fff;
+    color: #ffffff;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.cat-tag:hover {
+    background-color: #7f4d3e;
+    color: #ffffff;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
 }
 </style>
