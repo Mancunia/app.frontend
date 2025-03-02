@@ -6,7 +6,7 @@
             <i class="subscription__icon fas fa-pepper-hot"
                 :style="`background-color:${subscription.accent}; opacity:0.5`"></i>
         </h3>
-        <span class="subscription__price">${{ subscription.amount }} <span class="subscription__price-month">/ mo</span>
+        <span class="subscription__price">GHS{{ subscription.amount }} <span class="subscription__price-month"></span>
         </span>
         <ul class="subscription__list">
             <li class="subscription__item">
@@ -127,7 +127,6 @@ const initSubscription = async () => {
     display: block;
     width: 90%;
     text-align: center;
-    text-transform: lowercase;
     font-size: 32px;
     color: black;
     padding-bottom: 10px;

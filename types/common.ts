@@ -20,6 +20,7 @@ export type SignedUrlResponse = {
 export type Subscription = {
   id: string;
   name: string;
+  status: string;
   active: boolean;
   visible: boolean;
   duration: number;
