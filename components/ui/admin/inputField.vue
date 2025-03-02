@@ -1,10 +1,16 @@
 <template>
-    <div class="input-group">
+    <div v-if="common.includes(type.toLowerCase())" class="input-group">
         <span class="input-label">{{ label }}</span>
         <input :type="type" :required="required" :placeholder="placeHolder" v-model="inputField"
             @input="$emit('update:modelValue', inputField)" />
     </div>
-    <div v-if="type.toLowerCase() === 'textArea'" class="input-group">
+    <div v-else-if="type.toLowerCase() === 'password'" class="input-group">
+        <span class="input-label">{{ label }}</span>
+        <input :type="isPasswordVisible ? 'text' : 'password'" :required="required" :placeholder="placeHolder"
+            v-model="inputField" @input="$emit('update:modelValue', inputField)" />
+        <i @click="togglePasswordVisibility" :class="isPasswordVisible ? 'bx bx-hide' : 'bx bx-show'"></i>
+    </div>
+    <div v-else-if="type.toLowerCase() === 'textArea'" class="input-group">
         <span class="input-label">{{ label }}</span>
         <textarea :required="required" rows="4" cols="100" :placeholder="placeHolder" v-model="inputField"
             @input="$emit('update:modelValue', inputField)">
@@ -39,15 +45,27 @@ const props = defineProps({
         default: ''
     }
 })
+const common = ['text', 'email', 'search', 'tel', 'url', 'number', 'date', 'time', 'datetime-local', 'month', 'week']
+
 const emits = defineEmits(['update:modelValue'])
 const inputField = ref(props.value)
+const isPasswordVisible = ref(false);
+const togglePasswordVisibility = () => {
+
+    isPasswordVisible.value = !isPasswordVisible.value;
+}
 </script>
 
 <style scoped>
 .input-group {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    align-items: center;
     width: 100%;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 15px;
 }
 
 .input-label {
@@ -61,11 +79,10 @@ input[type="email"],
 input[type="text"],
 input[type="password"] {
     width: 100%;
-    padding: 10px;
-    margin-bottom: 15px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
+    border: unset;
+
 }
+
 textarea {
     width: 100%;
     padding: 10px;
@@ -87,9 +104,6 @@ input[type="checkbox"] {
 }
 
 @media (min-width: 768px) {
-    .input-group {
-        width: 50%;
-    }
 
     input[type="email"],
     input[type="text"],

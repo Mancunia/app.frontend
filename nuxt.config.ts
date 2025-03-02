@@ -17,10 +17,10 @@ export default defineNuxtConfig({
           href: "https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css",
           rel: "stylesheet",
         },
-        // {
-        //   href: `${APP_BASE_URL}/favicon.png`,
-        //   rel: "icon",
-        // },
+        {
+          href: `${process.env.NUXT_BASE_URL}/public/images/favicon.png`,
+          rel: "icon",
+        },
       ],
     },
   },

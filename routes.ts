@@ -6,7 +6,8 @@ type ROUTES = {
   app: {
     home: string;
     login: string;
-    register: string;
+    signup: string;
+    forgotPassword: string;
     book: string;
   };
   web?: {
@@ -23,8 +24,9 @@ const routes: ROUTES = {
   },
   app: {
     home: "/app",
-    login: "/app/login",
-    register: "/app/register",
+    login: "/app/auth/login",
+    signup: "/app/auth/signup",
+    forgotPassword: "/app/auth/forgot-password",
     book: "/app/book/",
   },
   web: {

@@ -1,33 +1,40 @@
 <template>
     <section>
-        <form class="card align-center" @submit.prevent="login">
-            <h2 class="title">Login</h2>
-            <UiAdminInputField :style="'appAuthInput'" placeHolder="Email" v-model="form.email" />
+        <form class="card align-center" @submit.prevent="signup">
+            <h2 class="title">SignUp</h2>
+            <UiAdminInputField :style="'appAuthInput'" placeHolder="Email" v-model="form.email" type="email" />
+            <UiAdminInputField :style="'appAuthInput'" placeHolder="Enter Username" v-model="form.username" />
             <UiAdminInputField :style="'appAuthInput'" placeHolder="Password" v-model="form.password" type="password" />
+            <UiAdminInputField :style="'appAuthInput'" placeHolder="Confirm Password" v-model="form.confirmPassword"
+                type="password" />
             <UiAdminButton class="appAuthButton">
                 <UiLoader v-if="loading" />
-                Login
+                Submit
             </UiAdminButton>
-            <NuxtLink to="/app/signup" class="signup">SignUp</NuxtLink>
+            <NuxtLink :to="routes.app.login" class="signup">Login</NuxtLink>
         </form>
     </section>
 </template>
 
 <script setup lang="ts">
+import routes from '~/routes';
+
 const form = ref({
     email: '',
-    password: ''
+    password: '',
+    confirmPassword: '',
+    username: '',
+    account: USER_ROLES.USER
 });
 
-const { user_login, loading } = useAuth();
+const { user_register, loading } = useAuth();
 
-const login = async () => {
-    await user_login(form.value);
+const signup = async () => {
+    await user_register(form.value);
 };
 
 definePageMeta({
     title: 'Login',
-    middleware: 'app',
     layout: 'app-auth'
 })
 </script>
@@ -46,7 +53,7 @@ form .title {
 }
 
 form .signup {
-    margin-top:10% ;
+    margin-top: 10%;
     color: #4D2316;
     font-family: "Rammetto One";
     font-size: 16px;
@@ -59,13 +66,13 @@ form .signup {
 
 @media (min-width: 768px) {
     form {
-        padding: 40% 20%;
+        padding: 20% 20%;
     }
 }
 
 @media (min-width: 1024px) {
     form {
-        padding: 40% 20%;
+        padding: 8% 20%;
     }
 }
 </style>

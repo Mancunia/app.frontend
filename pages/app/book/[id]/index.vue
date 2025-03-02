@@ -21,8 +21,9 @@
         <div class="tabs">
             <div class="tab" :class="{ active: tab === TABS.CHAPTERS }" @click="tab = TABS.CHAPTERS">Chapters {{
                 tabData.chapters }}</div>
-            <div class="tab" v-if="false" :class="{ active: tab === TABS.COMMENTS }" @click="tab = TABS.COMMENTS">Comments {{
-                book?.meta.comments }}</div>
+            <div class="tab" v-if="false" :class="{ active: tab === TABS.COMMENTS }" @click="tab = TABS.COMMENTS">
+                Comments {{
+                    book?.meta.comments }}</div>
         </div>
         <div class="tabPage">
             <div v-if="tab === TABS.CHAPTERS">
@@ -100,6 +101,7 @@ definePageMeta({
     flex-direction: column;
     align-items: center;
     padding: 2%;
+    margin-bottom: 30%;
     gap: 20px;
 }
 
@@ -176,6 +178,10 @@ definePageMeta({
 }
 
 @media only screen and (min-width: 750px) {
+    .page {
+        margin-bottom: unset;
+    }
+
     .book {
         flex-direction: row;
         height: 20rem;
