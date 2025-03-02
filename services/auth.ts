@@ -31,8 +31,25 @@ export const logout = async (app: USER_ROLES = USER_ROLES.USER) =>
     app
   );
 
-  export const verify = async (token: string) =>
+export const verify = async (token: string) =>
   useRequest<USER>({
     url: `/user/verify/${token}`,
     method: HTTP_METHODS.GET,
+  });
+
+export const forgotPassword = async (email: string) =>
+  useRequest<USER>({
+    url: `/user/forgot-password`,
+    method: HTTP_METHODS.POST,
+    data: { email },
+  });
+
+export const resetPassword = async (data: {
+  token: string;
+  newPassword: string;
+}) =>
+  useRequest<USER>({
+    url: `/user/reset-password`,
+    method: HTTP_METHODS.PUT,
+    data,
   });

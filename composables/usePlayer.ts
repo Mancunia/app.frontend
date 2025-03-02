@@ -2,8 +2,9 @@ import type { PLAYER } from "~/types/book";
 
 export const usePlayer = () => {
   const audio = useState<HTMLAudioElement>("player", () => new Audio());
-  const {checkForOldFile} = useUtils();
+  const { checkForOldFile } = useUtils();
   const store = useAuthStore();
+  const { addError } = useToast();
   const init = async (audioFile: string) => {
     let file = checkForOldFile(audioFile);
     stopAudio();
@@ -33,8 +34,16 @@ export const usePlayer = () => {
     }
   };
   const playAudio = () => {
-    audio.value.play();
-    playerDetails({ playing: true });
+    try {
+      audio.value.play();
+      playerDetails({ playing: true });
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        addError(error.message);
+      } else {
+        addError("An error occurred while playing the audio");
+      }
+    }
   };
 
   const pauseAudio = () => {
