@@ -1,7 +1,7 @@
 <template>
     <nav>
         <div class="appbar">
-            <img class="img" width="60" height="30" src="https://api.anansesemfie.com/public/images/logo_d.png"
+            <img class="img" width="60" height="30" src="https://api.anansesemfie.com/logo_d.png"
                 alt="" />
 
             <p class="anansesem">ANANSESEM</p>

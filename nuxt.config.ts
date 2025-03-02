@@ -18,7 +18,7 @@ export default defineNuxtConfig({
           rel: "stylesheet",
         },
         {
-          href: `${process.env.NUXT_BASE_URL}/public/images/favicon.png`,
+          href: `${process.env.NUXT_BASE_URL}/favicon.png`,
           rel: "icon",
         },
       ],
