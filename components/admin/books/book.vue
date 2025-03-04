@@ -1,57 +1,52 @@
 <template>
     <AdminBooksLoadersBookLoader v-if="loading" />
-    <div v-else-if="state === State.VIEW" class="book-card-large">
-        <img v-if="selectedBook.cover" :src="checkForOldFile(selectedBook?.cover)" class="book-image">
-        <img v-else src="@/assets/images/imagePlaceholder.webp" class="book-image">
-        <div class="book-details-large">
-            <p>Title: {{ selectedBook?.title }}</p>
-            <p>Description: {{ selectedBook?.description }}</p>
-            <p>Author: {{ selectedBook?.authors.toString() }}</p>
-            <p>Language: {{ bookLanguages }}</p>
-            <p>Genre: {{ bookCategories }}</p>
+    <div v-else-if="state === State.VIEW" class="bookWrapper">
+        <div class="cover">
+            <img v-if="selectedBook.cover" :src="checkForOldFile(selectedBook?.cover)" class="book-image">
+            <img v-else src="@/assets/images/imagePlaceholder.webp" class="book-image">
         </div>
-        <button class="btn" @click="edit">EDIT</button>
-    </div>
-    <div v-else-if="state === State.EDIT || state === State.NEW" class="book-card-large-new">
-        <img v-if="selectedBook.cover" :src="checkForOldFile(selectedBook?.cover)" class="book-image"
-            @click="dropImage">
-        <UiUploadPicture v-else @submit="imageData = $event" type="image" />
-        <div class="book-details-large">
-            <div class="book-details-large">
-                <div class="input-container">
-                    <div class="label">
-                        <h4>Title</h4>
-                    </div>
-                    <input type="text" placeholder="Enter title" v-model="selectedBook.title" />
-                </div>
-                <div class="input-container">
-                    <div class="label">
-                        <h4>Authors</h4>
-                    </div>
-                    <input type="text" placeholder="Emmanuel,Asabere" v-model="selectedBook.authors" />
-                </div>
-                <div class="input-container">
-                    <div class="label">
-                        <h4>Description</h4>
-                    </div>
-                    <textarea type="text" placeholder="Enter Additional Information" rows="4" cols="100"
-                        v-model="selectedBook.description"></textarea>
-                </div>
-                <div class="input-container-btn">
-                    <UiSelectDropDown :data-list="languages ?? []" placeHolder="languages" generic="array"
-                        @selected="selectedBook.languages = $event" :selected-option="selectedBook.languages" />
-                    <UiLoader v-if="Langs.loading" />
-                    <UiSelectDropDown :data-list="categories ?? []" placeHolder="Categories" generic="array"
-                        @selected="selectedBook.category = $event" :selected-option="selectedBook.category" />
-                    <UiLoader v-if="Cates.loading" />
-
-                    <div class="save-btn">
-                        <UiAdminButton @click="submit">SAVE</UiAdminButton>
-                    </div>
-                </div>
+        <div class="details">
+            <div class="info">
+                <p><span class="title">Title:</span> <span class="titleText">{{ selectedBook?.title }}</span></p>
+                <p><span class="title">Description:</span> <span class="titleText">{{ selectedBook?.description
+                        }}</span></p>
+                <p><span class="title">Authors:</span> <span class="titleText">{{ selectedBook?.authors.toString()
+                        }}</span></p>
+                <p><span class="title">Language:</span> <span class="titleText">{{ bookLanguages }}</span></p>
+                <p><span class="title">Genre:</span> <span class="titleText">{{ bookCategories }}</span></p>
+            </div>
+            <div class="btn">
+                <UiAdminButton @click="edit">EDIT</UiAdminButton>
             </div>
 
+        </div>
 
+    </div>
+    <div v-else-if="state === State.EDIT || state === State.NEW" class="bookWrapper">
+        <div class="cover">
+            <img v-if="selectedBook.cover" :src="checkForOldFile(selectedBook?.cover)" @click="dropImage">
+            <UiUploadPicture v-else @submit="imageData = $event" type="image" />
+        </div>
+        <div class="details">
+            <UiAdminInputField @update:model-value="selectedBook.title = $event" place-holder="Title" type="text"
+                :value="selectedBook.title" />
+            <UiAdminInputField @update:model-value="selectedBook.authors = $event" place-holder="Authors" type="text"
+                :value="selectedBook.authors.toString()" />
+            <UiAdminInputField @update:model-value="selectedBook.description = $event" place-holder="Description"
+                :value="selectedBook.description" type="text" />
+
+            <div class="selectWrapper">
+                <UiSelectDropDown :data-list="languages ?? []" placeHolder="languages" generic="array"
+                    @selected="selectedBook.languages = $event" :selected-option="selectedBook.languages" />
+                <UiLoader v-if="Langs.loading" />
+                <UiSelectDropDown :data-list="categories ?? []" placeHolder="Categories" generic="array"
+                    @selected="selectedBook.category = $event" :selected-option="selectedBook.category" />
+                <UiLoader v-if="Cates.loading" />
+
+                <div class="save-btn">
+                    <UiAdminButton @click="submit">SAVE</UiAdminButton>
+                </div>
+            </div>
         </div>
     </div>
     <div v-else>
@@ -76,7 +71,7 @@ const State = {
 const route = useRoute()
 const router = useRouter()
 const store = useAuthStore()
-const { languages, categories } = useCommon()
+const { languages, categories } = useCommon(USER_ROLES.ADMIN)
 const { isOpen: isModalOpen, open: openModal, close: closeModal } = useModal();
 const { checkForOldFile } = useUtils()
 
@@ -134,7 +129,7 @@ const Cates = ref<{ data: Categories[] | null, loading: boolean }>({ data: null,
 
 const { uploadFile, generateSignedUrl } = useAWS()
 
-const state = computed(() => route.query.action as string || State.VIEW)
+const state = computed(() => route.query.action as string ?? State.VIEW)
 const edit = () => {
     router.push({ query: { bookId: selectedBook.value?._id, action: 'edit' } })
 }
@@ -267,5 +262,67 @@ onMounted(() => {
         fetchBook()
     }
 })
-
 </script>
+
+<style scoped>
+.bookWrapper {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.cover {
+    width: 20rem;
+    height: 15rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+.details {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.details .info p {
+    font-size: 1.2rem;
+    margin-top: 2%;
+}
+
+.details .info p .title {
+    font-weight: bold;
+    background-color: #0000008c;
+    border-right: 5px solid #000;
+    color: #fff;
+    padding: 1%;
+}
+
+.details .info p .titleText {
+    font-weight: black;
+    background-color: #ffffff8c;
+    color: #000000;
+    padding: 1%;
+}
+
+.details .btn {
+    width: 200px;
+    align-self: flex-end;
+}
+
+.details .selectWrapper {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+}
+</style>

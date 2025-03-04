@@ -40,5 +40,39 @@
 
 <script setup lang="ts">
 
-const emit = defineEmits(['submit'])
+const postBook = async () => {
+    try {
+        selectedBook.value._id = null
+        uploading.value.loading = true
+        openModal()
+        if (imageData.value) {
+            uploading.value.message = 'Uploading image'
+            uploading.value.progress = 20
+            const response = await generateSignedUrl(imageData.value.file)
+            if (response) {
+                const imgLink = await uploadFile(imageData.value.file, response.signedURL)
+
+                if (imgLink) {
+                    uploading.value.progress = 50
+                    selectedBook.value.cover = imgLink
+                }
+            }
+        }
+        uploading.value.message = 'Creating book'
+        uploading.value.progress = 70
+        const { data } = await createBook(selectedBook.value)
+        if (data) {
+            uploading.value.message = 'Book created'
+            uploading.value.progress = 100
+            selectedBook.value = data
+            router.push({ query: { bookId: data._id, action: 'view' } })
+        }
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            console.error('Error uploading book')
+        }
+    } finally {
+        imageData.value = null
+    }
+}
 </script>

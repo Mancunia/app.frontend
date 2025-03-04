@@ -3,10 +3,6 @@
         <AppCategories />
     </div>
     <div class="list-container">
-        <div class="list-container-appbar">
-            <p class="allcat m">All</p>
-            <button class="btnallcat m">See All</button>
-        </div>
         <div v-if="loading">
             <div class="list-card-container">
                 <UiAppLoadersBook />
@@ -44,7 +40,7 @@ const pagination = ref<{ page: number, limit: number }>({ page: 1, limit: 100 })
 
 
 const store = useAuthStore()
-const { setCommon } = useCommon()
+const { setCommon } = useCommon(USER_ROLES.USER)
 
 const fetchBooks = async () => {
     try {

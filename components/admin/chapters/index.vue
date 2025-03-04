@@ -44,7 +44,7 @@ const fetchChapters = async () => {
     };
     try {
         chapters.value.loading = true;
-        const { data } = await getChapters(bookId.value);
+        const { data } = await getChapters(bookId.value,USER_ROLES.ADMIN);
         if (data) {
             chapters.value.data = data;
         }

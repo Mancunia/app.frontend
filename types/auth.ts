@@ -24,3 +24,15 @@ export type USER_REGISTER = {
   username: string;
   account: USER_ROLES;
 };
+
+export type USER_PROFILE = {
+  id: string;
+  email: string;
+  username: string;
+  account: number;
+  active: boolean;
+  dp: string;
+  bio: string;
+  subscription: string;
+  createdAt: string;
+};

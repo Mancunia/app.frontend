@@ -60,7 +60,7 @@ const getChapter = async () => {
         if (!chapter.value?.id) return
         stop()
         loading.value = true
-        const { data } = await playChapter(chapter.value?.id ?? '')
+        const { data } = await playChapter(chapter.value?.id ?? '',USER_ROLES.ADMIN)
         if (data) {
             store.setPlayer({
                 ...data,

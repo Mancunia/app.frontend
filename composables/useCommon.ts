@@ -1,12 +1,12 @@
 import { getLanguages, getCategories } from "~/services/common";
-export const useCommon = () => {
+export const useCommon = (env: USER_ROLES) => {
   const store = useAuthStore();
   const languages = computed(() => store.getLanguages);
   const categories = computed(() => store.getCategories);
 
   const setLanguages = async () => {
     try {
-      const { data } = await getLanguages();
+      const { data } = await getLanguages(env);
       if (data) {
         store.setLanguages(data);
       }
@@ -18,7 +18,7 @@ export const useCommon = () => {
   };
   const setCategories = async () => {
     try {
-      const { data } = await getCategories();
+      const { data } = await getCategories(env);
       if (data) {
         store.setCategories(data);
       }

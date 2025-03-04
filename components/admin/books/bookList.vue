@@ -1,8 +1,7 @@
 <template>
     <div class="sidebar-content">
-        <div class="search-container">
-            <UiAdminInputField placeholder="Search Books" @update="searchTerm = $event" />
-        </div>
+        <UiAdminInputField placeholder="Search Books" @update="searchTerm = $event" type="text" />
+
         <div class="card-container" v-if="books.loading">
             <AdminBooksLoadersBookItemLoader />
             <AdminBooksLoadersBookItemLoader />
@@ -11,7 +10,6 @@
         </div>
         <div class="card-container" v-else-if="!books.loading && books.data">
             <AdminBooksBookItem v-for="(book, index) in books.data" :key="index" :book="book" />
-            <UiInfiniteScroll @more="viewMore" :options="options" />
             <div v-if="fetchingMore">
                 <AdminBooksLoadersBookItemLoader />
                 <AdminBooksLoadersBookItemLoader />
@@ -28,7 +26,7 @@ import { getBooks } from "@/services/book"
 import { type BOOK } from "~/types/book";
 const searchTerm = ref<string | null>(null);
 const store = useAuthStore()
-const pagination = ref<{ page: number, limit: number }>({ page: 1, limit: 7 })
+const pagination = ref<{ page: number, limit: number }>({ page: 1, limit: 40 })
 const books = ref<{ data: BOOK[] | null, loading: boolean }>({ data: null, loading: false })
 const fetchingMore = ref<boolean>(false)
 const canFetchMore = ref<boolean>(true)
@@ -61,15 +59,21 @@ const fetchBooks = async () => {
     }
 }
 
-const viewMore = () => {
-    if (!canFetchMore.value) return
-    fetchingMore.value = true
-    pagination.value.page = Number(pagination.value.page) + 1
-    fetchBooks()
-}
 
 onMounted(() => {
     books.value.loading = true
     fetchBooks()
 })
 </script>
+
+<style scoped>
+.search-contain {
+    box-sizing: border-box;
+    width: 237px;
+    height: 50px;
+    border-radius: 5px;
+    background: #fdfdfd;
+    border-bottom: 2px solid;
+    margin-bottom: 20px;
+}
+</style>
