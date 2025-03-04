@@ -3,10 +3,10 @@
         <nav>
             <ul>
                 <li v-for="(nav, index) in navItems" :key="index">
-                    <a href="#" :class="{ active: nav.url === activeRoute }">
+                    <NuxtLink :to="nav.url" :class="{ active: nav.url === activeRoute }">
                         <i :class="nav.icon"></i>
                         <span>{{ nav.title }}</span>
-                    </a>
+                    </NuxtLink>
                 </li>
                 <li>
                     <NuxtLink :to="routes.app.home">

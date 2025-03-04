@@ -11,7 +11,8 @@
             </div>
         </div>
         <div class="metric">
-            <UiAdminCard v-for="(metric, index) in metrics" :key="index" :metric="metric" />
+            <div v-if="loading">Loading...</div>
+            <UiAdminCard v-else v-for="(metric, index) in metrics" :key="index" :metric="metric" />
         </div>
     </div>
 
@@ -55,34 +56,39 @@ watchEffect(() => {
 </script>
 
 <style scoped>
-.container{
+.container {
     display: flex;
     flex-direction: column;
     gap: 20px;
-    padding: 0px 5%;
+    height: 20vh;
+    overflow-y: auto;
 }
+
 .filter {
     display: flex;
     flex-direction: row;
     gap: 20px;
     justify-content: flex-end;
 }
+
 .input-group {
     display: flex;
     flex-direction: column;
     gap: 5px;
 }
+
 input[type="date"] {
     padding: 5px;
     border-radius: 5px;
     border: 1px solid #ccc;
 }
+
 .metric {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
     gap: 25px;
-    height: min-content;
-    padding: 0px 5%;
+    height: 15vh;
+    overflow-y: auto;
 }
 </style>

@@ -27,8 +27,6 @@ const sendNewPasswordRequest = async () => {
             form.value.email = ''
         }
 
-
-
     } catch (error: unknown) {
         console.error({ error })
     }

@@ -1,10 +1,10 @@
 <template>
-    <div v-if="common.includes(type.toLowerCase())" class="input-group">
+    <div v-if="common.includes(type.toLowerCase())" class="input-group" :style="`margin-bottom: ${marginBottom}`">
         <span class="input-label">{{ label }}</span>
         <input :type="type" :required="required" :placeholder="placeHolder" v-model="inputField"
             @input="$emit('update:modelValue', inputField)" />
     </div>
-    <div v-else-if="type.toLowerCase() === 'password'" class="input-group">
+    <div v-else-if="type.toLowerCase() === 'password'" class="input-group" :style="`margin-bottom: ${marginBottom}`">
         <span class="input-label">{{ label }}</span>
         <input :type="isPasswordVisible ? 'text' : 'password'" :required="required" :placeholder="placeHolder"
             v-model="inputField" @input="$emit('update:modelValue', inputField)" />
@@ -43,6 +43,10 @@ const props = defineProps({
     label: {
         type: String,
         default: ''
+    },
+    marginBottom: {
+        type: String,
+        default: '15px'
     }
 })
 const common = ['text', 'email', 'search', 'tel', 'url', 'number', 'date', 'time', 'datetime-local', 'month', 'week']
@@ -65,7 +69,6 @@ const togglePasswordVisibility = () => {
     border: 1px solid #ccc;
     border-radius: 5px;
     padding: 10px;
-    margin-bottom: 15px;
 }
 
 .input-label {
@@ -79,6 +82,7 @@ input[type="email"],
 input[type="text"],
 input[type="password"] {
     width: 100%;
+    padding: 10px 15px;
     border: unset;
 
 }

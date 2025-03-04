@@ -12,14 +12,16 @@
             </div>
         </div>
     </div>
-
+    <CommonModal v-model="isModalOpen">
+        
+    </CommonModal>
 </template>
 <script setup lang="ts">
 
 const router = useRouter()
-const { setCommon } = useCommon()
+const { setCommon } = useCommon(USER_ROLES.ADMIN)
 
-
+const { isOpen: isModalOpen, open: openModal, close: closeModal } = useModal();
 
 const addBook = () => {
     router.push({ query: { action: 'new' } })
@@ -34,3 +36,11 @@ definePageMeta({
     layout: 'admin-layout',
 })
 </script>
+<style scoped>
+.admin-main {
+    display: flex;
+    flex-direction: row;
+    height: 100%;
+    background-color: #f5f5f5;
+}
+</style>

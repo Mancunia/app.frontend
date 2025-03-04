@@ -1,7 +1,10 @@
 <template>
     <div class="content">
-        <AdminBooksBook />
-        <div class="chapter-card-container">
+        <div v-if="bookId" class="bookWrapper">
+            <AdminBooksBook />
+        </div>
+
+        <div v-if="bookId" class="chapterWrapper">
             <div v-if="action.toLowerCase() === 'view'" class="tabs">
                 <button class="btn" :class="{ black: tab === Tabs.CHAPTERS }"
                     @click="setTab(Tabs.CHAPTERS)">CHAPTERS</button>
@@ -16,6 +19,7 @@
         </div>
     </div>
 
+
 </template>
 
 <script setup lang="ts">
@@ -26,11 +30,15 @@ enum Tabs {
     METRICS
 }
 const route = useRoute()
-const bookId = route.query.bookId as string
-const otherId = ref(bookId + rand(1, 1000))
-const action = computed(() => route.query.action as string || 'view')
+
+
+
 
 const tab = ref<Tabs>(Tabs.CHAPTERS)
+
+const action = computed(() => route.query.action as string || 'view')
+const bookId = computed(() => route.query.bookId as string)
+const otherId = ref(bookId.value + rand(1, 1000))
 const setTab = (currentTab: Tabs) => tab.value = currentTab
 </script>
 
@@ -41,10 +49,17 @@ const setTab = (currentTab: Tabs) => tab.value = currentTab
     justify-content: space-between;
 }
 
-.chapter-card-container {
+.bookWrapper {
+    display: flex;
+    justify-content: center;
+    width:100%;
+    margin-top: 20px;
+}
+
+.chapterWrapper {
     display: flex;
     flex-direction: column;
-    margin-top: 20px;
+    margin-top: 10%;
 }
 
 .tabs {
