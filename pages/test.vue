@@ -1,5 +1,5 @@
 <template>
-  <SampleFireworks title="Congratulations" />
+  <AdminBooksForm />
 </template>
 
 <script setup>

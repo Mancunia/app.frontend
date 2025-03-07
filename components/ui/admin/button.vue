@@ -3,6 +3,7 @@
         <button :class="style" @click="emit('click')">
             <slot></slot>
         </button>
+        <UiLoader v-if="loading" :theme="{ color: '#fff' }" />
     </div>
 </template>
 
@@ -11,6 +12,10 @@ const props = defineProps({
     style: {
         type: String,
         default: 'button'
+    },
+    loading: {
+        type: Boolean,
+        default: false
     }
 })
 const emit = defineEmits(['click'])

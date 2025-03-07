@@ -1,5 +1,5 @@
 <template>
-   <AdminUsers :userType="2" />
+   <AdminUsers :userType="0" :actions="{ makeAssociate: true }" />
 </template>
 
 <script setup lang="ts">

@@ -6,7 +6,7 @@
 
                 </span>
                 <span v-else-if="!isAllChecked && checked.length" v-for="(item, index) in checked" :key="index"
-                    class="item">{{ dataList.find((opt) => opt.id
+                    class="item">{{dataList.find((opt) => opt.id
                         === item)?.name
                     }}</span>
                 <span v-else>
@@ -66,12 +66,7 @@ const active = ref<boolean>(false);
 
 const toggleActive = () => active.value = !active.value;
 const isAllChecked = computed(() => {
-    if(props.dataList.length > 0){
-        return checked.value.length === props.dataList.length;
-    }else{
-        emit('search', searchTerm.value);
-        return []
-    }
+    return checked.value.length === props.dataList.length;
 });
 
 const currentItems = computed(() => {
@@ -104,6 +99,13 @@ watch(checked, () => {
     } else if (props.generic === 'array') {
         emit('selected', checked.value);
     }
+});
+
+watch(searchTerm, () => {
+    if (currentItems.value.length === 0) {
+        setTimeout(()=>emit('search', searchTerm.value),3000);
+    }
+
 });
 
 

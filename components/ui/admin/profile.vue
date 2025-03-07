@@ -1,11 +1,11 @@
 <template>
-    <div class="col card">
-        <div class="img-placeholder">
+    <div class="profileWrapper">
+        <div class="profilePicture">
             <img :src="checkForOldFile(profile.dp)">
         </div>
-        <div>
-            <h3>{{ profile.email }}</h3>
-            <p><i class="fa-solid fa-user"></i> {{ profile.username }}</p>
+        <div class="profileDetails">
+            <h3><i class='bx bxs-envelope'></i>{{ profile.email }}</h3>
+            <p><i class='bx bx-user'></i> {{ profile.username }}</p>
         </div>
     </div>
 
@@ -27,51 +27,41 @@ const { checkForOldFile } = useUtils();
 </script>
 
 <style scoped>
-.col {
-    width: 100%;
-}
-
-.card {
-    border: 1px solid #eee;
-    border-radius: 15px;
-    padding: 20px;
-    background-color: #fff;
+.profileWrapper {
     display: flex;
-    column-gap: 20px;
-    box-shadow: 1px 1px 16px -6px rgba(0, 0, 0, 0.5);
-    -webkit-box-shadow: 1px 1px 16px -6px rgba(0, 0, 0, 0.5);
-    -moz-box-shadow: 1px 1px 16px -6px rgba(0, 0, 0, 0.5);
+    flex-direction: column;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid #e0e0e0;
 }
 
-.card img {
-    max-width: 250px;
-    transform: translateY(-15%);
-}
-
-.img-placeholder {
-    position: relative;
-    max-height: 200px;
+.profilePicture {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
     overflow: hidden;
-    border-radius: 15px;
-    box-shadow: 1px 1px 16px -6px rgba(0, 0, 0, 0.75);
-    -webkit-box-shadow: 1px 1px 16px -6px rgba(0, 0, 0, 0.75);
-    -moz-box-shadow: 1px 1px 16px -6px rgba(0, 0, 0, 0.75);
+    margin-right: 10px;
 }
 
-h3 {
-    font-weight: 400;
+.profilePicture img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
-p {
-    font-weight: 300;
+.profileDetails {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
 }
 
-a {
-    color: #888;
-    text-decoration: none;
+.profileDetails h3 {
+    font-size: 1.2rem;
+    margin: 0;
 }
 
-a:hover {
-    color: inherit;
+.profileDetails p {
+    font-size: 1rem;
+    margin: 0;
 }
 </style>

@@ -12,6 +12,7 @@ export const useAuth = () => {
 
   const { addSuccess, addError } = useNotification();
   const user = useAuthStore();
+  const { stopAudio } = usePlayer();
   const user_login = async (credentials: USER_LOGIN) => {
     try {
       loading.value = true;
@@ -61,6 +62,7 @@ export const useAuth = () => {
     try {
       await logout(USER_ROLES.USER);
       user.logout(USER_ROLES.USER);
+      stopAudio();
       addSuccess("Logout successful");
       navigateTo(routes.app.login);
     } catch (error) {
