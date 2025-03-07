@@ -68,7 +68,7 @@ const form = ref<BOOK>({
 })
 const associates = ref<{ id: string, name: string }[] | null>(null)
 
-const { uploadFile, generateSignedUrl } = useAWS()
+const { uploadFile, generateSignedUrl } = useAWS(USER_ROLES.ADMIN)
 const { languages, categories } = useCommon(USER_ROLES.ADMIN)
 const postBook = async () => {
     try {
