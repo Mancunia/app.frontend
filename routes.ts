@@ -2,7 +2,7 @@ type ROUTES = {
   admin: {
     home: string;
     login: string;
-    associates: string;
+    users: string;
   };
   app: {
     home: string;
@@ -22,7 +22,7 @@ const routes: ROUTES = {
   admin: {
     home: "/admin",
     login: "/admin/login",
-    associates: "/admin/associates",
+    users: "/admin/users",
   },
   app: {
     home: "/app",

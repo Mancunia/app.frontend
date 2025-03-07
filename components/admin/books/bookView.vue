@@ -31,9 +31,6 @@ enum Tabs {
 }
 const route = useRoute()
 
-
-
-
 const tab = ref<Tabs>(Tabs.CHAPTERS)
 
 const action = computed(() => route.query.action as string || 'view')
@@ -47,12 +44,13 @@ const setTab = (currentTab: Tabs) => tab.value = currentTab
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    overflow-y: auto;
 }
 
 .bookWrapper {
     display: flex;
     justify-content: center;
-    width:100%;
+    width: 100%;
     margin-top: 20px;
 }
 
@@ -60,6 +58,7 @@ const setTab = (currentTab: Tabs) => tab.value = currentTab
     display: flex;
     flex-direction: column;
     margin-top: 10%;
+    width: 100%;
 }
 
 .tabs {

@@ -30,8 +30,8 @@ export const adminNavigationItems: {
     icon: "bx bx-home",
   },
   {
-    title: "Associates",
-    url: routes.admin.associates,
+    title: "Users",
+    url: routes.admin.users,
     icon: "bx bx-user",
   },
 ];

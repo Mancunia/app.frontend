@@ -13,7 +13,7 @@
         </div>
     </div>
     <CommonModal v-model="isModalOpen">
-        
+        <AdminBooksForm @saved="onSave" />
     </CommonModal>
 </template>
 <script setup lang="ts">
@@ -24,7 +24,19 @@ const { setCommon } = useCommon(USER_ROLES.ADMIN)
 const { isOpen: isModalOpen, open: openModal, close: closeModal } = useModal();
 
 const addBook = () => {
-    router.push({ query: { action: 'new' } })
+    openModal()
+}
+
+const onSave = (data: any) => {
+    try {
+        console.log('saved', data)
+        closeModal()
+        router.push({ query: { bookId: data._id, action: 'view' } })
+    }
+    catch (error) {
+        console.log(error)
+    }
+
 }
 
 onMounted(() => {
