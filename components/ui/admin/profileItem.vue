@@ -2,7 +2,7 @@
 
     <div class="card" :class="{ active }">
         <div class="dp">
-            <img :src="profile.dp" alt="Profile Image">
+            <img :src="checkForOldFile(profile.dp)" alt="Profile Image">
         </div>
         <div class="details">
             <h3>{{ profile.email }}</h3>
@@ -15,6 +15,8 @@
 
 <script setup lang="ts">
 import type { USER_PROFILE } from '~/types/auth';
+
+const { checkForOldFile } = useUtils()
 defineProps({
     profile: {
         type: Object as PropType<USER_PROFILE>,
