@@ -36,11 +36,11 @@ const { checkForOldFile } = useUtils();
 }
 
 .profilePicture {
-    width: 50px;
-    height: 50px;
     border-radius: 50%;
+    height: 200px;
+    margin: 10px 0px 20px 0px;
     overflow: hidden;
-    margin-right: 10px;
+    width: 200px;
 }
 
 .profilePicture img {

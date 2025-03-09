@@ -3,11 +3,11 @@
         <div class="filter">
             <div class="input-group">
                 <label for="startDate">Start Date</label>
-                <input type="date" id="startDate" v-model="filter.startDate" />
+                <UiAdminInputField type="date" id="startDate" @update:model-value="filter.startDate = $event" :value="filter.startDate" />
             </div>
             <div class="input-group">
                 <label for="endDate">End Date</label>
-                <input type="date" id="endDate" v-model="filter.endDate" />
+                <UiAdminInputField type="date" id="endDate" @update:model-value="filter.endDate = $event" :value="filter.endDate" />
             </div>
         </div>
         <div class="metric">
@@ -24,22 +24,25 @@
 import type { Metrics } from '~/types/common';
 import { getMetrics } from '~/services/admin/book';
 
-const bookId = useRoute().query.bookId as string;
-
+const {getCurrentMonthBeginningAndEnd}=useUtils()
+const currentMonth = getCurrentMonthBeginningAndEnd();
 const metrics = ref<Metrics[] | null>(null);
 const filter = ref<{
     startDate: string;
     endDate: string;
 }>({
-    startDate: '2024-11-03',
-    endDate: '2024-11-04'
+    startDate: currentMonth.firstDay,
+    endDate: currentMonth.lastDay
 });
 const loading = ref<boolean>(true);
+
+const bookId = computed(() => useRoute().query.bookId as string);
+
 
 const fetchBookMetrics = async () => {
     try {
         loading.value = true
-        const response = await getMetrics(bookId, filter.value);
+        const response = await getMetrics(bookId.value, filter.value);
         metrics.value = response.data;
 
     }
@@ -49,6 +52,7 @@ const fetchBookMetrics = async () => {
 }
 
 watchEffect(() => {
+    console.log('watching')
     fetchBookMetrics();
 })
 

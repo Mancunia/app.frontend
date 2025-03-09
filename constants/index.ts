@@ -22,16 +22,18 @@ export const adminNavigationItems: {
   title: string;
   url: string;
   icon: string;
-  hasAccess?: number[];
+  hasAccess: number[];
 }[] = [
   {
     title: "Home",
     url: routes.admin.home,
     icon: "bx bx-home",
+    hasAccess: [USER_ROLES.ADMIN, USER_ROLES.ASSOCIATE],
   },
   {
     title: "Users",
     url: routes.admin.users,
     icon: "bx bx-user",
+    hasAccess: [USER_ROLES.ADMIN],
   },
 ];

@@ -1,6 +1,6 @@
 <template>
     <div class="button">
-        <button :class="style" @click="emit('click')">
+        <button @click="emit('click')" :style="style">
             <slot></slot>
         </button>
         <UiLoader v-if="loading" :theme="{ color: '#fff' }" />

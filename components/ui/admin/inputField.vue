@@ -80,7 +80,16 @@ const togglePasswordVisibility = () => {
 
 input[type="email"],
 input[type="text"],
-input[type="password"] {
+input[type="password"],
+input[type="search"],
+input[type="tel"],
+input[type="url"],
+input[type="number"],
+input[type="date"],
+input[type="time"],
+input[type="datetime-local"],
+input[type="month"],
+input[type="week"] {
     width: 100%;
     padding: 10px 15px;
     border: unset;

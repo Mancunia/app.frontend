@@ -2,7 +2,7 @@ import type { USER_PROFILE } from "~/types/auth";
 
 export const getUserProfiles = async (params: {
   search: string;
-  account: number;
+  account: USER_ROLES | USER_ROLES[];
 }) =>
   useRequest<USER_PROFILE[]>(
     {
@@ -13,10 +13,13 @@ export const getUserProfiles = async (params: {
     USER_ROLES.ADMIN
   );
 
-export const makeUserAssociate = async (params: { userId: string }) =>
-  useRequest<USER_PROFILE[]>(
+export const changeRole = async (params: {
+  userId: string;
+  type: USER_ROLES;
+}) =>
+  useRequest<USER_PROFILE>(
     {
-      url: `admin/user/makeAssociate`,
+      url: `admin/user/changeRole`,
       method: HTTP_METHODS.PUT,
       data: params,
     },

@@ -35,6 +35,7 @@ defineProps({
     flex-direction: row;
     align-items: center;
     padding: 10px;
+    margin-bottom: 10px;
     border-radius: 10px;
     box-shadow: 5px 6px 5px 3px rgba(0, 0, 0, 0.1);
 }
@@ -65,6 +66,7 @@ defineProps({
 }
 
 .active {
-    background-color: #f0f0f0;
+    background-color: #604108;
+    color: #fff;
 }
 </style>
