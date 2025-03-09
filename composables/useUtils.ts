@@ -332,6 +332,13 @@ export const useUtils = () => {
     }
     return file;
   };
+
+  const getCurrentMonthBeginningAndEnd = (): { firstDay: string; lastDay: string } => {
+    const today = new Date();
+    const firstDay = new Date(today.getFullYear(), today.getMonth(), 1).toISOString().split('T')[0];
+    const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0).toISOString().split('T')[0];
+    return { firstDay, lastDay };
+  };
   return {
     formatMobileNumber,
     formatCurrency,
@@ -357,5 +364,6 @@ export const useUtils = () => {
     millisecondsToDays,
     hasSpecialCharacters,
     checkForOldFile,
+    getCurrentMonthBeginningAndEnd,
   };
 };

@@ -15,10 +15,18 @@
                     <img src="@/assets/images/profilePlaceHolder.png" alt="">
                 </div>
 
-                <div class="actions">
-                    <UiAdminButton v-if="selectedUser && actions.makeAssociate" :loading="loading.makeAssociate"
+                <div v-if="selectedUser" class="actions">
+                    <UiAdminButton v-if="selectedUser.account != USER_ROLES.ASSOCIATE" :loading="loading.makeAssociate"
                         @click="makeAssociate">
                         Make Associate
+                    </UiAdminButton>
+                    <UiAdminButton v-if="selectedUser.account != USER_ROLES.ADMIN" :loading="loading.makeAdmin"
+                        :style="`background-color: black`" @click="makeAdmin">
+                        Make Admin
+                    </UiAdminButton>
+                    <UiAdminButton v-if="selectedUser.account != USER_ROLES.USER" :loading="loading.makeUser"
+                        :style="`background-color: green`" @click="makeUser">
+                        Make User
                     </UiAdminButton>
                 </div>
 
@@ -30,26 +38,22 @@
 
 <script setup lang="ts">
 import type { USER_PROFILE } from '~/types/auth';
-import { getUserProfiles, makeUserAssociate } from '~/services/admin/users';
+import { getUserProfiles, changeRole } from '~/services/admin/users';
 
 const props = defineProps({
     userType: {
-        type: Number as PropType<USER_ROLES>,
+        type: Object as PropType<USER_ROLES | USER_ROLES[]>,
         required: true,
-        default: 0
+        default: null
     },
-    actions: {
-        type: Object as PropType<{ makeAssociate?: boolean, makeAdmin?: boolean }>,
-        default: { makeAssociate: false, makeAdmin: false }
-    }
 })
-const loading = ref<{ base: boolean, makeAssociate: boolean }>({ base: false, makeAssociate: false });
+const loading = ref<{ base: boolean, makeAssociate: boolean, makeAdmin: boolean, makeUser: boolean }>({ base: false, makeAssociate: false, makeAdmin: false, makeUser: false });
 const users = ref<USER_PROFILE[]>([]);
 const selectedUser = ref<USER_PROFILE | null>(null);
 const search = ref('');
 
 const { debounce } = useUtils()
-const { addSuccess } = useToast();
+const { addSuccess,addError } = useToast();
 
 
 const fetchUsers = async () => {
@@ -65,19 +69,65 @@ const fetchUsers = async () => {
     }
 }
 
-const makeAssociate = async () => {
+const changeUserRole = async (type: USER_ROLES) => {
     try {
         if (!selectedUser.value) return;
         loading.value.makeAssociate = true;
-        const response = await makeUserAssociate({ userId: selectedUser.value.id });
+        const response = await changeRole({ userId: selectedUser.value.id, type });
         if (response) {
-            addSuccess('User has been made an associate');
+            addSuccess('User role has been updated');
+            selectedUser.value.account = response.data.account;
             fetchUsers();
         }
     }
     finally {
         loading.value.makeAssociate = false;
     }
+}
+const makeUser = () => {
+    try {
+        loading.value.makeUser = true;
+        loading.value.makeAssociate = true;
+        changeUserRole(USER_ROLES.USER);
+    }
+    catch (error:unknown) {
+        if(error instanceof Error){
+            addError(error.message)
+        }
+    }
+    finally {
+        loading.value.makeUser = false;
+    }
+}
+const makeAdmin = () => {
+    try {
+        loading.value.makeAdmin = true;
+        changeUserRole(USER_ROLES.ADMIN);
+    }
+    catch (error:unknown) {
+        if (error instanceof Error) {
+            addError(error.message)
+        }
+    }
+    finally {
+        loading.value.makeAdmin = false;
+    }
+}
+
+const makeAssociate = () => {
+    try {
+        loading.value.makeAssociate = true;
+        changeUserRole(USER_ROLES.ASSOCIATE);
+    }
+    catch (error:unknown) {
+        if (error instanceof Error) {
+            addError(error.message)
+        }
+    }
+    finally {
+        loading.value.makeAssociate = false;
+    }
+
 }
 
 watch(search, debounce(fetchUsers, 500));
@@ -86,7 +136,6 @@ watch(search, debounce(fetchUsers, 500));
 onMounted(() => {
     fetchUsers();
 })
-
 </script>
 
 <style scoped>
@@ -126,12 +175,14 @@ onMounted(() => {
     border: 1px solid #ccc;
     padding: 20px;
 }
+
 .profile .placeHolder {
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100%;
 }
+
 .profile img {
     width: 100%;
     height: 100%;

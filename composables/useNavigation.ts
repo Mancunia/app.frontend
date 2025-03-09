@@ -13,6 +13,9 @@ export function useNavigation() {
     return adminNavigationItems;
   });
 
+  const hasAccess = () => {
+    return store.getAdmin.role === USER_ROLES.ADMIN;
+  };
   const updateSearchParams = ({
     key,
     value,
@@ -32,5 +35,6 @@ export function useNavigation() {
     activeRoute,
     updateSearchParams,
     navItems,
+    hasAccess,
   };
 }

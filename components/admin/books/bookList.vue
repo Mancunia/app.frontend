@@ -1,7 +1,8 @@
 <template>
     <div class="sidebar-content">
-        <UiAdminInputField placeholder="Search Books" @update="searchTerm = $event" type="text" />
-
+       
+        <UiAdminInputField placeholder="Search Books" @update:model-value="pagination.search = $event" type="search" />
+ {{pagination.search}}
         <div class="card-container" v-if="books.loading">
             <AdminBooksLoadersBookItemLoader />
             <AdminBooksLoadersBookItemLoader />
@@ -24,31 +25,21 @@
 <script setup lang="ts">
 import { getBooks } from "@/services/book"
 import { type BOOK } from "~/types/book";
-const searchTerm = ref<string | null>(null);
 const store = useAuthStore()
-const pagination = ref<{ page: number, limit: number }>({ page: 1, limit: 40 })
+const pagination = ref<{ page: number, limit: number,search:string }>({ page: 1, limit: 40,search:'' })
 const books = ref<{ data: BOOK[] | null, loading: boolean }>({ data: null, loading: false })
 const fetchingMore = ref<boolean>(false)
 const canFetchMore = ref<boolean>(true)
 
-const options = {
-    root: null,
-    rootMargin: '0px',
-    threshold: 0,
-} as const
+const {debounce} = useUtils()
 
 const fetchBooks = async () => {
     try {
+        books.value.loading = true
         const { data } = await getBooks(store.getAdmin.role, pagination.value)
         if (data) {
-            if (data.results.length < pagination.value.limit) {
-                canFetchMore.value = false
-            }
-            if (books.value.data?.length) {
-                books.value.data.push(...data.results)
-            } else {
-                books.value.data = data.results
-            }
+             books.value.data = data.results
+
             pagination.value.page = data.page
             pagination.value.limit = data.records
         }
@@ -58,6 +49,13 @@ const fetchBooks = async () => {
         fetchingMore.value = false
     }
 }
+
+const searchBooks = debounce(fetchBooks, 500)
+
+watch(()=>pagination.value.search, () => {
+    console.log('searching')
+        searchBooks()
+})
 
 
 onMounted(() => {

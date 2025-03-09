@@ -3,7 +3,7 @@
         <nav>
             <ul>
                 <li v-for="(nav, index) in navItems" :key="index">
-                    <NuxtLink :to="nav.url" :class="{ active: nav.url === activeRoute }">
+                    <NuxtLink v-if="nav.hasAccess.includes(admin.role)" :to="nav.url" :class="{ active: nav.url === activeRoute }">
                         <i :class="nav.icon"></i>
                         <span>{{ nav.title }}</span>
                     </NuxtLink>
@@ -26,6 +26,7 @@
 import routes from '~/routes';
 const { navItems, activeRoute } = useNavigation()
 const { admin_logout } = useAuth()
+const admin = useAuthStore().getAdmin
 
 
 </script>
