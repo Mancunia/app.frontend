@@ -36,7 +36,7 @@ const books = ref<BOOK[] | null>(null);
 const fetchingMore = ref<boolean>(false)
 const canFetchMore = ref<boolean>(true)
 
-const pagination = ref<{ page: number, limit: number }>({ page: 1, limit: 100 })
+const pagination = ref<{ page: number, limit: number,search:string }>({ page: 1, limit: 100,search:'' })
 
 
 const store = useAuthStore()
