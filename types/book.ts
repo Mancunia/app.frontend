@@ -34,6 +34,11 @@ export type CHAPTER_REQUEST = {
   bookId: string;
 };
 
+export type PLAY_CHAPTER = {
+  chapter: CHAPTER;
+  playTime: number;
+  status: string;
+};
 export type PLAYER = {
   showDetails: boolean;
   playing: boolean;

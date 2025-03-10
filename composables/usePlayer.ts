@@ -1,17 +1,49 @@
-import type { PLAYER } from "~/types/book";
+import type { PLAY_CHAPTER, PLAYER } from "~/types/book";
+import { playChapter } from "~/services/play";
 
-export const usePlayer = () => {
+export const usePlayer = (chapterId: string, app: USER_ROLES) => {
   const audio = useState<HTMLAudioElement>("player", () => new Audio());
+  const audioFile = ref<PLAY_CHAPTER | null>(null);
+  const validTime = ref(0);
+  const loading = ref<boolean>(false);
   const { checkForOldFile } = useUtils();
   const store = useAuthStore();
   const { addError } = useToast();
-  const init = async (audioFile: string) => {
-    let file = checkForOldFile(audioFile);
+
+  const fetchChapter = async () => {
+    try {
+      loading.value = true;
+      const res = await playChapter(chapterId, app);
+      if (res) {
+        audioFile.value = res.data;
+      }
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        addError(error.message);
+      } else {
+        addError("An error occurred while fetching the chapter");
+      }
+    } finally {
+      loading.value = false;
+    }
+  };
+
+  const calculateTime = async () => {
+    if (!audioFile.value) return;
+    const duration = audio.value.duration;
+    const playable = duration / audioFile.value.playTime;
+    validTime.value = playable;
+  };
+
+  const init = async () => {
+    if (!audioFile.value) return;
+    let file = checkForOldFile(audioFile.value.chapter.content);
     stopAudio();
     audio.value.src = file;
     if (audio.value.src) {
       await audio.value.load();
       await playAudio();
+      await calculateTime();
     }
 
     audio.value.addEventListener("ended", async () => {
@@ -85,6 +117,14 @@ export const usePlayer = () => {
     });
   };
 
+  watch(()=>audio.value.currentTime, () => {
+    console.log("audio changed", audio.value.currentTime, validTime.value);
+    if (audio.value.currentTime >= validTime.value) {
+      audio.value.currentTime = validTime.value;
+      stopAudio();
+    }
+  });
+
   return {
     init,
     toggleAudio,
@@ -97,6 +137,8 @@ export const usePlayer = () => {
     fastForwardAudio,
     rewindAudio,
     playerDetails,
-    player: audio,
+    player: audioFile,
+    fetchChapter,
+    loading,
   };
 };

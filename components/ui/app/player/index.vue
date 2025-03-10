@@ -17,7 +17,8 @@
                         <button @click="toggleAudio">
                             <img v-if="store.getPlayer.playing" src="@/assets/images/player/pause.png"
                                 alt="forward button" />
-                            <img v-else src="@/assets/images/player/play.svg" alt="backward button" width="25" height="25" />
+                            <img v-else src="@/assets/images/player/play.svg" alt="backward button" width="25"
+                                height="25" />
                         </button>
                     </div>
 
@@ -49,13 +50,13 @@ const props = defineProps({
 })
 const showControls = ref(false)
 const store = useAuthStore()
-const {checkForOldFile} = useUtils()
+const { checkForOldFile } = useUtils()
 
 const chapter = computed(() =>
     store.getPlaying
 )
 
-const { toggleAudio, stopAudio, setVolume, muteAudio, unmuteAudio, fastForwardAudio, rewindAudio, playerDetails } = usePlayer()
+const { toggleAudio, stopAudio, setVolume, muteAudio, unmuteAudio, fastForwardAudio, rewindAudio, playerDetails } = usePlayer(store.getPlaying.id, USER_ROLES.USER)
 
 
 const getChapter = async () => {
@@ -114,14 +115,14 @@ onMounted(() => {
 .rectangleParent {
     display: flex;
     flex-direction: row;
-    gap: 10%;
+    gap: 0%;
     align-items: center;
-    margin-left: 5%;
-    width: 351px;
+    margin-left: 15px;
+    width: 330px;
     height: 59px;
     border-radius: 19px;
     background: #4D2316;
-    padding: 5px 10px;
+    padding: 0px 10px;
     transition: 0.5s ease-in-out;
     transform: translateX(85%)
 }
@@ -184,6 +185,7 @@ onMounted(() => {
     }
 
     .rectangleParent {
+        width: 100%;
         transform: translateX(0%)
     }
 
