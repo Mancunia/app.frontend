@@ -1,7 +1,7 @@
 <template>
     <div v-if="chapter?.id" class="controls">
         <div class="details">
-            <img :src="chapter.book.cover" alt="" srcset="">
+            <img :src="checkForOldFile(chapter.book.cover)" alt="" srcset="">
             <div class="chapter">
                 <p class="typography">{{ chapter.title }}</p>
                 <p class="typography1">{{ chapter.book.title }}</p>
@@ -17,8 +17,8 @@
             <button @click="toggleAudio">
                 <img v-if="store.getPlayer.playing" class="controls-book-chapter-btns-img"
                     src="@/assets/images/player/pause1.png" alt="" srcset="">
-                <img v-else class="controls-book-chapter-btns-img" src="@/assets/images/player/play.svg" width="50" height="50" alt=""
-                    srcset="">
+                <img v-else class="controls-book-chapter-btns-img" src="@/assets/images/player/play.svg" width="50"
+                    height="50" alt="" srcset="">
             </button>
             <button @click="fastForwardAudio(10)">
                 <img class="controls-book-chapter-btns-img" src="@/assets/images/player/forward.png" alt="" srcset="">
@@ -52,6 +52,7 @@ const chapter = computed<CHAPTER | null>(() => {
 
 const ended = computed(() => currentTime.value === duration.value)
 
+const { checkForOldFile } = useUtils()
 const { toggleAudio, pauseAudio, setVolume, fastForwardAudio, rewindAudio } = usePlayer(store.getPlaying.id, USER_ROLES.ADMIN)
 
 
@@ -60,7 +61,7 @@ const getChapter = async () => {
         if (!chapter.value?.id) return
         stop()
         loading.value = true
-        const { data } = await playChapter(chapter.value?.id ?? '',USER_ROLES.ADMIN)
+        const { data } = await playChapter(chapter.value?.id ?? '', USER_ROLES.ADMIN)
         if (data) {
             store.setPlayer({
                 ...data,
