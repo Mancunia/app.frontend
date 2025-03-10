@@ -17,7 +17,7 @@
             <button @click="toggleAudio">
                 <img v-if="store.getPlayer.playing" class="controls-book-chapter-btns-img"
                     src="@/assets/images/player/pause1.png" alt="" srcset="">
-                <img v-else class="controls-book-chapter-btns-img" src="@/assets/images/player/pause.png" alt=""
+                <img v-else class="controls-book-chapter-btns-img" src="@/assets/images/player/play.svg" width="50" height="50" alt=""
                     srcset="">
             </button>
             <button @click="fastForwardAudio(10)">
@@ -52,7 +52,7 @@ const chapter = computed<CHAPTER | null>(() => {
 
 const ended = computed(() => currentTime.value === duration.value)
 
-const { toggleAudio, pauseAudio, setVolume, fastForwardAudio, rewindAudio } = usePlayer()
+const { toggleAudio, pauseAudio, setVolume, fastForwardAudio, rewindAudio } = usePlayer(store.getPlaying.id, USER_ROLES.ADMIN)
 
 
 const getChapter = async () => {

@@ -36,7 +36,7 @@ const store = useAuthStore();
 const route = useRoute();
 
 
-const { init, playAudio, pauseAudio } = usePlayer()
+const { init, playAudio, pauseAudio, fetchChapter, player } = usePlayer(props.chapter.id, USER_ROLES.ADMIN);
 const action = computed(() => route.query.action as string || 'view');
 
 const actions = [{
@@ -49,21 +49,23 @@ const actions = [{
 
 
 const play = async () => {
-    if (store.getPlaying.id !== props.chapter.id) {
+    if (store.getPlaying.id !== props.chapter.id || !player.value) {
         store.setPlaying(props.chapter);
+        await fetchChapter()
+        await init()
     }
-    init(props.chapter?.content ?? '')
     await playAudio()
 
 }
 </script>
 <style scoped>
-.body{
+.body {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
 }
+
 .chapter {
     display: flex;
     flex-direction: column;

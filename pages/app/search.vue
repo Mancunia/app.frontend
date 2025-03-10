@@ -28,7 +28,7 @@ import { filterBooks } from '~/services/book';
 import type { BOOK } from '~/types/book';
 const books = ref<BOOK[] | null>(null);
 
-const { languages, categories } = useCommon()
+const { languages, categories } = useCommon(USER_ROLES.USER)
 
 const searchOptions = ref<{ page: number, limit: number, search: string, categories: string[], languages: string[] }>({
     page: 1,
@@ -51,7 +51,6 @@ const filter = async () => {
     }
 }
 const search = () => {
-    console.log('search')
     books.value = null
     filter()
 }

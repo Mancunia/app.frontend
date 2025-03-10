@@ -1,8 +1,7 @@
 <template>
     <div class="sidebar-content">
-       
+
         <UiAdminInputField placeholder="Search Books" @update:model-value="pagination.search = $event" type="search" />
- {{pagination.search}}
         <div class="card-container" v-if="books.loading">
             <AdminBooksLoadersBookItemLoader />
             <AdminBooksLoadersBookItemLoader />
@@ -26,19 +25,18 @@
 import { getBooks } from "@/services/book"
 import { type BOOK } from "~/types/book";
 const store = useAuthStore()
-const pagination = ref<{ page: number, limit: number,search:string }>({ page: 1, limit: 40,search:'' })
+const pagination = ref<{ page: number, limit: number, search: string }>({ page: 1, limit: 40, search: '' })
 const books = ref<{ data: BOOK[] | null, loading: boolean }>({ data: null, loading: false })
 const fetchingMore = ref<boolean>(false)
-const canFetchMore = ref<boolean>(true)
 
-const {debounce} = useUtils()
+const { debounce } = useUtils()
 
 const fetchBooks = async () => {
     try {
         books.value.loading = true
         const { data } = await getBooks(store.getAdmin.role, pagination.value)
         if (data) {
-             books.value.data = data.results
+            books.value.data = data.results
 
             pagination.value.page = data.page
             pagination.value.limit = data.records
@@ -52,9 +50,8 @@ const fetchBooks = async () => {
 
 const searchBooks = debounce(fetchBooks, 500)
 
-watch(()=>pagination.value.search, () => {
-    console.log('searching')
-        searchBooks()
+watch(() => pagination.value.search, () => {
+    searchBooks()
 })
 
 
