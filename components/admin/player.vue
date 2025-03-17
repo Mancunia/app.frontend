@@ -41,7 +41,7 @@
 import { playChapter } from '~/services/play';
 import type { CHAPTER } from '~/types/book'
 const store = useAuthStore()
-const volume = ref(store.getPlayer.volume ?? 0)
+const volume = ref(store.getPlayer.volume ?? 50)
 const currentTime = ref(0)
 const duration = ref(0)
 const loading = ref(false)
