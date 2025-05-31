@@ -12,8 +12,8 @@
 
                 <button class="save-btn" @click="save">Save</button>
             </div>
-            <UiUploadPicture v-else @submit="audioData = $event" type="audio" :allowed-ext="acceptedFormats"
-                accept="audio/*" />
+            <UiUploadPicture v-else @submit="audioData = $event"  :allowed-ext="acceptedFormats"
+                accept=".mp3,.wav,.pdf" />
 
 
         </div>
@@ -31,7 +31,7 @@ const props = defineProps({
         required: true
     }
 })
-const acceptedFormats = ['mp3', 'wav']
+const acceptedFormats = ['mp3', 'wav','pdf']
 const audioData = ref()
 const uploading = ref<{ isUploading: boolean, progress: number, message: string }>({ isUploading: false, progress: 0, message: "" })
 const form = ref<CHAPTER_REQUEST>({

@@ -29,7 +29,6 @@ const addBook = () => {
 
 const onSave = (data: any) => {
     try {
-        console.log('saved', data)
         closeModal()
         router.push({ query: { bookId: data._id, action: 'view' } })
     }
