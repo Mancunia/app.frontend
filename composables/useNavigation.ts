@@ -10,7 +10,9 @@ export function useNavigation() {
   });
 
   const navItems = computed(() => {
-    return adminNavigationItems;
+    return adminNavigationItems.filter((item) => {
+      return item.hasAccess.includes(store.getAdmin.role);
+    });
   });
 
   const hasAccess = () => {

@@ -1,7 +1,7 @@
 <template>
     <div class="admin-main">
         <div class="sidebar">
-            <UiAdminButton @click="addBook">ADD NEW BOOK</UiAdminButton>
+            <UiAdminButton v-if="hasAccess()" @click="addBook">ADD NEW BOOK</UiAdminButton>
             <AdminBooksBookList />
         </div>
 
@@ -22,6 +22,7 @@ const router = useRouter()
 const { setCommon } = useCommon(USER_ROLES.ADMIN)
 
 const { isOpen: isModalOpen, open: openModal, close: closeModal } = useModal();
+const {hasAccess} = useNavigation()
 
 const addBook = () => {
     openModal()
