@@ -1,7 +1,7 @@
 <template>
     <div class="profile">
         <div class="dp">
-            <img v-if="user.dp" :src="user.dp" alt="">
+            <img v-if="user.dp" :src="checkForOldFile(user.dp)" alt="">
             <img v-else src="@/assets/images/user.png" alt="profile" />
         </div>
         <div class="name">
@@ -26,7 +26,7 @@ const pageSettings = ref<{
 })
 
 const user = useAuthStore().getUser
-
+const { checkForOldFile } = useUtils()
 
 
 </script>
