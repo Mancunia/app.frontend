@@ -70,6 +70,7 @@ const {checkForOldFile} = useUtils()
     justify-content: center;
     align-items: center;
     flex-shrink: 0;
+    border-radius: 20px;
 }
 
 .nav .icon.active {
