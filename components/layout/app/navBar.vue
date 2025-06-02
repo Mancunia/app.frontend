@@ -38,6 +38,7 @@ const {checkForOldFile} = useUtils()
     border-radius: 50%;
     margin: 10px;
     cursor: pointer;
+    border-radius: 20px;
 }
 
 .appbar .anansesem {

@@ -9,7 +9,7 @@
         <NuxtLink :to="links.library.link" class="icon" :class="{ 'active': links.library.link == activeRoute }">
             <img class="" alt="" width="30" height="30" src="@/assets/images/book.png" />
         </NuxtLink>
-        <NuxtLink :to="links.profile.link" class="icon" :class="{ 'active': links.profile.link == activeRoute }">
+        <NuxtLink :to="links.profile.link" class="icon profile" :class="{ 'active': links.profile.link == activeRoute }">
             <img v-if="user.dp" width="30" height="30" :src="checkForOldFile(user.dp)" alt="">
             <img v-else width="30" height="30" src="@/assets/images/user.png" alt="profile" />
         </NuxtLink>
@@ -70,9 +70,11 @@ const {checkForOldFile} = useUtils()
     justify-content: center;
     align-items: center;
     flex-shrink: 0;
-    border-radius: 20px;
 }
 
+.nav .profile img{
+    border-radius: 20px;
+}
 .nav .icon.active {
     border-bottom: 2px solid #fff;
     padding: 2%;
