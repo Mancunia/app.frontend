@@ -82,6 +82,7 @@
 
 .details-container {
     position: absolute;
+    display: none;
 }
 
 .bottom-bar-container {
@@ -137,6 +138,7 @@
     }
 
     .details-container {
+        display: block;
         position: relative;
         width: 30%;
         align-content: center;

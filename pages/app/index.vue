@@ -1,5 +1,5 @@
 <template>
-    <div class="category-container">
+    <div v-if="false" class="category-container">
         <AppCategories />
     </div>
     <div class="list-container">

@@ -2,7 +2,7 @@
     <NuxtLink v-if="book" style="text-decoration: none; color:#000" :to="`${routes.app.book}${props.book._id}`"
         @click="selectBook = book">
         <div class="story-item">
-            <div class="story-thumbnail"><img :src="checkForOldFile(book.cover)" alt="" class="thumb-n"></div>
+            <div class="story-thumbnail"><img :src="checkForOldFile(book.cover)" alt=""></div>
             <div class="story-title">{{ book.title }}</div>
             <div class="writer">{{ String(book.authors) }}</div>
         </div>
@@ -43,7 +43,7 @@ const { checkForOldFile } = useUtils()
     margin-bottom: 10px;
 }
 
-.thumb-n {
+.story-thumbnail img {
     width: 100%;
     /* Make the image full width */
     height: 100%;
@@ -61,6 +61,8 @@ const { checkForOldFile } = useUtils()
 
 .story-title {
     font-weight: 700;
+    width: 250px;
+
 }
 
 .writer {
