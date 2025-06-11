@@ -7,7 +7,7 @@ import type { BOOK } from "~/types/book";
 
 export const getSignedUrl = async (
   file: SignedUrlRequest,
-  app: USER_ROLES = USER_ROLES.USER
+  app: USER_ROLES = USER_ROLES.ADMIN
 ) =>
   useRequest<SignedUrlResponse>(
     {
@@ -15,7 +15,7 @@ export const getSignedUrl = async (
       method: HTTP_METHODS.POST,
       data: file,
     },
-    app
+    USER_ROLES.ADMIN
   );
 
 export const createBook = async (book: BOOK) =>
