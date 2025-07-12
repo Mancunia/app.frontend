@@ -9,7 +9,7 @@
     </div>
     <div v-else class="chapter-content">
         <div v-if="chapters.data" class="cards-container-box">
-            <AdminChaptersChapter v-for="(chapter, index) in chapters.data" :key="index" :chapter="chapter" />
+            <AdminChaptersChapter v-for="(chapter, index) in chapters.data" :key="index" :chapter="chapter"  @deleted="fetchChapters" />
         </div>
         <div v-else>
             <h1>No chapters found</h1>
@@ -44,7 +44,7 @@ const fetchChapters = async () => {
     };
     try {
         chapters.value.loading = true;
-        const { data } = await getChapters(bookId.value,USER_ROLES.ADMIN);
+        const { data } = await getChapters(bookId.value, USER_ROLES.ADMIN);
         if (data) {
             chapters.value.data = data;
         }

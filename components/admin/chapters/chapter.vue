@@ -10,7 +10,7 @@
 
         </div>
         <div v-if="action === actions[1].id" class="">
-            <UiSelect :data-list="actions">
+            <UiSelect :data-list="actions" @selected="handleAction">
                 <template v-slot:icon>
                     <div class="">
                         <img src="@/assets/images/context_menu.png" alt="" srcset="">
@@ -25,6 +25,8 @@
 
 <script setup lang="ts">
 import { type CHAPTER } from '~/types/book';
+import { deleteChapter } from '~/services/book';
+const emit = defineEmits(['deleted']);
 const props = defineProps({
     chapter: {
         type: Object as PropType<CHAPTER>,
@@ -34,6 +36,7 @@ const props = defineProps({
 
 const store = useAuthStore();
 const route = useRoute();
+const { addSuccess, addError } = useToast();
 
 
 const { init, playAudio, pauseAudio, fetchChapter, player } = usePlayer(props.chapter.id, USER_ROLES.ADMIN);
@@ -47,6 +50,24 @@ const actions = [{
     id: 'delete', name: 'Delete'
 }]
 
+const handleAction = async (actionId: string) => {
+    if (actionId === 'delete') {
+        const confirmed = confirm('Are you sure you want to delete this chapter?');
+        if (!confirmed) return;
+        try {
+            await deleteChapter(props.chapter.content);
+        } catch (e) {
+            addError('Failed to delete chapter');
+            return;
+        }
+         addSuccess('Chapter deleted successfully');
+         emit('deleted', props.chapter.id);
+    }
+
+    if (actionId === 'edit') {
+        router.push({ path: '/admin/chapters/edit', query: { id: props.chapter.id } });
+    }
+};
 
 const play = async () => {
     if (store.getPlaying.id !== props.chapter.id || !player.value) {
