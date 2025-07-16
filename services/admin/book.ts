@@ -28,10 +28,19 @@ export const createBook = async (book: BOOK) =>
     USER_ROLES.ADMIN
   );
 
-export const updateBook = async (book: BOOK) =>
+export const deleteBook = async (id: string) =>
+  useRequest(
+    {
+      url: `admin/book/deleteBook/${id}`,
+      method: HTTP_METHODS.DELETE,
+    },
+    USER_ROLES.ADMIN
+  );
+
+export const updateBook = async (id: string, book: BOOK) =>
   useRequest<BOOK>(
     {
-      url: "admin/book/updateBook",
+      url: `admin/book/updateBook/${id}`,
       method: HTTP_METHODS.PUT,
       data: book,
     },

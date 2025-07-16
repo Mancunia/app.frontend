@@ -1,36 +1,39 @@
 <template>
     <div class="page">
-        <div class="content">
-            <div class="list">
+        <div class="list">
+            <div class="input">
                 <UiAdminInputField place-holder="search" type="text" @update:model-value="search = $event" />
-                <div class="users">
-                    <UiAdminProfileItem v-for="user in users" :key="user.id" :profile="user"
-                        @click="selectedUser = user" :active="selectedUser?.id == user.id" />
-                </div>
             </div>
-            <div class="profile">
 
-                <UiAdminProfile v-if="selectedUser" :profile="selectedUser" />
-                <div v-else class="placeHolder">
-                    <img src="@/assets/images/profilePlaceHolder.png" alt="">
-                </div>
-
-                <div v-if="selectedUser" class="actions">
-                    <UiAdminButton v-if="selectedUser.account != USER_ROLES.ASSOCIATE" :loading="loading.makeAssociate"
-                        @click="makeAssociate">
-                        Make Associate
-                    </UiAdminButton>
-                    <UiAdminButton v-if="selectedUser.account != USER_ROLES.ADMIN" :loading="loading.makeAdmin"
-                        :style="`background-color: black`" @click="makeAdmin">
-                        Make Admin
-                    </UiAdminButton>
-                    <UiAdminButton v-if="selectedUser.account != USER_ROLES.USER" :loading="loading.makeUser"
-                        :style="`background-color: green`" @click="makeUser">
-                        Make User
-                    </UiAdminButton>
-                </div>
+            <div class="users">
+                <UiAdminProfileItem v-for="user in users" :key="user.id" :profile="user" @click="selectedUser = user"
+                    :active="selectedUser?.id == user.id" />
 
             </div>
+        </div>
+        <div class="profile">
+
+            <UiAdminProfile v-if="selectedUser" :profile="selectedUser" />
+            <div v-else class="placeHolder">
+                <img src="@/assets/images/profilePlaceHolder.png" alt="">
+                <h4>select a user</h4>
+            </div>
+
+            <div v-if="selectedUser" class="actions">
+                <UiAdminButton v-if="selectedUser.account != USER_ROLES.ASSOCIATE" :loading="loading.makeAssociate"
+                    @click="makeAssociate">
+                    Make Associate
+                </UiAdminButton>
+                <UiAdminButton v-if="selectedUser.account != USER_ROLES.ADMIN" :loading="loading.makeAdmin"
+                    :style="`background-color: black`" @click="makeAdmin">
+                    Make Admin
+                </UiAdminButton>
+                <UiAdminButton v-if="selectedUser.account != USER_ROLES.USER" :loading="loading.makeUser"
+                    :style="`background-color: green`" @click="makeUser">
+                    Make User
+                </UiAdminButton>
+            </div>
+
         </div>
 
     </div>
@@ -53,7 +56,7 @@ const selectedUser = ref<USER_PROFILE | null>(null);
 const search = ref('');
 
 const { debounce } = useUtils()
-const { addSuccess,addError } = useToast();
+const { addSuccess, addError } = useToast();
 
 
 const fetchUsers = async () => {
@@ -90,8 +93,8 @@ const makeUser = () => {
         loading.value.makeAssociate = true;
         changeUserRole(USER_ROLES.USER);
     }
-    catch (error:unknown) {
-        if(error instanceof Error){
+    catch (error: unknown) {
+        if (error instanceof Error) {
             addError(error.message)
         }
     }
@@ -104,7 +107,7 @@ const makeAdmin = () => {
         loading.value.makeAdmin = true;
         changeUserRole(USER_ROLES.ADMIN);
     }
-    catch (error:unknown) {
+    catch (error: unknown) {
         if (error instanceof Error) {
             addError(error.message)
         }
@@ -119,7 +122,7 @@ const makeAssociate = () => {
         loading.value.makeAssociate = true;
         changeUserRole(USER_ROLES.ASSOCIATE);
     }
-    catch (error:unknown) {
+    catch (error: unknown) {
         if (error instanceof Error) {
             addError(error.message)
         }
@@ -140,7 +143,11 @@ onMounted(() => {
 
 <style scoped>
 .page {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
     padding: 20px;
+
 }
 
 .content {
@@ -153,18 +160,19 @@ onMounted(() => {
 }
 
 .list {
-    width: 40%;
+    width: 25%;
     height: 100%;
-    background-color: rgb(237 237 237);
     border: 1px solid #ccc;
     border-radius: 10px;
     padding: 20px;
 }
-
+.list .input{
+    width: 50%;
+}
 .list .users {
     display: flex;
-    flex-direction: column;
-    height: 80%;
+    flex-direction: row;
+    flex-wrap: wrap;
     overflow-y: auto;
     padding: 20px;
 }
@@ -178,11 +186,17 @@ onMounted(() => {
 
 .profile .placeHolder {
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     height: 100%;
 }
 
+.profile .placeHolder img {
+    width: 100px;
+    height: 100px;
+    border-radius: 20px;
+}
 .profile img {
     width: 100%;
     height: 100%;

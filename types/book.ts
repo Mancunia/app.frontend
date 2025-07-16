@@ -1,38 +1,34 @@
 export type BOOK = {
+  id: string;
+  title: string;
+  description: string;
+  category: string[];
+  languages: string[];
+  authors: string[];
+  cover: string;
   meta: {
     played: number;
     views: number;
+    likes: number;
+    dislikes: number;
     comments: number;
   };
-  _id?: string | null;
-  status: number;
-  authors: string[];
-  cover: string;
-  moment: string;
-  title: string;
-  description: string;
-  folder: string;
-  uploader: string;
-  __v: number;
-  collections: string[];
-  languages: string[];
-  category: string[];
-  createdAt: string;
-  associates: string[];
-  updatedAt: string;
 };
 export type CHAPTER = {
-  id: string;
-  title: string;
-  content: string;
-  book: BOOK;
-  createdAt: string;
-};
-export type CHAPTER_REQUEST = {
-  title: string | null;
-  content: string | null;
+  id?: string;
   bookId: string;
+  title: string;
+  content: string | null;
+  book: BOOK | null;
+  createdAt?: string;
+  password: string | null;
 };
+// export type CHAPTER_REQUEST = {
+//   title: string | null;
+//   password:string|null;
+//   content: string | null;
+//   bookId: string;
+// };
 
 export type PLAY_CHAPTER = {
   chapter: CHAPTER;

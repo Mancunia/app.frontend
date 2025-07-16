@@ -30,7 +30,6 @@ const active = ref<boolean>(false);
 const toggleActive = () => active.value = !active.value;
 
 const clicked = (item: string) => {
-    console.log('action', item)
     emit('selected', item)
     return toggleActive()
 }

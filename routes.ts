@@ -3,6 +3,7 @@ type ROUTES = {
     home: string;
     login: string;
     users: string;
+    period:string;
   };
   app: {
     home: string;
@@ -23,6 +24,7 @@ const routes: ROUTES = {
     home: "/admin",
     login: "/admin/login",
     users: "/admin/users",
+    period:"/admin/period"
   },
   app: {
     home: "/app",

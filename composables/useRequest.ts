@@ -36,17 +36,21 @@ export const useRequest = async <T>(
   const defaultBaseUrl = config.public.apiBase;
   const store = useAuthStore();
   client.defaults.baseURL = defaultBaseUrl;
-
-  const token = ref<string | null>(null);
+  console.log({app})
+  let token = "" ;
   if (store.getUser?.token !== null || store.getAdmin?.token !== null) {
     if (app === USER_ROLES.ADMIN) {
-      token.value = store.getAdmin.token;
+      console.log("admin", store.getAdmin.token);
+      token = store.getAdmin.token;
     } else if (app === USER_ROLES.USER) {
-      token.value = store.getUser.token;
+      console.log("user");
+      token = store.getUser.token;
     } else {
-      token.value = "";
+      console.log("none");
+      token = "";
     }
-    const authToken = `Bearer ${token.value}`;
+    const authToken = `Bearer ${token}`;
+    console.log({ authToken });
     client.defaults.headers.common["Authorization"] = authToken;
   }
 
