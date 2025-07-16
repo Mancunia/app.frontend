@@ -1,11 +1,16 @@
 <template>
     <teleport to="body">
-        <div v-if="isOpen" class="modal-backdrop" @click.self="close">
-            <div class="modal-content">
-                <button class="close-btn" @click="close">✖</button>
-                <slot></slot>
+        <transition name="fade">
+            <div v-if="isOpen" class="modal-backdrop" @click.self="onBackdropClick">
+                <transition name="scale">
+                    <div class="modal-content">
+                        <button class="close-btn" @click="close">✖</button>
+                        <slot></slot>
+                    </div>
+                </transition>
             </div>
-        </div>
+        </transition>
+
     </teleport>
 </template>
 
@@ -16,6 +21,10 @@ const props = defineProps({
     modelValue: {
         type: Boolean,
         required: true
+    },
+    closeOnBackdropClick: {
+        type: Boolean,
+        default: true
     }
 });
 
@@ -31,6 +40,11 @@ const close = () => {
     isOpen.value = false;
     emit('update:modelValue', false);
 };
+
+function onBackdropClick() {
+    if (!props.closeOnBackdropClick) return;
+    close()
+}
 </script>
 
 <style scoped>
@@ -49,7 +63,7 @@ const close = () => {
 
 .modal-content {
     background: white;
-    padding: 2%;
+    padding: 4%;
     border-radius: 10px;
     position: relative;
 }
@@ -62,5 +76,27 @@ const close = () => {
     border: none;
     font-size: 1.5rem;
     cursor: pointer;
+}
+/* Fade for overlay */
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+    opacity: 0;
+}
+
+/* Scale for modal */
+.scale-enter-active,
+.scale-leave-active {
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.scale-enter-from,
+.scale-leave-to {
+    opacity: 0;
+    transform: scale(0.95);
 }
 </style>

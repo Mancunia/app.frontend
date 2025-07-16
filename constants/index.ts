@@ -36,4 +36,10 @@ export const adminNavigationItems: {
     icon: "bx bx-user",
     hasAccess: [USER_ROLES.ADMIN],
   },
+  {
+    title: "Periods",
+    url: routes.admin.period,
+    icon: "bx bx-time",
+    hasAccess: [USER_ROLES.ADMIN],
+  },
 ];

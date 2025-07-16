@@ -121,7 +121,7 @@ input[type="checkbox"] {
     input[type="email"],
     input[type="text"],
     input[type="password"] {
-        height: 50px;
+        height: inherit;
     }
 }
 </style>

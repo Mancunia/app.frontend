@@ -1,12 +1,16 @@
 <template>
 
-    <div class="card" :class="{ active }">
+    <div class="card" :class="{ active }" :title="profile.email">
         <div class="dp">
             <img :src="checkForOldFile(profile.dp)" alt="Profile Image">
         </div>
         <div class="details">
-            <h3>{{ profile.email }}</h3>
-            <p>{{ profile.username }}</p>
+            <div class="text">
+                {{ profile.username }}
+            </div>
+            <div class="subtext">
+                {{ profile.email }}
+            </div>
         </div>
     </div>
 
@@ -32,12 +36,14 @@ defineProps({
 <style scoped>
 .card {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     align-items: center;
-    padding: 10px;
-    margin-bottom: 10px;
+    justify-content: space-between;
+    width: 100px;
+    padding: 5px;
+    margin: 0px 20px;
     border-radius: 10px;
-    box-shadow: 5px 6px 5px 3px rgba(0, 0, 0, 0.1);
+    /* box-shadow: 5px 6px 5px 3px rgba(0, 0, 0, 0.1); */
 }
 
 .card .dp {
@@ -45,7 +51,6 @@ defineProps({
     height: 50px;
     border-radius: 50%;
     overflow: hidden;
-    margin-right: 10px;
 }
 
 .card .dp img {
@@ -57,16 +62,24 @@ defineProps({
 .card .details {
     display: flex;
     flex-direction: column;
-    gap: 5px;
+    width: 100px;
 }
 
-.card .details h3 {
-    font-size: 1.2rem;
-    margin: 0;
+
+.card .details .subtext {
+    font-size: 8px;
+    text-align: center;
+    word-break: break-all;
+}
+
+.card .details .text {
+    font-size: 12px;
+    font-weight: bolder;
+    text-align: center;
 }
 
 .active {
-    background-color: #604108;
+    background-color: #764f0677;
     color: #fff;
 }
 </style>

@@ -1,5 +1,6 @@
 <template>
-    <CommonProgress v-if="uploading.loading" :progress="uploading.progress" :message="uploading.message" />
+    <CommonProgress v-if="uploading.loading" :progress="uploading.progress" :message="uploading.message"
+        @done="emit('saved')" />
     <div v-else class="bookWrapper">
         <div class="cover">
             <img v-if="imageData" :src="imageData?.base64Url" />
@@ -27,7 +28,7 @@
 
             </div>
             <div class="submit">
-                <UiAdminButton @click="postBook">SAVE</UiAdminButton>
+                <UiAdminButton @click="save">SAVE</UiAdminButton>
             </div>
         </div>
     </div>
@@ -35,12 +36,20 @@
 </template>
 
 <script setup lang="ts">
-import { createBook } from '~/services/admin/book';
+import type { PropType } from 'vue';
+import { createBook, updateBook } from '~/services/admin/book';
 import { getUserProfiles } from '~/services/admin/users';
 import type { USER_PROFILE } from '~/types/auth';
 import type { BOOK } from '~/types/book';
 
 const emit = defineEmits(['saved']);
+
+const { book } = defineProps({
+    book: {
+        type: Object as PropType<BOOK | null>,
+        required: false
+    }
+})
 const loading = ref<{ book: boolean, associates: boolean }>({ book: false, associates: false });
 const uploading = ref<{ progress: number, loading: boolean, message: string }>({ progress: 0, loading: false, message: '' })
 const imageData = ref()
@@ -71,29 +80,64 @@ const associates = ref<{ id: string, name: string }[] | null>(null)
 const { uploadFile, generateSignedUrl } = useAWS(USER_ROLES.ADMIN)
 const { languages, categories } = useCommon(USER_ROLES.ADMIN)
 const postBook = async () => {
-    try {
-        uploading.value.loading = true
-        if (imageData.value) {
-            uploading.value.message = 'Uploading image'
-            uploading.value.progress = 20
-            const response = await generateSignedUrl(imageData.value.file)
-            if (response) {
-                const imgLink = await uploadFile(imageData.value.file, response.signedURL)
-                if (imgLink) {
-                    form.value.cover = imgLink
-                    uploading.value.progress = 50
-                }
+    uploading.value.loading = true
+    if (imageData.value) {
+        uploading.value.message = 'Uploading image'
+        uploading.value.progress = 20
+        const response = await generateSignedUrl(imageData.value.file)
+        if (response) {
+            const imgLink = await uploadFile(imageData.value.file, response.signedURL)
+            if (imgLink) {
+                form.value.cover = imgLink
+                uploading.value.progress = 50
             }
         }
-        uploading.value.message = 'Creating book'
-        uploading.value.progress = 70
-        const { data } = await createBook(form.value)
-        if (data) {
-            uploading.value.message = 'Book created'
-            uploading.value.progress = 100
-            emit('saved', data)
+    }
+    uploading.value.message = 'Creating book'
+    uploading.value.progress = 70
+    const { data } = await createBook(form.value)
+    if (data) {
+        uploading.value.message = 'Book created'
+        uploading.value.progress = 100
+        emit('saved', data)
+    }
+
+}
+
+const putBook = async () => {
+    uploading.value.loading = true
+    if (imageData.value) {
+        uploading.value.message = 'Uploading image'
+        uploading.value.progress = 20
+        const response = await generateSignedUrl(imageData.value.file)
+        if (response) {
+            const imgLink = await uploadFile(imageData.value.file, response.signedURL)
+            if (imgLink) {
+                form.value.cover = imgLink
+                uploading.value.progress = 50
+            }
         }
-    } catch (error: unknown) {
+    }
+    uploading.value.message = 'Creating book'
+    uploading.value.progress = 70
+    const { data } = await updateBook(form.value.id, form.value)
+    if (data) {
+        uploading.value.message = 'Book updated'
+        uploading.value.progress = 100
+        emit('saved', data)
+    }
+}
+
+const save = async () => {
+    try {
+        console.log('clicked saved')
+        if (form.value.id) {
+            console.log('on updated')
+            return await putBook()
+        }
+        await postBook()
+    }
+    catch (error) {
         if (error instanceof Error) {
             console.error(error.message)
         }
@@ -118,6 +162,15 @@ const findAssociates = async (search: string) => {
 const dropImage = () => {
     imageData.value = null
 }
+
+watch(() => book, () => {
+    if (book) {
+        form.value = book
+    }
+}, {
+    deep: true,
+    immediate: true
+})
 </script>
 <style lang="css" scoped>
 .bookWrapper {
