@@ -6,11 +6,18 @@
         <div class="description">
             <h3>{{ chapter.title }}</h3>
             <UiLoader v-if="loading" :theme="{ color: 'black' }" />
-            <button v-else-if="store.getPlaying.id !== chapter.id || !store.getPlayer.playing" @click="play">
-                Play
-            </button>
-            <span v-else><img width="50" height="30" src="@/assets/playing.gif" /></span>
-
+            <template v-else-if="chapterType === 'audio'">
+                <button v-if="store.getPlaying.id !== chapter.id || !store.getPlayer.playing" @click="play">
+                    Play
+                </button>
+                <span v-else><img width="50" height="30" src="@/assets/playing.gif" /></span>
+            </template>
+            <template v-else-if="chapterType === 'pdf'">
+                <button @click="openPDF">Read PDF</button>
+            </template>
+            <template v-else>
+                <small>Unsupported chapter type</small>
+            </template>
         </div>
     </div>
 </template>
@@ -34,8 +41,21 @@ const play = async () => {
         await init()
     }
     await playAudio()
-
 }
+const chapterType = computed(() => {
+    const url = props.chapter.content?.toLowerCase() || '';
+    if (url.includes('.mp3')) return 'audio';
+    if (url.includes('.pdf')) return 'pdf';
+    return 'unknown';
+});
+
+const openPDF = () => {
+    if (props.chapter.content) {
+        window.open(props.chapter.content, '_blank');
+    } else {
+        alert("PDF file not available");
+    }
+};
 
 </script>
 
