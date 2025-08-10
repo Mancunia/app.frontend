@@ -31,11 +31,30 @@ const props = defineProps({
 
 const store = useAuthStore();
 const route = useRoute();
+
 const { hasAccess } = useNavigation()
 
 
 const { init, playAudio, pauseAudio, fetchChapter, player } = usePlayer(props.chapter.id as string, USER_ROLES.ADMIN);
 
+const handleAction = async (actionId: string) => {
+    if (actionId === 'delete') {
+        const confirmed = confirm('Are you sure you want to delete this chapter?');
+        if (!confirmed) return;
+        try {
+            await deleteChapter(props.chapter.content);
+        } catch (e) {
+            addError('Failed to delete chapter');
+            return;
+        }
+         addSuccess('Chapter deleted successfully');
+         emit('deleted', props.chapter.id);
+    }
+
+    if (actionId === 'edit') {
+        router.push({ path: '/admin/chapters/edit', query: { id: props.chapter.id } });
+    }
+};
 
 const play = async () => {
     if (store.getPlaying.id !== props.chapter.id || !player.value) {

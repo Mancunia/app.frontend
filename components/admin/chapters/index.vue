@@ -7,6 +7,7 @@
             <AdminChaptersLoadersChapter />
         </div>
     </div>
+
     <div v-else-if="chapters" class="chapter-content">
         <AdminChaptersChapter v-for="(chapter, index) in chapters" :key="index" :chapter="chapter"
             @edit="InitEdit($event)" @delete="InitDelete($event)" />
@@ -119,6 +120,7 @@ const fetchChapters = async () => {
         return
     };
     try {
+
         loading.value.base = true;
         const { data } = await getChapters(bookId.value, USER_ROLES.ADMIN);
         if (data) {
