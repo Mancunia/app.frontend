@@ -58,7 +58,7 @@ const props = defineProps({
         default: 'string',
     },
 });
-
+const { debounce } = useUtils()
 const emit = defineEmits(['selected', 'search']);
 const checked = ref<string[]>([]);
 const searchTerm = ref<string>('');
@@ -101,11 +101,14 @@ watch(checked, () => {
     }
 });
 
+const sendText = debounce(() => {
+    emit('search', searchTerm.value)
+}, 600)
+
 watch(searchTerm, () => {
     if (currentItems.value.length === 0) {
-        setTimeout(()=>emit('search', searchTerm.value),3000);
+        sendText()
     }
-
 });
 
 

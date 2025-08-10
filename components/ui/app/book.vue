@@ -1,5 +1,5 @@
 <template>
-    <NuxtLink v-if="book" style="text-decoration: none; color:#000" :to="`${routes.app.book}${props.book._id}`"
+    <NuxtLink v-if="book" style="text-decoration: none; color:#000" :to="`${routes.app.book}${props.book.id}`"
         @click="selectBook = book">
         <div class="story-item">
             <div class="story-thumbnail"><img :src="checkForOldFile(book.cover)" alt=""></div>

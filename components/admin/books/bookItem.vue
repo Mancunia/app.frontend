@@ -1,16 +1,9 @@
 <template>
-    <div v-if="book" class="book-card" :class="{ active: route.query.bookId === book._id }" @click="takeAction('view')">
+    <div v-if="book" class="book-card" :class="{ active: route.query.bookId === book.id }">
         <img :src="checkForOldFile(book.cover)" :alt="`${book.title}_cover`">
         <div class="book-details">
-            <p>Title: {{ book.title }}</p>
-            <p>Author: {{ book.authors.toString() }}</p>
-        </div>
-        <div class="btn">
-            <UiSelect :data-list="actions" @selected="takeAction">
-                <template v-slot:icon>
-                    <img src="@/assets/images/context_menu.png" alt="" srcset="">
-                </template>
-            </UiSelect>
+            <header>{{ book.title }}</header>
+            <p>{{ book.authors?.toString() }}</p>
         </div>
 
     </div>
@@ -36,25 +29,40 @@ const route = useRoute()
 const { checkForOldFile } = useUtils()
 
 const view = () => {
-    router.push({ query: { bookId: props.book._id, action: 'view' } })
+    router.push({ query: { bookId: props.book.id, action: 'view' } })
 }
 const edit = () => {
-    router.push({ query: { bookId: props.book._id, action: 'edit' } })
+    router.push({ query: { bookId: props.book.id, action: 'edit' } })
 }
 
-const takeAction = (action: string) => {
-    switch (action) {
-        case 'view':
-            return view()
-        case 'edit':
-            return edit()
-        default:
-            return
-    }
-}
 </script>
 <style lang="css" scoped>
 .active {
     border: 2px solid brown
+}
+.book-card{
+    display:flex;
+    flex-direction: row;
+   gap:10px;
+    width:100%;
+    padding: 10px;
+    margin-bottom: 30px;
+    border-radius: 10px;
+    background-color: #fff;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+
+}
+.book-card img {
+    width: 80px;
+    height: 100px;
+    border-radius: 10px;
+    object-fit: cover;
+}
+.book-card .book-details {
+    padding: 10px;
+    bottom: 0;
+    width: 100%;
 }
 </style>

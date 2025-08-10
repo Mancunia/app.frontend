@@ -16,7 +16,6 @@
 </script>
 
 <style>
-@import url('@/assets/css/admin/styles.css');
 .page {
     display: flex;
     flex-direction: row;
@@ -32,6 +31,6 @@
 .body {
     padding: 20px;
     width: 90%;
-    height: 100%;
+    min-height: 100vh;
 }
 </style>
