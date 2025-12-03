@@ -95,6 +95,7 @@ const like = async () => {
 }
 const playReadChapter = async (chapter: CHAPTER) => {
     try {
+        console.log('Playing chapter:', chapter);
         if (!chapter) throw new Error('No chapter provided');
         const playerEle = document.getElementById('player')
         if (store.getPlaying.id !== chapter.id || !player.value) {
