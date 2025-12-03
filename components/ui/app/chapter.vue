@@ -1,23 +1,16 @@
 <template>
     <div v-if="chapter" class="chapter">
         <div class="cover">
-            <img :src="checkForOldFile(chapter.book.cover)" alt="chapter.title" />
+            <img :src="checkForOldFile(chapter.book?.cover ?? '')" alt="chapter.title" />
         </div>
         <div class="description">
             <h3>{{ chapter.title }}</h3>
             <UiLoader v-if="loading" :theme="{ color: 'black' }" />
-            <template v-else-if="chapterType === 'audio'">
-                <button v-if="store.getPlaying.id !== chapter.id || !store.getPlayer.playing" @click="play">
-                    Play
-                </button>
-                <span v-else><img width="50" height="30" src="@/assets/playing.gif" /></span>
-            </template>
-            <template v-else-if="chapterType === 'pdf'">
-                <button @click="openPDF">Read PDF</button>
-            </template>
-            <template v-else>
-                <small>Unsupported chapter type</small>
-            </template>
+            <button v-else-if="store.getPlaying.id !== chapter.id || !store.getPlayer.playing" @click="play">
+                {{ chapter.type === 'ebook' ? 'Read' : 'Play' }}
+            </button>
+            <span v-else><img width="50" height="30" src="@/assets/playing.gif" /></span>
+
         </div>
     </div>
 </template>
@@ -30,36 +23,14 @@ const props = defineProps({
         type: Object as PropType<CHAPTER>,
         required: true
     },
-    loading:{
-        type:Boolean
+    loading: {
+        type: Boolean
     }
 })
 const store = useAuthStore();
-const { init, playAudio, fetchChapter, loading, player } = usePlayer(props.chapter.id, USER_ROLES.USER)
 const { checkForOldFile } = useUtils()
 
-const play = async () => {
-    if (store.getPlaying.id !== props.chapter.id || !player.value) {
-        store.setPlaying(props.chapter);
-        await fetchChapter()
-        await init()
-    }
-    await playAudio()
-}
-const chapterType = computed(() => {
-    const url = props.chapter.content?.toLowerCase() || '';
-    if (url.includes('.mp3')) return 'audio';
-    if (url.includes('.pdf')) return 'pdf';
-    return 'unknown';
-});
-
-const openPDF = () => {
-    if (props.chapter.content) {
-        window.open(props.chapter.content, '_blank');
-    } else {
-        alert("PDF file not available");
-    }
-};
+const play = async () => emits('play',)
 
 </script>
 
