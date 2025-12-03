@@ -114,3 +114,13 @@ export const updateChapter = async (id: string, chapter: CHAPTER) =>
     method: HTTP_METHODS.PUT,
     data: chapter,
   });
+
+  export const deleteChapter = async (chapterURL: string) =>
+    useRequest(
+      {
+        url: `/admin/book/chapter`,
+        method: HTTP_METHODS.DELETE,
+        data: {chapterURL}
+      },
+      USER_ROLES.ADMIN
+    );
