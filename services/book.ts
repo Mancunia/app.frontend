@@ -47,6 +47,27 @@ export const filterBooks = async (
     app
   );
 
+export const getLikedBooks = async (app: USER_ROLES = USER_ROLES.USER) =>
+  useRequest<BOOK[]>(
+    {
+      url: `/book/liked/all`,
+      method: HTTP_METHODS.GET,
+    },
+    app
+  );
+
+export const likeBook = async (id: string) =>
+  useRequest<BOOK>({
+    url: `/book/reaction/like/${id}`,
+    method: HTTP_METHODS.POST,
+  });
+
+export const disLikeBook = async (id: string) =>
+  useRequest<BOOK>({
+    url: `/book/reaction/dislike/${id}`,
+    method: HTTP_METHODS.POST,
+  });
+
 //comments
 export const postComment = async (bookID: string, text: string) =>
   useRequest<Comment>({

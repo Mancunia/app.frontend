@@ -24,10 +24,14 @@
 
 <script setup lang="ts">
 import type { CHAPTER } from '~/types/book';
+const emits = defineEmits(['play'])
 const props = defineProps({
     chapter: {
         type: Object as PropType<CHAPTER>,
         required: true
+    },
+    loading:{
+        type:Boolean
     }
 })
 const store = useAuthStore();

@@ -56,6 +56,7 @@ const {checkForOldFile} = useUtils()
     height: 70px;
     justify-content: space-evenly;
     align-items: center;
+    justify-self: center;
     flex-shrink: 0;
     border-radius: 33px;
     background: #191413;

@@ -1,10 +1,11 @@
 export type BOOK = {
-  id: string;
+  id?: string;
   title: string;
   description: string;
   category: string[];
   languages: string[];
   authors: string[];
+  associates: string[];
   cover: string;
   meta: {
     played: number;
@@ -22,6 +23,7 @@ export type CHAPTER = {
   book: BOOK | null;
   createdAt?: string;
   password: string | null;
+  type:'ebook'|'audio'|null;
 };
 // export type CHAPTER_REQUEST = {
 //   title: string | null;
@@ -53,3 +55,15 @@ export type Comment = {
   };
   comment: string;
 };
+
+export type PdfPageData = {
+  pageNumber: number;
+  textContent: string;
+}
+
+export type PdfFileData = {
+  name: string;
+  size: number;
+  totalPages: number;
+  pages: PdfPageData[];
+}

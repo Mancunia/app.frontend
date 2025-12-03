@@ -18,17 +18,22 @@
                 <p>{{ book.description }}</p>
             </div>
         </div>
+        <div class="reaction">
+            <button @click="like"><i class='bx  bx-thumb-up'></i> </button>
+            <!-- <button @click="disLike"><i class='bx  bx-thumb-down'></i> </button> -->
+        </div>
         <div class="tabs">
             <div class="tab" :class="{ active: tab === TABS.CHAPTERS }" @click="tab = TABS.CHAPTERS">Chapters {{
                 tabData.chapters }}</div>
             <div class="tab" v-if="false" :class="{ active: tab === TABS.COMMENTS }" @click="tab = TABS.COMMENTS">
                 Comments {{
-                    book?.meta.comments }}</div>
+                book?.meta.comments }}</div>
         </div>
         <div class="tabPage">
             <div v-if="tab === TABS.CHAPTERS">
                 <div class="chapters" v-if="chapters.chapters">
-                    <UiAppChapter v-for="(chapter, index) in chapters.chapters" :key="index" :chapter="chapter" />
+                    <UiAppChapter v-for="(chapter, index) in chapters.chapters" :key="index" :chapter="chapter"
+                        :loading="loadingChapter === chapter.id" @play="playReadChapter(chapter)" />
                 </div>
 
             </div>
@@ -41,7 +46,7 @@
 
 <script setup lang="ts">
 import type { BOOK, CHAPTER } from '~/types/book';
-import { getBook, getChapters } from '~/services/book';
+import { getBook, getChapters,likeBook,disLikeBook } from '~/services/book';
 
 enum TABS {
     CHAPTERS,
@@ -53,10 +58,13 @@ const tabData = ref<{ chapters: number, comments: number }>({ chapters: 0, comme
 const book = useState<BOOK | null>('appBook')
 const chapters = ref<{ chapters: CHAPTER[] | null, loading: boolean }>({ chapters: null, loading: false })
 const loading = ref<boolean>(false);
+const loadingChapter = ref('')
 
 const id = useRoute().params.id as string
 
 const { checkForOldFile } = useUtils()
+const store = useAuthStore();
+const { init, initPDF, playAudio, stopAudio, fetchChapter, loading: playerLoading, player } = usePlayer(USER_ROLES.USER)
 
 const fetchBook = async () => {
     try {
@@ -79,6 +87,36 @@ const fetchChapters = async () => {
         }
     } finally {
         chapters.value.loading = false;
+    }
+}
+
+const like = async () => {
+    await likeBook(id);
+}
+const disLike = async () => {
+    await disLikeBook(id);
+}
+const playReadChapter = async (chapter: CHAPTER) => {
+    const playerEle = document.getElementById('player')
+    if (store.getPlaying.id !== chapter.id || !player.value) {
+        store.setPlaying(chapter);
+        stopAudio()
+        const { data } = await fetchChapter(chapter.id ?? '');
+        if (data) {
+            if (data.chapter.type === 'ebook') {
+                initPDF(data)
+            }
+            else {
+                await init(data)
+                playAudio()
+            }
+        }
+    }
+    if (playerEle) {
+        // trigger hover or click automatically
+        playerEle.dispatchEvent(new MouseEvent('mouseenter', { bubbles: true }));
+        playerEle.dispatchEvent(new MouseEvent('mouseover', { bubbles: true }));
+        playerEle.click();
     }
 }
 
@@ -116,6 +154,23 @@ definePageMeta({
     border-radius: 20px;
     transition-duration: 1s ease-in-out;
 
+}
+
+.reaction {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+.reaction button {
+    background-color: transparent;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+.reaction button:hover {
+    color: #454343;
+    scale: 1.5;
+    transition-duration: 5s ease-in-out;
 }
 
 .book-image {

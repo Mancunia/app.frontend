@@ -4,22 +4,18 @@
             <LayoutAppNavBar />
 
             <div class="container">
-                <div class="items-container">
-                    <slot />
-                </div>
-                <div class="divider-container">
-                    <div class="divider">
+                <div class="content">
+                    <div class="items-container">
+                        <slot />
+                    </div>
+                    <div class="navigator">
+                        <UiAppNavigator />
                     </div>
                 </div>
 
-                <div class="details-container">
-                    <UiAppPlayerDetails class="details" />
+                <div class="player" id="player">
+                    <UiAppPlayerDetails />
                 </div>
-                <div class="bottom-bar-container">
-                    <UiAppPlayer class="player" />
-                    <UiAppNavigator class="navigator" />
-                </div>
-
             </div>
 
         </div>
@@ -46,21 +42,17 @@
 }
 
 .page {
-    display: flex;
-    flex-direction: row;
-    height: 100%;
-    width: 100%;
     background-color: #f5f5f5;
 }
 
 .container {
+    display: flex;
+    flex-direction: column;
     width: 100%;
     height: 100%;
-    margin: auto;
-    display: flex;
 }
 
-.items-container {
+.container.content {
     position: relative;
     width: 100%;
     height: 100vh;
@@ -70,82 +62,69 @@
     padding: 0 20px;
     margin-bottom: 5%;
     overflow: scroll;
+
 }
 
-.divider-container {
-    display: none;
+.items-container {
+    position: relative;
+    width: 100%;
+    height: 80vh;
+    margin-bottom: 5%;
+    overflow-y: auto;
 }
 
-.divider-container .divider {
-    display: none;
+.container .content .navigator {
+    padding: 0px 10px;
 }
 
-.details-container {
-    position: absolute;
-    display: none;
-}
-
-.bottom-bar-container {
+.container .player {
     position: fixed;
-    bottom: 0;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    align-items: center;
-    padding: 10px 0px;
+    align-self: center;
+    width: 90%;
+    padding: 20px;
+    border-radius: 12px;
+    transition: 0.5s ease-in-out;
+    transform: translateX(96%);
 }
 
-.bottom-bar-container .player {
-    width: 100%;
+.container .player:hover {
+    transform: translateX(0%);
 }
 
 @media only screen and (min-width: 750px) {
-    .bottom-bar-container {
-        flex-direction: row-reverse;
+    .container {
+        flex-direction: row;
         justify-content: space-around;
-        align-items: flex-end;
-        padding: 10px 5%;
     }
 
-    .bottom-bar-container div {
-        bottom: 0;
-    }
-
-    .bottom-bar-container .player {
-        width: unset;
+    .container .content {
+        width: 68%;
+        height: 100vh;
     }
 
     .items-container {
-        position: relative;
-        width: 60%;
-        height: 100vh;
-        overflow-y: auto;
-    }
-
-    .divider-container {
-        height: 100%;
-        display: flex;
-        align-items: center;
-        border: 1px solid #d9d9d9;
-    }
-
-    .divider-container .divider {
-        background-color: #d9d9d9;
-        width: 100%;
-        height: 80%;
+        padding: 10px;
         border-radius: 10px;
+        /* box-shadow: #565656 -2px 3px 13px 0px; */
+        margin: 10px;
     }
 
-    .details-container {
-        display: block;
+    .container .content .navigator {
+        padding: 0% 35%;
+    }
+
+    .container .player {
         position: relative;
         width: 30%;
-        align-content: center;
+        height: 80vh;
+        margin: 10px;
+        border-radius: 30px;
+        align-self: unset;
+        padding: 10px;
+        /* box-shadow: #565656 4px 3px 13px 0px; */
+        background: unset;
+        transform: unset;
     }
 
-    .details-container :only-child {
-        padding: 0% 5%;
-    }
 }
 </style>

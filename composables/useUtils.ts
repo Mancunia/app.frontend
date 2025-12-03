@@ -316,6 +316,14 @@ export const useUtils = () => {
     return Math.ceil(milliseconds / msInADay);
   }
 
+  function secondsToMinutes(seconds: number): string {
+   const totalSeconds = Math.round(seconds); // round to nearest second
+   const mins = Math.floor(totalSeconds / 60);
+   const secs = totalSeconds % 60;
+   const paddedSecs = secs.toString().padStart(2, "0");
+   return `${mins}:${paddedSecs}`;
+  }
+
   function hasSpecialCharacters(text: string): boolean {
     // Define a regular expression pattern to match special characters
     const specialCharsRegex = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/;
@@ -347,6 +355,26 @@ export const useUtils = () => {
     return { firstDay, lastDay };
   };
 
+  const decryptJWT = <T>(token: string): T => {
+    const base64Url = token.split(".")[1];
+    const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+    const jsonPayload = decodeURIComponent(
+      window
+        .atob(base64)
+        .split("")
+        .map(
+          (c) =>
+            `%${
+              // biome-ignore lint/style/useTemplate: <explanation>
+              ("00" + c.charCodeAt(0).toString(16)).slice(-2)
+            }`
+        )
+        .join("")
+    );
+    const decodedToken = JSON.parse(jsonPayload);
+    return decodedToken;
+  };
+
   return {
     formatMobileNumber,
     formatCurrency,
@@ -373,5 +401,7 @@ export const useUtils = () => {
     hasSpecialCharacters,
     checkForOldFile,
     getCurrentMonthBeginningAndEnd,
+    decryptJWT,
+    secondsToMinutes,
   };
 };

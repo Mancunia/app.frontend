@@ -14,7 +14,7 @@ export default defineNuxtConfig({
     head: {
       link: [
         {
-          href: "https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css",
+          href: "https://cdn.boxicons.com/3.0.6/fonts/basic/boxicons.min.css",
           rel: "stylesheet",
         },
         {

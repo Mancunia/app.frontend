@@ -1,88 +1,87 @@
 <template>
-    <div v-if="store.getPlaying.book" class="player">
-        <div class="rectangleParent">
-            <div class="book-art">
-                <img :src="checkForOldFile(store.getPlaying.book?.cover)" alt="book art" />
-            </div>
-            <div class="controls">
-                <div class="player-item">
-                    <button>
-                        <img src="@/assets/images/player/previous.png" alt="previous button" />
-                    </button>
-                    <button @click="rewindAudio(5)">
-                        <img src="@/assets/images/player/backward.png" alt="backward button" />
-                    </button>
+    <div>
+        {{ secondsToMinutes(currentTime) }} / {{ secondsToMinutes(duration) }}
+        <input class="seek" type="range" min="0" :max="duration" :value="currentTime"
+            @input="seekAudio(Number(($event.target as HTMLInputElement).value))" />
 
-                    <div class="play-button">
-                        <button @click="toggleAudio">
-                            <img v-if="store.getPlayer.playing" src="@/assets/images/player/pause.png"
-                                alt="forward button" />
-                            <img v-else src="@/assets/images/player/play.svg" alt="backward button" width="25"
-                                height="25" />
+        <div v-if="store.getPlaying.book" class="player">
+            <div class="rectangleParent">
+                <div class="book-art">
+                    <img :src="checkForOldFile(store.getPlaying.book?.cover)" alt="book art" />
+                </div>
+
+                <div class="controls">
+                    <div class="player-item">
+                        <button disabled>
+                            <img src="@/assets/images/player/previous.png" alt="previous button" />
+                        </button>
+
+                        <button @click="rewindAudio(5)">
+                            <img src="@/assets/images/player/backward.png" alt="backward button" />
+                        </button>
+
+                        <div class="play-button">
+                            <button @click="toggleAudio">
+                                <img v-if="store.getPlayer.playing" src="@/assets/images/player/pause.png"
+                                    alt="pause" />
+                                <img v-else src="@/assets/images/player/play.svg" alt="play" width="25" height="25" />
+                            </button>
+                        </div>
+
+                        <button @click="fastForwardAudio(5)">
+                            <img src="@/assets/images/player/forward.png" alt="forward" />
+                        </button>
+
+                        <button disabled>
+                            <img src="@/assets/images/player/next.png" alt="next button" />
+                        </button>
+
+                        <button disabled
+                            @click="playerDetails({ showDetails: !store.getPlayer.showDetails, playing: store.getPlayer.playing })">
+                            <img src="@/assets/images/player/playlist.png" alt="playlist" />
                         </button>
                     </div>
-
-                    <button @click="fastForwardAudio(5)">
-                        <img src="@/assets/images/player/forward.png" alt="play button" />
-                    </button>
-                    <button>
-                        <img src="@/assets/images/player/next.png" alt="forward button" />
-                    </button>
-                    <button
-                        @click="playerDetails({ showDetails: !store.getPlayer.showDetails, playing: store.getPlayer.playing })">
-                        <img src="@/assets/images/player/playlist.png" alt="forward button" />
-                    </button>
                 </div>
             </div>
-
         </div>
     </div>
-
 </template>
+
 <script setup lang="ts">
-import { playChapter } from '~/services/play';
-const props = defineProps({
-    file: {
-        type: String,
-        required: true,
-        default: '~/assets/test-audio.mp3'
-    }
-})
-const showControls = ref(false)
+import { playChapter } from '~/services/play'
+
 const store = useAuthStore()
-const { checkForOldFile } = useUtils()
+const { checkForOldFile,secondsToMinutes } = useUtils()
 
-const chapter = computed(() =>
-    store.getPlaying
-)
+const chapter = computed(() => store.getPlaying)
 
-const { toggleAudio, stopAudio, setVolume, muteAudio, unmuteAudio, fastForwardAudio, rewindAudio, playerDetails } = usePlayer(store.getPlaying.id, USER_ROLES.USER)
-
+const {
+    toggleAudio,
+    stopAudio,
+    setVolume,
+    muteAudio,
+    unmuteAudio,
+    duration,
+    currentTime,
+    fastForwardAudio,
+    rewindAudio,
+    seekAudio,
+    playerDetails,
+    init
+} = usePlayer(USER_ROLES.USER)
 
 const getChapter = async () => {
-    try {
-        if (!chapter.value?.id) return
-        const res = await playChapter(chapter.value.id)
-    } finally {
-        console.log('done')
-    }
+    const c = chapter.value
+    if (!c?.id) return
+    const res = await playChapter(c.id)
+    if (res) await init(res)
 }
 
-
-
-
-onMounted(() => {
-    getChapter()
-    if (store.getPlayer.playing) {
-        toggleAudio()
-    }
-
-    onBeforeUnmount(() => {
-
-    })
+onMounted(async () => {
+    await getChapter()
 })
-
 </script>
+
 <style scoped>
 .player {
     display: flex;
@@ -110,6 +109,11 @@ onMounted(() => {
 }
 
 /* book details */
+.seek{
+    width:90%;
+}
+
+
 
 /* player */
 .rectangleParent {
@@ -118,22 +122,17 @@ onMounted(() => {
     gap: 0%;
     align-items: center;
     margin-left: 15px;
-    width: 330px;
+    width: 300px;
     height: 59px;
     border-radius: 19px;
     background: #4D2316;
     padding: 0px 10px;
-    transition: 0.5s ease-in-out;
-    transform: translateX(85%)
-}
-
-.rectangleParent:hover {
-    transform: translateX(0%)
+    transform: translateX(45%)
 }
 
 .rectangleParent .controls {
     display: flex;
-    gap: 30%;
+    gap: 10%;
     width: 100%;
 
 }
@@ -152,7 +151,7 @@ onMounted(() => {
     flex-direction: row;
     position: relative;
     padding: 0px 0px;
-    gap: 10px;
+    gap: 1px;
     /* width: 10px;
     height: 59px; */
     flex-shrink: 0;
@@ -175,6 +174,10 @@ onMounted(() => {
 }
 
 @media only screen and (min-width: 750px) {
+    .player {
+        width: unset;
+    }
+
     .bookDetails {
         background: rgba(255, 255, 255, 0.2);
     }
