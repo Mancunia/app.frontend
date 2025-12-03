@@ -27,7 +27,7 @@
                 tabData.chapters }}</div>
             <div class="tab" v-if="false" :class="{ active: tab === TABS.COMMENTS }" @click="tab = TABS.COMMENTS">
                 Comments {{
-                book?.meta.comments }}</div>
+                    book?.meta.comments }}</div>
         </div>
         <div class="tabPage">
             <div v-if="tab === TABS.CHAPTERS">
@@ -46,7 +46,7 @@
 
 <script setup lang="ts">
 import type { BOOK, CHAPTER } from '~/types/book';
-import { getBook, getChapters,likeBook,disLikeBook } from '~/services/book';
+import { getBook, getChapters, likeBook, disLikeBook } from '~/services/book';
 
 enum TABS {
     CHAPTERS,
@@ -93,31 +93,35 @@ const fetchChapters = async () => {
 const like = async () => {
     await likeBook(id);
 }
-const disLike = async () => {
-    await disLikeBook(id);
-}
 const playReadChapter = async (chapter: CHAPTER) => {
-    const playerEle = document.getElementById('player')
-    if (store.getPlaying.id !== chapter.id || !player.value) {
-        store.setPlaying(chapter);
-        stopAudio()
-        const { data } = await fetchChapter(chapter.id ?? '');
-        if (data) {
-            if (data.chapter.type === 'ebook') {
-                initPDF(data)
-            }
-            else {
-                await init(data)
-                playAudio()
+    try {
+        if (!chapter) throw new Error('No chapter provided');
+        const playerEle = document.getElementById('player')
+        if (store.getPlaying.id !== chapter.id || !player.value) {
+            store.setPlaying(chapter);
+            stopAudio()
+            const { data } = await fetchChapter(chapter.id ?? '');
+            if (data) {
+                if (data.chapter.type === 'ebook') {
+                    initPDF(data)
+                }
+                else {
+                    await init(data)
+                    playAudio()
+                }
             }
         }
+        if (playerEle) {
+            // trigger hover or click automatically
+            playerEle.dispatchEvent(new MouseEvent('mouseenter', { bubbles: true }));
+            playerEle.dispatchEvent(new MouseEvent('mouseover', { bubbles: true }));
+            playerEle.click();
+        }
     }
-    if (playerEle) {
-        // trigger hover or click automatically
-        playerEle.dispatchEvent(new MouseEvent('mouseenter', { bubbles: true }));
-        playerEle.dispatchEvent(new MouseEvent('mouseover', { bubbles: true }));
-        playerEle.click();
+    catch (err) {
+        console.error('Error playing chapter:', err);
     }
+
 }
 
 
@@ -161,12 +165,14 @@ definePageMeta({
     flex-direction: row;
     gap: 10px;
 }
+
 .reaction button {
     background-color: transparent;
     border: none;
     font-size: 1.5rem;
     cursor: pointer;
 }
+
 .reaction button:hover {
     color: #454343;
     scale: 1.5;
