@@ -58,7 +58,10 @@ const logout = () => {
 
 <style scoped>
 .page {
+    justify-self: center;
     display: flex;
+    width: 400px;
+    padding:5%;
     flex-direction: column;
     gap: calc(50px + 1vh);
     justify-content: center;
@@ -88,7 +91,7 @@ const logout = () => {
 
 }
 .logout {
-    width: 100%;
+    /* width: 100%; */
     display: flex;
     padding: 10% 20%;
 }

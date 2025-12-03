@@ -15,6 +15,8 @@
                     :value="form.title" />
                 <UiAdminInputField @update:model-value="form.authors = $event" place-holder="Authors" type="text"
                     :value="form.authors.toString()" />
+                <QuillEditor v-model:content="form.description" contentType="html" theme="snow"
+                    toolbar="minimal" @update:content="form.description = $event" style="height: 100px" />
                 <UiAdminInputField @update:model-value="form.description = $event" place-holder="Description"
                     :value="form.description" type="text" />
                 <div class="selectWrapper">
@@ -41,6 +43,7 @@ import { createBook, updateBook } from '~/services/admin/book';
 import { getUserProfiles } from '~/services/admin/users';
 import type { USER_PROFILE } from '~/types/auth';
 import type { BOOK } from '~/types/book';
+import { QuillEditor } from '@vueup/vue-quill';
 
 const emit = defineEmits(['saved']);
 
@@ -57,23 +60,17 @@ const form = ref<BOOK>({
     meta: {
         played: 0,
         views: 0,
-        comments: 0
+        comments: 0,
+        likes: 0,
+        dislikes: 0
     },
-    status: 0,
     authors: [],
     cover: '',
-    moment: '',
     title: '',
     description: '',
-    folder: '',
-    uploader: '',
-    __v: 0,
-    collections: [],
     languages: [],
     category: [],
-    createdAt: '',
     associates: [],
-    updatedAt: ''
 })
 const associates = ref<{ id: string, name: string }[] | null>(null)
 
@@ -173,6 +170,7 @@ watch(() => book, () => {
 })
 </script>
 <style lang="css" scoped>
+@import '@vueup/vue-quill/dist/vue-quill.snow.css';
 .bookWrapper {
     display: flex;
     justify-content: space-around;

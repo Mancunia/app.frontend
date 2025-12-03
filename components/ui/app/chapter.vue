@@ -7,7 +7,7 @@
             <h3>{{ chapter.title }}</h3>
             <UiLoader v-if="loading" :theme="{ color: 'black' }" />
             <button v-else-if="store.getPlaying.id !== chapter.id || !store.getPlayer.playing" @click="play">
-                Play
+                {{ chapter.type === 'ebook'? 'Read' : 'Play' }}
             </button>
             <span v-else><img width="50" height="30" src="@/assets/playing.gif" /></span>
 
@@ -17,25 +17,20 @@
 
 <script setup lang="ts">
 import type { CHAPTER } from '~/types/book';
+const emits = defineEmits(['play'])
 const props = defineProps({
     chapter: {
         type: Object as PropType<CHAPTER>,
         required: true
+    },
+    loading:{
+        type:Boolean
     }
 })
 const store = useAuthStore();
-const { init, playAudio, fetchChapter, loading, player } = usePlayer(props.chapter.id as string, USER_ROLES.USER)
 const { checkForOldFile } = useUtils()
 
-const play = async () => {
-    if (store.getPlaying.id !== props.chapter.id || !player.value) {
-        store.setPlaying(props.chapter);
-        await fetchChapter()
-        await init()
-    }
-    await playAudio()
-
-}
+const play = async () => emits('play',)
 
 </script>
 
