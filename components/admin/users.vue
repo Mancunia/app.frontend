@@ -175,6 +175,7 @@ onMounted(() => {
     flex-wrap: wrap;
     overflow-y: auto;
     padding: 20px;
+    height: 80vh;
 }
 
 .profile {

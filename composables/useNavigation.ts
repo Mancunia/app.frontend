@@ -16,7 +16,6 @@ export function useNavigation() {
   });
 
   const hasAccess = () => {
-    console.log({ stored: store.getAdmin.role === USER_ROLES.ADMIN });
     return store.getAdmin.role === USER_ROLES.ADMIN;
   };
   const updateSearchParams = ({

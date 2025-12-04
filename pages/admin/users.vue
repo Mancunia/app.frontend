@@ -10,5 +10,3 @@ definePageMeta({
    layout: 'admin-layout',
 })
 </script>
-
-<style scoped></style>
