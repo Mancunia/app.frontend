@@ -15,8 +15,6 @@
                     :value="form.title" />
                 <UiAdminInputField @update:model-value="form.authors = $event" place-holder="Authors" type="text"
                     :value="form.authors.toString()" />
-                <QuillEditor v-model:content="form.description" contentType="html" theme="snow"
-                    toolbar="minimal" @update:content="form.description = $event" style="height: 100px" />
                 <UiAdminInputField @update:model-value="form.description = $event" place-holder="Description"
                     :value="form.description" type="text" />
                 <div class="selectWrapper">
@@ -43,7 +41,6 @@ import { createBook, updateBook } from '~/services/admin/book';
 import { getUserProfiles } from '~/services/admin/users';
 import type { USER_PROFILE } from '~/types/auth';
 import type { BOOK } from '~/types/book';
-import { QuillEditor } from '@vueup/vue-quill';
 
 const emit = defineEmits(['saved']);
 
@@ -127,7 +124,6 @@ const putBook = async () => {
 
 const save = async () => {
     try {
-        console.log('clicked saved')
         if (form.value.id) {
             console.log('on updated')
             return await putBook()
