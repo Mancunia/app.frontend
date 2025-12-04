@@ -1,5 +1,13 @@
 import { ref, onUnmounted } from "vue";
 import * as pdfjsLib from "pdfjs-dist";
+// Import the worker file as a URL so the bundler includes the exact
+// worker that matches the installed `pdfjs-dist` version.
+// Vite (used by Nuxt 3) supports the `?url` import suffix which returns
+// the resolved public URL for the asset. This prevents mismatches where
+// a static `public/pdf.worker.mjs` file doesn't match the library version.
+// If your build system doesn't support `?url`, copy `node_modules/pdfjs-dist/build/pdf.worker.mjs`
+// into `public/` during your build instead.
+import pdfWorkerUrl from "pdfjs-dist/build/pdf.worker.mjs?url";
 import type {
   PDFDocumentProxy,
   PDFPageProxy,
@@ -8,7 +16,7 @@ import { useFileDownloader } from "~/composables/useDownloadFile";
 import type { PdfFileData, PdfPageData } from "~/types/book";
 import { jwtDecode } from "jwt-decode";
 
-pdfjsLib.GlobalWorkerOptions.workerSrc = "/pdf.worker.mjs";
+pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorkerUrl;
 
 export function usePdfReader() {
   const pdfData = ref<PdfFileData | null>(null);
@@ -33,7 +41,9 @@ export function usePdfReader() {
       let fileSize = 0;
       let decodedPassword = "";
       if (password) {
-        decodedPassword = decryptJWT<{id:string,exp:number,iat:number}>(password).id;
+        decodedPassword = decryptJWT<{ id: string; exp: number; iat: number }>(
+          password
+        ).id;
       }
 
       if (typeof source === "string") {

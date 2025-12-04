@@ -71,13 +71,19 @@ export const usePlayer = (app: USER_ROLES) => {
   };
 
   const initPDF = async (chapter: PLAY_CHAPTER) => {
-    const data = await readPdf(
+    try{
+      const data = await readPdf(
       chapter.chapter.content as string,
       chapter.chapter.password as string
     );
     if (data) {
       pdfFile.value = data;
     }
+    }
+    catch(error){
+      console.error(error)
+    }
+    
   };
 
   const init = async (chapter: PLAY_CHAPTER) => {
