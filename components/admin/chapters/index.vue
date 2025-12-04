@@ -20,7 +20,7 @@
         +
     </button>
     <CommonModal v-model="modalState.new" :closeOnBackdropClick="false">
-        <AdminChaptersForm :bookId="bookId" @done="fetchChapters" :chapter="selectedChapter" />
+        <AdminChaptersForm :bookId="bookId" @done="done" :chapter="selectedChapter" />
     </CommonModal>
     <CommonModal v-model="modalState.delete" :closeOnBackdropClick="true">
         <CommonProgress v-if="deleting.isDeleting" :progress="deleting.progress" :message="deleting.message"
