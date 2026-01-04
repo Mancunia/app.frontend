@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { useLocalStorage } from "@vueuse/core";
+import { set, useLocalStorage } from "@vueuse/core";
 import { type USER } from "@/types/auth";
 import type { CHAPTER, PLAYER } from "~/types/book";
 import { USER_ROLES } from "~/constants";
@@ -38,16 +38,26 @@ export const useAuthStore = defineStore("user", {
     setPlaying(playing: any) {
       this.playing = playing;
     },
+    setPlayingPage(page: number) {
+      set(this.playing, "page", page);
+    },
+    setPlayingSeek(seek: number) {
+      set(this.playing, "seek", seek);
+    },
+    
     setPlayer(player: Partial<PLAYER>) {
       this.player = player;
     },
     setLanguages(languages: Languages[]) {
       this.languages = languages;
     },
-    setCategories(categories:Categories[]){
-      this.categories = categories
+    setCategories(categories: Categories[]) {
+      this.categories = categories;
     },
-
+    clearPageAndSeek() {
+      set(this.playing, "page", 1);
+      set(this.playing, "seek", null);
+    },
     logout(user: USER_ROLES) {
       if (user === USER_ROLES.ADMIN) {
         this.admin = {} as USER;
@@ -77,8 +87,8 @@ export const useAuthStore = defineStore("user", {
     getLanguages(state) {
       return state.languages;
     },
-    getCategories(state){
-      return state.categories
-    }
+    getCategories(state) {
+      return state.categories;
+    },
   },
 });

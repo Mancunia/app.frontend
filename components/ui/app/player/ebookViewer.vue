@@ -33,26 +33,12 @@ const store = useAuthStore();
 
 const currentPage = ref<number>(1)
 const scale = ref(1)
+const hasMounted = ref(false);
 
 const book = computed(() => store.getPlaying.book ?? null)
 const currentPageDetails = computed(() => {
     return pdfFile.value?.pages[currentPage.value - 1].textContent
 })
-
-const previous = () => {
-    currentPage.value--
-}
-
-const next = () => {
-    if (
-        pdfFile.value &&
-        pdfFile.value.pages &&
-        currentPage.value - 1 <= pdfFile.value.pages.length
-    ) {
-        currentPage.value++
-    }
-}
-
 
 function prevPage() {
     currentPage.value--
@@ -75,6 +61,19 @@ function zoomIn() {
 function zoomOut() {
     if (scale.value > 0.2) scale.value -= 0.1
 }
+watch(currentPage, (newPage) => {
+    store.setPlayingPage(newPage)
+})
+
+onMounted(() => {
+    const storePage = store.getPlaying.page
+    nextTick(() => {
+        if (storePage) {
+            currentPage.value = storePage
+        }
+    });
+
+})
 
 </script>
 
@@ -82,6 +81,7 @@ function zoomOut() {
 <style scoped>
 .pdf-reader {
     display: flex;
+    position: relative;
     flex-direction: column;
     height: 90vh;
     font-family: Arial, sans-serif;
@@ -125,14 +125,13 @@ main {
     flex: 1;
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start;
     overflow: auto;
     padding: 20px;
     background: #d7d6d629;
 }
 
 #pdf-container {
-    height: inherit;
     width: 100%;
     max-width: 900px;
     /* background-color: #fff; */
@@ -146,14 +145,15 @@ main {
 
 .pdf-page {
     width: 100%;
-    height: 500px;
+    position: relative;
     /* background-color: #e5e7eb; */
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start;
     font-size: 1rem;
     border-radius: 4px;
     transition: transform 0.2s ease;
+    transform-origin: top center;
 }
 
 footer {
@@ -164,8 +164,6 @@ footer {
 }
 
 @media only screen and (min-width: 750px) {
-    .pdf-page {
-        font-size: 20pt;
-    }
+   
 }
 </style>

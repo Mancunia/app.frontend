@@ -51,7 +51,7 @@
 import { playChapter } from '~/services/play'
 
 const store = useAuthStore()
-const { checkForOldFile,secondsToMinutes } = useUtils()
+const { checkForOldFile, secondsToMinutes } = useUtils()
 
 const chapter = computed(() => store.getPlaying)
 
@@ -77,8 +77,16 @@ const getChapter = async () => {
     if (res) await init(res)
 }
 
+watch(currentTime, (newTime) => {
+    store.setPlayingSeek(newTime)
+})
+
 onMounted(async () => {
     await getChapter()
+    const storeSeek = await store.getPlaying.seek
+    if (storeSeek) {
+        seekAudio(storeSeek)
+    }
 })
 </script>
 
@@ -109,8 +117,8 @@ onMounted(async () => {
 }
 
 /* book details */
-.seek{
-    width:90%;
+.seek {
+    width: 90%;
 }
 
 

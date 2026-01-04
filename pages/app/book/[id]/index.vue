@@ -95,22 +95,21 @@ const like = async () => {
 }
 const playReadChapter = async (chapter: CHAPTER) => {
     try {
-        console.log('Playing chapter:', chapter);
         if (!chapter) throw new Error('No chapter provided');
+        await store.clearPageAndSeek();
         const playerEle = document.getElementById('player')
         if (store.getPlaying.id !== chapter.id || !player.value) {
             store.setPlaying(chapter);
             stopAudio()
             const { data } = await fetchChapter(chapter.id ?? '');
-            console.log('Fetched chapter data:', data.chapter.type);
-            console.log('Chapter type?', data.chapter.type === 'ebook');
             if (data) {
                 if (data.chapter.type === 'ebook') {
-                    console.log('init pdf viewer with data:', data)
+                    if (data.chapter.id !== store.getPlaying.id) {
+                        await store.setPlayingPage(1);
+                    }
                     await initPDF(data)
                 }
                 else {
-                    console.log('init audio player with data:', data)
                     await init(data)
                     playAudio()
                 }

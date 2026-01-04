@@ -25,11 +25,15 @@ const playReadChapter = async () => {
         const { data } = await fetchChapter(chapter.value.id ?? '');
         if (data) {
             if (data.chapter.type === 'ebook') {
-                console.log('init pdf viewer with data:', data)
+
+                console.log('Initializing PDF for chapter:', { api: data.chapter.id, store: store.getPlaying.id, same: data.chapter.id !== store.getPlaying.id });
+                if (data.chapter.id !== store.getPlaying.id) {
+                    console.log('reset page', data)
+                    await store.setPlayingPage(1);
+                }
                 await initPDF(data)
             }
             else {
-                console.log('init audio player with data:', data)
                 await init(data)
                 playAudio()
             }

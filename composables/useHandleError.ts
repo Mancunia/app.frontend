@@ -24,7 +24,7 @@ export const useHandleError = (
   const route = useRoute();
 
   const setError = (message: string | null): void => {
-    addError(message ?? "Unexpected Error occured");
+    canShowModal && addError(message ?? "Unexpected Error occured");
     callback(message ?? "");
   };
 
