@@ -23,7 +23,9 @@ export type CHAPTER = {
   book: BOOK | null;
   createdAt?: string;
   password: string | null;
-  type:'ebook'|'audio'|null;
+  type: "ebook" | "audio" | null;
+  page: number | null;
+  seek: number | null;
 };
 // export type CHAPTER_REQUEST = {
 //   title: string | null;
@@ -59,11 +61,11 @@ export type Comment = {
 export type PdfPageData = {
   pageNumber: number;
   textContent: string;
-}
+};
 
 export type PdfFileData = {
   name: string;
   size: number;
   totalPages: number;
   pages: PdfPageData[];
-}
+};
