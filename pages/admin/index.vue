@@ -10,7 +10,7 @@
       <div v-for="kpi in kpis" :key="kpi.label" class="kpi-card">
         <span class="kpi-label">{{ kpi.label }}</span>
         <span class="kpi-value">{{ kpi.value }}</span>
-        <span class="kpi-delta" :class="kpi.delta > 0 ? 'pos' : 'neg'">
+        <span v-if="kpi.delta !== 0" class="kpi-delta" :class="kpi.delta > 0 ? 'pos' : 'neg'">
           {{ kpi.delta > 0 ? '↑' : '↓' }} {{ Math.abs(kpi.delta) }}%
         </span>
       </div>
@@ -115,7 +115,7 @@ const todayLabel = new Date().toLocaleDateString('en-GB', { weekday: 'long', day
 const bookCount = ref('…');
 onMounted(async () => {
   const { data } = await getBooks(USER_ROLES.ADMIN, { page: 1, limit: 1 });
-  if (data) bookCount.value = String(data.results?.length ?? '—');
+  if (data) bookCount.value = String(data.records ?? '—');
 });
 
 const kpis = computed(() => [
