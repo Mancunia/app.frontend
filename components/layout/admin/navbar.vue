@@ -20,8 +20,8 @@
 
 <style scoped>
 nav {
-    background: #020202;
-    color: #fff;
+    background: var(--ink);
+    color: var(--cream);
     width: 100%;
     height: 51px;
 }

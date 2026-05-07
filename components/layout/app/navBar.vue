@@ -22,7 +22,7 @@ const {checkForOldFile} = useUtils()
 <style scoped>
 .appbar {
     width: 100%;
-    background-color: #d9d9d9;
+    background-color: var(--paper);
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -42,7 +42,7 @@ const {checkForOldFile} = useUtils()
 }
 
 .appbar .anansesem {
-    color: black;
+    color: var(--ink);
     font-size: 30px;
     font-family: Pontano Sans;
     font-weight: 400;

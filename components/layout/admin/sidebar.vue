@@ -42,8 +42,8 @@ body {
     font-family: system-ui, sans-serif;
     font-size: 16px;
     line-height: 1.7;
-    color: #333;
-    background-color: #fff;
+    color: var(--ink);
+    background-color: var(--paper);
 }
 
 body.sb-expanded {
@@ -65,7 +65,7 @@ aside {
     inset: 0 auto 0 0;
     padding: 1rem;
     width: 17%;
-    background-image: linear-gradient(#464748, #1f1e1f, #030303);
+    background: var(--ink);
     transition: width 0.5s ease-in-out;
 }
 
@@ -99,7 +99,7 @@ nav a {
     padding: 0.625rem 0.875rem;
     font-size: 1.25rem;
     line-height: 1;
-    color: #fff;
+    color: var(--cream);
     text-decoration: none;
     border-radius: 0.375rem;
     transition: background-color 0.5s ease-in-out, color 0.5s ease-in-out;
@@ -109,13 +109,13 @@ nav a.active,
 nav a:hover,
 nav a:focus-visible {
     outline: none;
-    color: #000000;
-    background-color: #fff;
+    color: var(--kola);
+    background-color: var(--paper);
 }
 
 nav a.active span,
 nav a:hover span {
-    color: #000000;
+    color: var(--kola);
 }
 
 nav a span {
@@ -142,7 +142,7 @@ nav a span {
         font-size: 0.875rem;
         opacity: 1;
         visibility: unset;
-        color: #fff;
+        color: var(--cream);
         transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
     }
 }
