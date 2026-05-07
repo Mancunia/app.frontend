@@ -14,11 +14,13 @@
         type="search"
         class="search-input"
         placeholder="Search stories…"
+        aria-label="Search stories"
       />
     </div>
 
     <div class="table-wrap">
       <div v-if="loading" class="loading-state">Loading stories…</div>
+      <p v-else-if="books.length === 0" class="empty">No stories found.</p>
       <table v-else class="books-table">
         <thead>
           <tr>
@@ -54,7 +56,6 @@
           </tr>
         </tbody>
       </table>
-      <p v-if="!loading && books.length === 0" class="empty">No stories found.</p>
     </div>
   </div>
 </template>
