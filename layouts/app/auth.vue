@@ -27,7 +27,7 @@ section .form {
     width: 100%;
     height: 80vh;
     align-items: center;
-    background: #FFF;
+    background: var(--paper);
     margin-top:50%;
     border-radius: 33px;
 }

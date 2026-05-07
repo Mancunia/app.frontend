@@ -40,7 +40,7 @@ const { checkForOldFile } = useUtils()
 .book-card {
     display: flex;
     flex-direction: row;
-    background-color: #f0e6e3;
+    background-color: var(--calabash);
     height: 170px;
     border-radius: 10px;
     align-items: center;
@@ -74,7 +74,7 @@ const { checkForOldFile } = useUtils()
 .details .link a {
     color: black;
     font-size: 15px;
-    font-family: Pontano Sans;
+    font-family: var(--font-sans);
     font-weight: 400;
     text-decoration: none;
     word-wrap: break-word;

@@ -34,7 +34,7 @@ const props = defineProps({
     position: relative;
     box-shadow: 0px 4px 9.9px rgba(0, 0, 0, 0.25);
     border-radius: 10px;
-    background-color: #f4eded;
+    background-color: var(--calabash);
     height: 125px;
 }
 

@@ -79,7 +79,7 @@ defineProps({
 }
 
 .active {
-    background-color: #764f0677;
-    color: #fff;
+    background-color: rgba(77, 35, 22, 0.47);
+    color: var(--cream);
 }
 </style>

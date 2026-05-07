@@ -31,7 +31,7 @@ input {
     margin-bottom: 5px;
     width: 13rem;
     padding: 10px;
-    border: 1px solid #ccc;
+    border: 1px solid var(--hairline);
     border-radius: 5px;
 }
 </style>

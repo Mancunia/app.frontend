@@ -12,7 +12,7 @@
 
 <style scoped>
 .background {
-  background-color: #f3f4f6;
+  background-color: var(--paper);
   height: 100vh;
   display: flex;
   justify-content: center;

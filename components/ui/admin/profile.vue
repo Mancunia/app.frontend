@@ -32,7 +32,7 @@ const { checkForOldFile } = useUtils();
     flex-direction: column;
     align-items: center;
     padding: 10px;
-    border-bottom: 1px solid #e0e0e0;
+    border-bottom: 1px solid var(--hairline);
 }
 
 .profilePicture {

@@ -40,7 +40,7 @@ const { checkForOldFile } = useUtils()
     align-items: center;
     padding: 10px 10px;
     border-radius: 22px;
-    background-color: #e8bf8d;
+    background-color: var(--ochre);
     margin-top: 10%;
 }
 
@@ -51,9 +51,9 @@ const { checkForOldFile } = useUtils()
 }
 
 .profile .name {
-    font-family: "Rammetto One";
+    font-family: var(--font-display);
     font-size: 1.5rem;
-    color: #020202;
+    color: var(--ink);
 }
 
 .edit {
@@ -65,10 +65,10 @@ const { checkForOldFile } = useUtils()
 }
 
 .edit button {
-    font-family: "Rammetto One";
+    font-family: var(--font-display);
     font-size: 1.5rem;
-    color: #563F29;
-    background-color: #fff;
+    color: var(--kola-2);
+    background-color: var(--paper);
     border: none;
     padding: 5px 10px;
     border-radius: 22px;
