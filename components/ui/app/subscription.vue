@@ -169,9 +169,10 @@ const initSubscription = async () => {
     width: 275px;
     margin: 5px 0;
     padding: 0;
-    border-radius: 10px;
+    border-radius: var(--d-radius);
     background: var(--paper);
-    box-shadow: 0 4px 13px 0 rgba(0, 0, 0, 0.45);
+    border: 1px solid var(--hairline);
+    box-shadow: 0 4px 16px var(--hairline);
     transition: transform .5s;
     cursor: pointer;
 
@@ -180,6 +181,7 @@ const initSubscription = async () => {
         display: block;
         text-align: center;
         padding: 10px;
+        font-family: var(--font-display);
         color: var(--ink);
         width: 80%;
         border-radius: 5px;
@@ -189,48 +191,36 @@ const initSubscription = async () => {
     }
 }
 
-.logout {
-    width: 100%;
-    display: flex;
-    padding: 10% 20%;
-}
-
-.logout button {
-    font-family: var(--font-display);
-    font-size: 1.5rem;
-    color: var(--cream);
-    background-color: var(--ink);
-    border: none;
-    padding: 5px 10px;
-    border-radius: 22px;
-}
-
 .logout_form {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     align-items: center;
-    padding: 10% 20%;
+    padding: var(--d-pad);
+    gap: 16px;
 }
+
 .logout_form h1 {
-    font-size: 2rem;
+    font-family: var(--font-display);
+    font-size: 1.2rem;
     font-weight: 600;
-    margin-bottom: 20px;
-    white-space: nowrap;
+    margin: 0;
+    text-align: center;
 }
 
 .logout_form .buttons {
     display: flex;
-    gap: 20px;
+    gap: 16px;
 }
 
 .logout_form .buttons button {
     font-family: var(--font-display);
-    font-size: 1.5rem;
+    font-size: 1rem;
     color: var(--cream);
-    background-color: var(--ink);
+    background: var(--ink);
     border: none;
-    padding: 5px 10px;
+    padding: 6px 16px;
     border-radius: 22px;
+    cursor: pointer;
 }
 </style>
