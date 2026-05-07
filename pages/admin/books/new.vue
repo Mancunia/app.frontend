@@ -105,7 +105,7 @@
         v-else
         class="btn-primary"
         @click="submit"
-        :disabled="saving"
+        :disabled="saving || !!successMsg"
       >{{ saving ? 'Creating…' : 'Create story' }}</button>
     </div>
   </div>
@@ -164,6 +164,7 @@ const advance = () => {
 const submit = async () => {
   errorMsg.value = '';
   if (!form.title.trim()) { errorMsg.value = 'Title is required.'; currentStep.value = 0; return; }
+  if (!form.description.trim()) { errorMsg.value = 'Description is required.'; currentStep.value = 0; return; }
   saving.value = true;
   try {
     const { data } = await createBook(form);
