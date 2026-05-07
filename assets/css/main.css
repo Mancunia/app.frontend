@@ -186,7 +186,7 @@ button {
   width: 90%;
   padding: 8%;
   margin-top: 5px;
-  background-color: #4d2316;
+  background-color: var(--kola);
   border-radius: 20px;
-  color: white;
+  color: var(--cream);
 }
