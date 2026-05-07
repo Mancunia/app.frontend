@@ -20,6 +20,7 @@
   background: var(--paper);
 }
 .body {
+  grid-column: 2;
   padding: 28px 32px;
   overflow-y: auto;
   min-height: 100vh;

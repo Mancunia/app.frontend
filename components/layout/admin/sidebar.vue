@@ -7,7 +7,7 @@
 
     <nav class="nav">
       <NuxtLink
-        v-for="item in visibleItems"
+        v-for="item in navItems"
         :key="item.url"
         :to="item.url"
         class="nav-item"
@@ -41,14 +41,9 @@
 import routes from '~/routes';
 const { navItems } = useNavigation();
 const { admin_logout } = useAuth();
-const admin = useAuthStore().getAdmin;
-
-const visibleItems = computed(() =>
-  navItems.value.filter((item: { hasAccess: number[] }) => item.hasAccess.includes(admin.role))
-);
+const route = useRoute();
 
 const isActive = (url: string) => {
-  const route = useRoute();
   if (url === routes.admin.home) return route.path === url;
   return route.path.startsWith(url);
 };
@@ -131,7 +126,6 @@ const isActive = (url: string) => {
 }
 
 .label {
-  font-size: 13.5px;
 }
 
 .spacer {
