@@ -96,7 +96,7 @@ const initSubscription = async () => {
 .subscription__main-feature,
 .subscription__price {
     text-transform: uppercase;
-    font-family: 'Open Sans', sans-serif;
+    font-family: var(--font-sans);
     margin-top: 0;
     margin-bottom: 0;
     color: var(--calabash);

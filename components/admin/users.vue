@@ -29,7 +29,7 @@
                     Make Admin
                 </UiAdminButton>
                 <UiAdminButton v-if="selectedUser.account != USER_ROLES.USER" :loading="loading.makeUser"
-                    :style="`background-color: green`" @click="makeUser">
+                    :style="`background-color: var(--ochre)`" @click="makeUser">
                     Make User
                 </UiAdminButton>
             </div>
