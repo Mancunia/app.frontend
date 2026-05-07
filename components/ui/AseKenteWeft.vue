@@ -15,7 +15,7 @@ const filled = computed(() => Math.max(0, Math.min(1, props.progress)))
 <template>
   <div
     class="kente-track"
-    :style="{ '--kente-h': `${height}px`, '--kente-fill': `${filled * 100}%` }"
+    :style="{ '--kente-h': `${props.height}px`, '--kente-fill': `${filled * 100}%` }"
     role="progressbar"
     :aria-valuenow="Math.round(filled * 100)"
     aria-valuemin="0"
