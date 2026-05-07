@@ -81,7 +81,7 @@ const checkPasswords = () => {
     font-weight: 500;
     color: var(--muted);
     padding: 20px;
-    box-shadow: 1px 1px 1px 1px var(--ink);
+    box-shadow: 0 0 0 1px var(--hairline);
     border-radius: 10px;
 }
 
