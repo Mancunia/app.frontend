@@ -35,33 +35,31 @@
       </svg>
     </div>
 
-    <div class="two-col">
-      <!-- Chapter funnel -->
-      <div class="panel">
-        <div class="panel-head"><span class="panel-title">Chapter completion</span></div>
-        <div class="funnel-list">
-          <div v-for="ch in chapters" :key="ch.num" class="funnel-row">
-            <span class="ch-num">Ch. {{ ch.num }}</span>
-            <span class="ch-title">{{ ch.title }}</span>
-            <div class="funnel-track">
-              <div class="funnel-bar" :style="{ width: ch.completion + '%', background: ch.completion > 60 ? 'var(--ochre)' : ch.completion > 30 ? 'var(--kola-2)' : 'var(--calabash)' }" />
-            </div>
-            <span class="ch-pct">{{ ch.completion }}%</span>
+    <!-- Chapter funnel -->
+    <div class="panel">
+      <div class="panel-head"><span class="panel-title">Chapter completion</span></div>
+      <div class="funnel-list">
+        <div v-for="ch in chapters" :key="ch.num" class="funnel-row">
+          <span class="ch-num">Ch. {{ ch.num }}</span>
+          <span class="ch-title">{{ ch.title }}</span>
+          <div class="funnel-track">
+            <div class="funnel-bar" :style="{ width: ch.completion + '%', background: ch.completion > 60 ? 'var(--ochre)' : ch.completion > 30 ? 'var(--kola-2)' : 'var(--calabash)' }" />
           </div>
+          <span class="ch-pct">{{ ch.completion }}%</span>
         </div>
       </div>
+    </div>
 
-      <!-- Region bars -->
-      <div class="panel">
-        <div class="panel-head"><span class="panel-title">Top regions</span></div>
-        <div class="region-list">
-          <div v-for="r in regions" :key="r.city" class="region-row">
-            <span class="region-city">{{ r.city }}</span>
-            <div class="region-track">
-              <div class="region-bar" :style="{ width: r.pct + '%' }" />
-            </div>
-            <span class="region-pct">{{ r.pct }}%</span>
+    <!-- Region bars -->
+    <div class="panel">
+      <div class="panel-head"><span class="panel-title">Top regions</span></div>
+      <div class="region-list">
+        <div v-for="r in regions" :key="r.city" class="region-row">
+          <span class="region-city">{{ r.city }}</span>
+          <div class="region-track">
+            <div class="region-bar" :style="{ width: r.pct + '%' }" />
           </div>
+          <span class="region-pct">{{ r.pct }}%</span>
         </div>
       </div>
     </div>
@@ -153,8 +151,6 @@ const regions = [
 .leg-lbl { font-family: var(--font-sans); font-size: 11px; color: var(--muted); }
 
 .chart-svg { width: 100%; height: 100px; display: block; }
-
-.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 
 .funnel-list { display: flex; flex-direction: column; gap: 10px; }
 .funnel-row { display: flex; align-items: center; gap: 10px; }
