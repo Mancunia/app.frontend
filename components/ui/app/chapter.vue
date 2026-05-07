@@ -42,8 +42,7 @@ const play = async () => emits('play',)
     justify-content: space-evenly;
     width: 100%;
     padding: 10px;
-    border: 0px;
-    background-color: rgba(210, 209, 209, 0.14);
+    background: var(--card); border: 1px solid var(--hairline);
     border-radius: 10px;
     transition: 0.5s ease-in-out;
     margin-bottom: 10%;
@@ -59,6 +58,7 @@ const play = async () => emits('play',)
     width: 100%;
     height: 100%;
     object-fit: cover;
+    border-radius: 8px;
 }
 
 .description {
@@ -76,6 +76,7 @@ const play = async () => emits('play',)
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
+    font-family: var(--font-serif); font-weight: 600; color: var(--ink);
 }
 
 .description button {
@@ -84,6 +85,7 @@ const play = async () => emits('play',)
     background-color: var(--ink);
     color: var(--cream);
     border: none;
-    border-radius: 5px;
+    border-radius: 20px;
+    font-family: var(--font-display); font-size: 0.85rem; padding: 4px 14px;
 }
 </style>

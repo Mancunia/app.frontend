@@ -1,5 +1,5 @@
 <template>
-    <NuxtLink v-if="book" style="text-decoration: none; color: var(--ink)" :to="`${routes.app.book}${props.book.id}`"
+    <NuxtLink v-if="book" class="book-link" :to="`${routes.app.book}${props.book.id}`"
         @click="selectBook = book">
         <div class="story-item">
             <div class="story-thumbnail"><img :src="checkForOldFile(book.cover)" alt=""></div>
@@ -26,47 +26,18 @@ const { checkForOldFile } = useUtils()
 </script>
 
 <style scoped>
-.story-item {
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 1rem;
-}
-
+.book-link { text-decoration: none; color: var(--ink); }
+.story-item { display: flex; flex-direction: column; }
 .story-thumbnail {
-    width: 250px;
-    /* Set the width of the container */
-    height: 300px;
-    /* Set the height of the container */
-    overflow: hidden;
-    /* Hide any overflow */
-    border-radius: 20px;
-    margin-bottom: 10px;
+  width: 100%; aspect-ratio: 3/4; height: auto;
+  border-radius: var(--d-radius); overflow: hidden;
+  box-shadow: 0 4px 14px var(--hairline); margin-bottom: 6px;
 }
-
-.story-thumbnail img {
-    width: 100%;
-    /* Make the image full width */
-    height: 100%;
-    /* Make the image full height */
-    object-fit: cover;
-    /* Scale the image to cover the container */
-    transition: transform 0.5s;
-    /* Add a transition effect */
-}
-
-.thumb-n:hover {
-    transform: scale(1.1);
-    /* Scale the image on hover */
-}
-
+.story-thumbnail img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s; }
+.story-thumbnail img:hover { transform: scale(1.04); }
 .story-title {
-    font-weight: 700;
-    width: 250px;
-
+  font-family: var(--font-serif); font-weight: 600; font-size: 0.85rem; color: var(--ink);
+  margin-top: 6px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
 }
-
-.writer {
-    font-size: 12px;
-    font-weight: 600;
-}
+.writer { font-family: var(--font-serif); font-style: italic; font-size: 0.75rem; color: var(--muted); }
 </style>

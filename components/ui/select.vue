@@ -56,7 +56,8 @@ const clicked = (item: string) => {
     align-items: center;
     cursor: pointer;
     justify-content: space-between;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 8px var(--hairline);
+    border: 1px solid var(--hairline); font-family: var(--font-sans);
 }
 
 .select-menu .options {
@@ -69,7 +70,7 @@ const clicked = (item: string) => {
     margin: 135px 0px 0px -66px;
     border-radius: 8px;
     background: var(--card);
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 16px var(--hairline); border: 1px solid var(--hairline);
     animation-name: fadeInDown;
     -webkit-animation-name: fadeInDown;
     animation-duration: 0.35s;
@@ -88,7 +89,7 @@ const clicked = (item: string) => {
 }
 
 .select-menu .options .option:hover {
-    background: var(--paper);
+    background: var(--calabash);
 }
 
 .select-menu .options .option i {
@@ -99,6 +100,7 @@ const clicked = (item: string) => {
 .select-menu .options .option .option-text {
     font-size: 18px;
     color: var(--ink);
+    font-family: var(--font-sans);
 }
 
 .select-btn i {
@@ -118,8 +120,7 @@ const clicked = (item: string) => {
 }
 
 .item {
-    background-color: rgb(165, 161, 161);
-    color: var(--cream);
+    background: var(--calabash); color: var(--ink);
     border-radius: 5px;
     padding: 2px 4px;
     text-wrap: nowrap;

@@ -14,7 +14,7 @@ const props = defineProps({
   },
   theme:{
     type:Object as PropType<{color:string}>,
-    default:{color:'white'}
+    default: () => ({ color: 'var(--cream)' })
   }
 })
 </script>
