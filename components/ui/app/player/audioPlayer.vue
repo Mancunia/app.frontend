@@ -1,103 +1,151 @@
 <template>
-    <div v-if="book" class="layout">
-        <div class="peripherals">
-            <NuxtLink :to="`${routes.app.book}${book.id}`"><i class='bx  bx-reply'></i> View Book</NuxtLink>
-        </div>
-        <div class="cover">
-            <img :src="checkForOldFile(book.cover)" alt="book art" />
-        </div>
-        <!-- <div class="details">
-            <div class="details_item">Views: {{ book.meta?.views ?? 0 }}</div>
-            <div class="details_item" v-if="book.languages?.length">Language: {{
-                languages.find((lang) => lang.id == book?.languages[0])?.name}}</div>
-        </div> -->
-        <div class="title">
-            {{ book.title }}
-        </div>
-        <div class="controls">
-            <UiAppPlayer />
-        </div>
+  <div v-if="book" class="audio-player">
+    <UiAseFireMotes :count="6" style="opacity: 0.15" />
+
+    <div class="eyebrow">Now playing</div>
+
+    <div class="cover-wrap">
+      <img :src="checkForOldFile(book.cover)" class="cover-art" alt="Book cover" />
     </div>
+
+    <div class="book-meta">
+      <h2 class="book-title">{{ book.title }}</h2>
+      <p class="book-author">{{ book.authors?.join(', ') }}</p>
+    </div>
+
+    <div class="progress-section">
+      <UiAseKenteWeft :progress="duration > 0 ? currentTime / duration : 0" :height="9" />
+      <div class="time-row">
+        <span>{{ secondsToMinutes(currentTime) }}</span>
+        <span>{{ secondsToMinutes(duration) }}</span>
+      </div>
+    </div>
+
+    <div class="transport">
+      <button @click="rewindAudio(5)" class="ctrl-btn" title="Rewind 5s">⏪</button>
+      <button @click="toggleAudio" class="play-btn">{{ playing ? '⏸' : '▶' }}</button>
+      <button @click="fastForwardAudio(5)" class="ctrl-btn" title="Forward 5s">⏩</button>
+    </div>
+
+    <div class="ghost-row">
+      <span>1.0×</span>
+      <span>Chapters</span>
+      <span>Sleep</span>
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
-import routes from '~/routes';
-
 const store = useAuthStore();
-const { languages } = useCommon(USER_ROLES.USER)
-const book = computed(() => store.getPlaying.book ?? null)
-const showDetails = computed(() => store.getPlayer.showDetails)
+const { checkForOldFile, secondsToMinutes } = useUtils();
+const book = computed(() => store.getPlaying.book ?? null);
 
-const { checkForOldFile } = useUtils()
+const {
+  toggleAudio, duration, currentTime, fastForwardAudio, rewindAudio, seekAudio
+} = usePlayer(USER_ROLES.USER);
+
+const playing = computed(() => store.getPlayer.playing);
 </script>
 
 <style scoped>
-.layout {
-    height: 80vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: center;
-    background: rgba(0, 0, 0, 0.3);
-    backdrop-filter: blur(20px) saturate(160%);
-    -webkit-backdrop-filter: blur(20px) saturate(160%);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    border-radius: 20px;
-    padding: 10%;
+.audio-player {
+  position: relative;
+  overflow: hidden;
+  height: 100%;
+  min-height: 400px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px 16px;
+  color: var(--cream);
 }
-
-.peripherals {
-    display: flex;
-    flex-direction: row;
+.eyebrow {
+  font-family: var(--font-sans);
+  font-size: 0.55rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  opacity: 0.5;
+  color: var(--cream);
+  z-index: 1;
 }
-.peripherals a {
-    text-decoration: none;
-    color: var(--ink);
-    font-size: 1.2rem;
-    display: flex;
-    align-items: center;
-    gap: 5px;
+.cover-wrap { z-index: 1; }
+.cover-art {
+  width: 120px;
+  height: 160px;
+  object-fit: cover;
+  border-radius: 12px;
+  box-shadow: 0 12px 36px rgba(0,0,0,0.5);
+  display: block;
 }
-.peripherals button:hover {
-    color: var(--ink-soft);
-    scale: 1.2;
-    transition-duration: 0.5s ease-in-out;
+.book-meta { text-align: center; z-index: 1; }
+.book-title {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  color: var(--cream);
+  line-height: 1.05;
+  margin: 0 0 4px;
 }
-
-.cover {
-    width: 90%;
-    height: 60%;
+.book-author {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 0.85rem;
+  color: var(--cream);
+  opacity: 0.6;
+  margin: 0;
 }
-
-.cover img {
-    object-fit: cover;
-    width: inherit;
-    height: inherit;
-    border-radius: 20px;
+.progress-section { width: 100%; z-index: 1; }
+.time-row {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--cream);
+  opacity: 0.6;
+  margin-top: 6px;
 }
-
-.details {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-around;
+.transport {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  z-index: 1;
 }
-
-.details_item {
-    display: flex;
-    flex-direction: row;
+.ctrl-btn {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 50%;
+  color: var(--cream);
+  width: 40px;
+  height: 40px;
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
-
-
-@media only screen and (min-width: 750px) {
-    .layout {
-        background: rgb(215 214 214);
-        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-
-    }
-
-    .cover {
-        width: 370px;
-        height: 400px;
-    }
+.ctrl-btn:hover { background: rgba(255,255,255,0.12); }
+.play-btn {
+  background: var(--ochre);
+  color: var(--ink);
+  border: none;
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.play-btn:hover { background: var(--ochre-deep); }
+.ghost-row {
+  display: flex;
+  gap: 20px;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--cream);
+  opacity: 0.5;
+  z-index: 1;
 }
 </style>

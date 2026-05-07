@@ -1,169 +1,154 @@
 <template>
-    <div class="pdf-reader">
-        <header>
-            <h1>Page: {{ currentPage }}</h1>
-            <div class="controls">
-                <button v-if="pdfFile?.pages && currentPage > 1" @click.prevent="prevPage">Prev</button>
-                <button v-if="pdfFile?.pages && currentPage < pdfFile?.pages?.length"
-                    @click.prevent="nextPage">Next</button>
-                <button @click="zoomIn">Zoom In</button>
-                <button @click="zoomOut">Zoom Out</button>
-            </div>
-        </header>
+  <div class="pdf-reader">
+    <header class="reader-header">
+      <div class="header-meta">
+        <span class="book-title">{{ book?.title }}</span>
+        <span class="chapter-name">{{ store.getPlaying.chapterTitle ?? 'Chapter' }}</span>
+      </div>
+      <span class="page-indicator">p. {{ currentPage }} / {{ totalPages }}</span>
+    </header>
 
-        <main>
-            <div id="pdf-container">
-                <div class="pdf-page" :style="{ transform: `scale(${scale})` }">
-                    {{ currentPageDetails }}
-                </div>
-            </div>
-        </main>
+    <main class="reader-body">
+      <div class="pdf-page" :style="{ fontSize: fontSize + 'rem' }">
+        {{ currentPageDetails }}
+      </div>
+    </main>
 
-        <footer>
-            {{ book?.title }}
-        </footer>
-    </div>
+    <footer class="reader-footer">
+      <UiAseKenteWeft :progress="totalPages > 0 ? currentPage / totalPages : 0" :height="5" />
+      <div class="footer-controls">
+        <button class="page-btn" :disabled="currentPage <= 1" @click="prevPage">‹</button>
+        <div class="font-controls">
+          <button class="font-btn" @click="decreaseFontSize">A−</button>
+          <button class="font-btn" @click="increaseFontSize">A+</button>
+        </div>
+        <button class="page-btn" :disabled="currentPage >= totalPages" @click="nextPage">›</button>
+      </div>
+    </footer>
+  </div>
 </template>
 
 <script setup lang="ts">
 import type { PdfFileData } from '~/types/book';
 
-const pdfFile = useState<PdfFileData | null>("pdfData");
+const pdfFile = useState<PdfFileData | null>('pdfData');
 const store = useAuthStore();
 
-const currentPage = ref<number>(1)
-const scale = ref(1)
-const hasMounted = ref(false);
+const currentPage = ref<number>(1);
+const fontSize = ref(1);
+const book = computed(() => store.getPlaying.book ?? null);
+const totalPages = computed(() => pdfFile.value?.pages?.length ?? 0);
+const currentPageDetails = computed(() => pdfFile.value?.pages[currentPage.value - 1]?.textContent ?? '');
 
-const book = computed(() => store.getPlaying.book ?? null)
-const currentPageDetails = computed(() => {
-    return pdfFile.value?.pages[currentPage.value - 1].textContent
-})
+function prevPage() { if (currentPage.value > 1) currentPage.value--; }
+function nextPage() { if (currentPage.value < totalPages.value) currentPage.value++; }
+function increaseFontSize() { if (fontSize.value < 1.4) fontSize.value = Math.round((fontSize.value + 0.1) * 10) / 10; }
+function decreaseFontSize() { if (fontSize.value > 0.8) fontSize.value = Math.round((fontSize.value - 0.1) * 10) / 10; }
 
-function prevPage() {
-    currentPage.value--
-}
-
-function nextPage() {
-    if (
-        pdfFile.value &&
-        pdfFile.value.pages &&
-        currentPage.value - 1 <= pdfFile.value.pages.length
-    ) {
-        currentPage.value++
-    }
-}
-
-function zoomIn() {
-    scale.value += 0.1
-}
-
-function zoomOut() {
-    if (scale.value > 0.2) scale.value -= 0.1
-}
-watch(currentPage, (newPage) => {
-    store.setPlayingPage(newPage)
-})
+watch(currentPage, (newPage) => { store.setPlayingPage(newPage); });
 
 onMounted(() => {
-    const storePage = store.getPlaying.page
-    nextTick(() => {
-        if (storePage) {
-            currentPage.value = storePage
-        }
-    });
-
-})
-
+  nextTick(() => {
+    const storePage = store.getPlaying.page;
+    if (storePage) currentPage.value = storePage;
+  });
+});
 </script>
-
 
 <style scoped>
 .pdf-reader {
-    display: flex;
-    position: relative;
-    flex-direction: column;
-    height: 90vh;
-    font-family: Arial, sans-serif;
-    background: var(--calabash);
-    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 400px;
 }
-
-header {
-    background: var(--ink);
-    color: var(--cream);
-    padding: 12px 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+.reader-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(255,255,255,0.06);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  padding: 8px 12px;
+  flex-shrink: 0;
 }
-
-header h1 {
-    font-size: 1.2rem;
+.header-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overflow: hidden;
 }
-
-.controls {
-    display: flex;
-    gap: 10px;
+.book-title {
+  font-family: var(--font-serif);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--cream);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
-
-.controls button {
-    background: var(--kola);
-    color: var(--cream);
-    border: none;
-    padding: 6px 12px;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.2s;
+.chapter-name {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  color: var(--cream);
+  opacity: 0.5;
 }
-
-.controls button:hover {
-    background: var(--kola-2);
+.page-indicator {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--ochre);
+  white-space: nowrap;
+  flex-shrink: 0;
 }
-
-main {
-    flex: 1;
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    overflow: auto;
-    padding: 20px;
-    background: var(--hairline);
+.reader-body {
+  flex: 1;
+  overflow-y: auto;
+  background: var(--paper);
+  padding: 14px;
 }
-
-#pdf-container {
-    width: 100%;
-    max-width: 900px;
-    /* background-color: #fff; */
-    border-radius: 8px;
-    /* box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15); */
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
 .pdf-page {
-    width: 100%;
-    position: relative;
-    /* background-color: #e5e7eb; */
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    font-size: 1rem;
-    border-radius: 4px;
-    transition: transform 0.2s ease;
-    transform-origin: top center;
+  font-family: var(--font-serif);
+  line-height: 1.75;
+  color: var(--ink-soft);
+  white-space: pre-wrap;
 }
-
-footer {
-    background: var(--ink);
-    color: var(--cream);
-    padding: 10px 20px;
-    text-align: center;
+.reader-footer {
+  background: rgba(255,255,255,0.04);
+  border-top: 1px solid rgba(255,255,255,0.08);
+  padding: 8px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex-shrink: 0;
 }
-
-@media only screen and (min-width: 750px) {
-   
+.footer-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
+.page-btn {
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 50%;
+  color: var(--cream);
+  width: 32px;
+  height: 32px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.page-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+.font-controls { display: flex; gap: 8px; }
+.font-btn {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 4px;
+  color: var(--cream);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  padding: 4px 10px;
+  cursor: pointer;
+}
+.font-btn:hover { background: rgba(255,255,255,0.12); }
 </style>
