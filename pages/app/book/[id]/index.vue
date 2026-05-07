@@ -3,7 +3,7 @@
     <!-- Loading skeleton -->
     <div v-if="loading">
       <UiSkeletonLoader width="100%" height="260px" />
-      <div style="padding: var(--d-pad)">
+      <div class="skeleton-wrap">
         <UiSkeletonLoader width="60%" height="28px" />
         <UiSkeletonLoader width="40%" height="20px" />
       </div>
@@ -160,6 +160,7 @@ definePageMeta({
 
 <style scoped>
 .book-page { display: flex; flex-direction: column; padding-bottom: var(--d-pad); }
+.skeleton-wrap { padding: var(--d-pad); }
 .hero-wrap { position: relative; width: 100%; }
 .hero-img { width: 100%; max-height: 260px; object-fit: cover; border-radius: var(--d-radius) var(--d-radius) 0 0; display: block; }
 .hero-overlay { position: absolute; bottom: 0; left: 0; right: 0; height: 80px; background: linear-gradient(to top, var(--paper), transparent); }

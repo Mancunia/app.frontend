@@ -69,9 +69,4 @@ definePageMeta({ title: 'Forgot Password', middleware: 'app', layout: 'app-auth'
     width: 100%;
 }
 
-@media (min-width: 768px) {
-    .page {
-        padding: var(--d-pad);
-    }
-}
 </style>

@@ -51,12 +51,7 @@ form .title {
     margin: 0 0 8px;
 }
 
-form .signup {
-    color: var(--ochre);
-    font-family: var(--font-sans);
-    text-decoration: none;
-}
-
+form .signup,
 .link {
     color: var(--ochre);
     font-family: var(--font-sans);
