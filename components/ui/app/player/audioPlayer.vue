@@ -59,7 +59,7 @@ const { checkForOldFile } = useUtils()
     gap: 5px;
 }
 .peripherals button:hover {
-    color: #454343;
+    color: var(--ink-soft);
     scale: 1.2;
     transition-duration: 0.5s ease-in-out;
 }

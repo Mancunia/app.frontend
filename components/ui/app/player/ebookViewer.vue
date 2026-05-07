@@ -85,12 +85,12 @@ onMounted(() => {
     flex-direction: column;
     height: 90vh;
     font-family: Arial, sans-serif;
-    background-color: #f2f2f2;
+    background: var(--calabash);
     box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
 }
 
 header {
-    background-color: #1f2937;
+    background: var(--ink);
     color: var(--cream);
     padding: 12px 20px;
     display: flex;
@@ -108,7 +108,7 @@ header h1 {
 }
 
 .controls button {
-    background-color: #3b82f6;
+    background: var(--kola);
     color: var(--cream);
     border: none;
     padding: 6px 12px;
@@ -118,7 +118,7 @@ header h1 {
 }
 
 .controls button:hover {
-    background-color: #2563eb;
+    background: var(--kola-2);
 }
 
 main {
@@ -128,7 +128,7 @@ main {
     align-items: flex-start;
     overflow: auto;
     padding: 20px;
-    background: #d7d6d629;
+    background: var(--hairline);
 }
 
 #pdf-container {
