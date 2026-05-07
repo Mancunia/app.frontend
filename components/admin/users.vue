@@ -25,11 +25,11 @@
                     Make Associate
                 </UiAdminButton>
                 <UiAdminButton v-if="selectedUser.account != USER_ROLES.ADMIN" :loading="loading.makeAdmin"
-                    :style="`background-color: var(--ink)`" @click="makeAdmin">
+                    variant="dark" @click="makeAdmin">
                     Make Admin
                 </UiAdminButton>
                 <UiAdminButton v-if="selectedUser.account != USER_ROLES.USER" :loading="loading.makeUser"
-                    :style="`background-color: var(--ochre)`" @click="makeUser">
+                    variant="accent" @click="makeUser">
                     Make User
                 </UiAdminButton>
             </div>
