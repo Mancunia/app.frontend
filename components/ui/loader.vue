@@ -19,7 +19,7 @@ const props = defineProps({
 })
 </script>
 
-<style>
+<style scoped>
 .svg-spinner {
   animation: spin 1s linear infinite;
   margin-right: 2px;
