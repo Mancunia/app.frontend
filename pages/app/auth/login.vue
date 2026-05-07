@@ -10,7 +10,6 @@
             </UiAdminButton>
             <NuxtLink :to="routes.app.signup" class="signup">SignUp</NuxtLink>
             <NuxtLink :to="routes.app.forgotPassword" class="link">Forgot Password</NuxtLink>
-
         </form>
     </section>
 </template>
@@ -35,53 +34,32 @@ definePageMeta({
     layout: 'app-auth'
 })
 </script>
+
 <style scoped>
 form {
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: 30% 20%;
+    gap: 16px;
+    width: 100%;
 }
 
 form .title {
     font-family: var(--font-display);
+    color: var(--cream);
     font-size: 1.5rem;
+    text-align: center;
+    margin: 0 0 8px;
 }
 
 form .signup {
-    margin-top: 10%;
-    color: var(--kola);
-    font-family: var(--font-display);
-    font-size: 16px;
-    font-style: normal;
-    font-weight: 400;
-    line-height: normal;
-    text-transform: uppercase;
+    color: var(--ochre);
+    font-family: var(--font-sans);
     text-decoration: none;
 }
 
 .link {
-    margin-top: 10%;
-    color: var(--kola);
-    font-family: var(--font-display);
-    font-size: 16px;
-    font-style: normal;
-    font-weight: 400;
-    line-height: normal;
-    text-transform: uppercase;
+    color: var(--ochre);
+    font-family: var(--font-sans);
     text-decoration: none;
-}
-
-@media (min-width: 768px) {
-    form {
-        padding: 40% 20%;
-    }
-}
-
-@media (min-width: 1024px) {
-    form {
-        padding: 40% 20%;
-    }
 }
 </style>

@@ -4,7 +4,7 @@
             <div class="search-box">
                 <input class="search-input" type="search" name="search" id="search" placeholder="Search"
                     control-id="ControlID-3" v-model="searchOptions.search">
-                <img @click="search" class="icon" src="@/assets/images/search.png" alt="">
+                <button class="search-icon" @click="search">🔍</button>
             </div>
 
             <div class="filter-container">
@@ -20,7 +20,6 @@
             <UiAppBook v-for="(book, index) in books" :key="index" :book="book" />
         </div>
     </div>
-
 </template>
 
 <script setup lang="ts">
@@ -65,8 +64,6 @@ onMounted(() => {
     filter();
 })
 
-
-
 definePageMeta({
     title: 'Search',
     middleware: 'app',
@@ -75,57 +72,10 @@ definePageMeta({
 </script>
 
 <style scoped>
-.page {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 2%;
-    gap: 20px;
-}
-
-.search {}
-
-.search-box {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px;
-    max-width: 400px;
-    height: auto;
-    border-radius: 10px;
-    border: 2px solid var(--kola-2);
-}
-
-.search-box input {
-    width: 100%;
-    border: none;
-    outline: none;
-    background: none;
-    font-size: 14px;
-}
-
-.search-box .icon {
-    width: 20px;
-    height: 20px;
-}
-
-.books {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: 10px;
-}
-
-.filter-container {
-    display: flex;
-    gap: 10px;
-}
-
-@media only screen and (min-width: 750px) {
-    .books {
-        flex-direction: row;
-        flex-wrap: wrap;
-        gap: 10px;
-    }
-}
+.page { display: flex; flex-direction: column; padding: var(--d-pad); gap: 20px; }
+.search-box { display: flex; justify-content: space-between; align-items: center; padding: 8px 14px; max-width: 480px; border-radius: var(--d-radius); border: 1px solid var(--hairline); background: var(--card); }
+.search-box input { width: 100%; border: none; outline: none; background: none; font-size: 1rem; font-family: var(--font-sans); color: var(--ink); }
+.search-icon { color: var(--muted); font-size: 1rem; cursor: pointer; background: none; border: none; }
+.filter-container { display: flex; gap: 8px; flex-wrap: wrap; }
+.books { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: var(--d-gap); width: 100%; }
 </style>

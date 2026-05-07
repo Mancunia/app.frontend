@@ -15,7 +15,6 @@
                     Logout
                 </button>
             </div>
-
         </div>
     </div>
     <CommonModal v-model="pageSettings.isLogoutOpen">
@@ -57,75 +56,16 @@ const logout = () => {
 </script>
 
 <style scoped>
-.page {
-    justify-self: center;
-    display: flex;
-    width: 400px;
-    padding:5%;
-    flex-direction: column;
-    gap: calc(50px + 1vh);
-    justify-content: center;
-    align-items: center;
-}
-
-.profile {
-    width: 100%;
-}
-
-.settings {
-    width: 100%;
-    align-items: center;
-}
-
-.links {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-}
-.links a{
-    font-family: var(--font-display);
-    font-size: 1rem;
-    color: var(--ink);
-    border: none;
-    border-radius: 22px;
-
-}
-.logout {
-    /* width: 100%; */
-    display: flex;
-    padding: 10% 20%;
-}
-
-.logout button {
-    font-family: var(--font-display);
-    font-size: 1.5rem;
-    color: var(--cream);
-    background-color: var(--ink);
-    border: none;
-    padding: 5px 10px;
-    border-radius: 22px;
-}
-
-.logout_form {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10% 20%;
-}
-
-.logout_form .buttons {
-    display: flex;
-    gap: 20px;
-}
-
-.logout_form .buttons button {
-    font-family: var(--font-display);
-    font-size: 1.5rem;
-    color: var(--cream);
-    background-color: var(--ink);
-    border: none;
-    padding: 5px 10px;
-    border-radius: 22px;
-}
+.page { display: flex; flex-direction: column; align-items: center; max-width: 400px; padding: var(--d-pad); gap: 32px; margin: 0 auto; }
+.profile { width: 100%; }
+.settings { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 16px; }
+.links { display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; }
+.links a { font-family: var(--font-display); color: var(--ink); font-size: 1rem; border: 1px solid var(--hairline); border-radius: 999px; padding: 8px 20px; text-decoration: none; }
+.links a:hover { background: var(--calabash); }
+.logout { display: flex; padding: 0; }
+.logout button { font-family: var(--font-display); font-size: 1.2rem; color: var(--cream); background: var(--ink); border: none; padding: 8px 24px; border-radius: 22px; cursor: pointer; }
+.logout_form { display: flex; flex-direction: column; align-items: center; padding: var(--d-pad); gap: 24px; }
+.logout_form h1 { font-family: var(--font-display); color: var(--ink); font-size: 1.2rem; text-align: center; margin: 0; }
+.logout_form .buttons { display: flex; gap: 16px; }
+.logout_form .buttons button { font-family: var(--font-display); font-size: 1rem; color: var(--cream); background: var(--ink); border: none; padding: 8px 20px; border-radius: 22px; cursor: pointer; }
 </style>

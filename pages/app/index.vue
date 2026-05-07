@@ -1,24 +1,32 @@
 <template>
-    <div v-if="false" class="category-container">
-        <AppCategories />
-    </div>
-    <div class="list-container">
-        <div v-if="loading">
-            <div class="list-card-container">
-                <UiAppLoadersBook />
-                <UiAppLoadersBook />
-                <UiAppLoadersBook />
-                <UiAppLoadersBook />
-                <UiAppLoadersBook />
-                <UiAppLoadersBook />
-                <UiAppLoadersBook />
-                <UiAppLoadersBook />
-            </div>
+    <div class="home-page">
+        <div v-if="false" class="category-container">
+            <AppCategories />
         </div>
-        <div v-else class="list-card-container">
+
+        <div class="greeting">
+            <p class="greeting-eyebrow">Tonight's storyteller</p>
+            <h1 class="greeting-headline">The fire is lit. Sit by it.</h1>
+            <p class="greeting-sub">"Anansesem nti, yɛhwɛ." — Because of stories, we look.</p>
+        </div>
+
+        <h2 class="section-heading">By the firelight</h2>
+
+        <div v-if="loading" class="book-grid">
+            <UiAppLoadersBook />
+            <UiAppLoadersBook />
+            <UiAppLoadersBook />
+            <UiAppLoadersBook />
+            <UiAppLoadersBook />
+            <UiAppLoadersBook />
+            <UiAppLoadersBook />
+            <UiAppLoadersBook />
+        </div>
+        <div v-else class="book-grid">
             <UiAppBook v-for="(book, index) in books" :key="index" :book="book" />
         </div>
-        <div class="list-card-container" v-if="fetchingMore">
+
+        <div class="book-grid" v-if="fetchingMore">
             <UiAppLoadersBook />
             <UiAppLoadersBook />
             <UiAppLoadersBook />
@@ -36,8 +44,7 @@ const books = ref<BOOK[] | null>(null);
 const fetchingMore = ref<boolean>(false)
 const canFetchMore = ref<boolean>(true)
 
-const pagination = ref<{ page: number, limit: number,search:string }>({ page: 1, limit: 100,search:'' })
-
+const pagination = ref<{ page: number, limit: number, search: string }>({ page: 1, limit: 100, search: '' })
 
 const store = useAuthStore()
 const { setCommon } = useCommon(USER_ROLES.USER)
@@ -68,6 +75,7 @@ onMounted(() => {
     loading.value = true;
     Promise.all([fetchBooks(), setCommon()]);
 })
+
 definePageMeta({
     title: 'Login',
     middleware: 'app',
@@ -76,68 +84,49 @@ definePageMeta({
 </script>
 
 <style scoped>
-.category-container {
-    width: 80%;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-evenly;
-    gap: 10px;
-    padding: 10px;
-    box-sizing: border-box;
+.home-page {
+    padding: var(--d-pad);
 }
 
-.list-container {
-    width: 100%;
-    padding: 10px;
-    box-sizing: border-box;
+.greeting {
+    margin-bottom: 16px;
 }
 
-.list-container-appbar {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    box-sizing: border-box;
-    justify-content: space-between;
-}
-
-.list-card-container {
-    width: 100%;
-    /* margin-bottom: 60%; */
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: center;
-    /* Center children horizontally */
-    gap: 1%;
-}
-
-.list-container-appbar {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    box-sizing: border-box;
-    justify-content: space-between;
-}
-
-.btnallcat {
-    color: var(--ink);
-    font-size: 16px;
+.greeting-eyebrow {
     font-family: var(--font-sans);
-    font-weight: 500;
-    word-wrap: break-word;
-    text-align: center;
-    border: none;
-    cursor: pointer;
-    background-color: transparent;
+    color: var(--muted);
+    font-size: 0.7rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    margin: 0;
 }
 
-@media only screen and (min-width: 750px) {
+.greeting-headline {
+    font-family: var(--font-display);
+    color: var(--ink);
+    font-size: clamp(1.4rem, 3vw, 2.2rem);
+    margin: 4px 0;
+}
 
-    .list-card-container {
-        margin-bottom: 10%;
-        justify-content: space-evenly;
-    }
+.greeting-sub {
+    font-family: var(--font-serif);
+    font-style: italic;
+    color: var(--muted);
+    font-size: 0.85rem;
+    margin: 0;
+}
+
+.section-heading {
+    font-family: var(--font-serif);
+    font-weight: 600;
+    color: var(--ink);
+    font-size: 1rem;
+    margin: 8px 0 4px;
+}
+
+.book-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: var(--d-gap);
 }
 </style>

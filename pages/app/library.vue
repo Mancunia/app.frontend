@@ -1,19 +1,22 @@
 <template>
-    <div class="list-container">
-        <div v-if="loading">
-            <div class="list-card-container">
-                <UiAppLoadersBook v-for="i in 5" />
-            </div>
-        </div>
-        <div v-else class="list-card-container">
-            <UiAppBook v-for="(book, index) in books" :key="index" :book="book" />
-        </div>
+  <div class="library-page">
+    <h2 class="section-heading">Your library</h2>
+    <div v-if="loading" class="book-grid">
+      <UiAppLoadersBook v-for="i in 5" :key="i" />
     </div>
+    <div v-else-if="books && books.length" class="book-grid">
+      <UiAppBook v-for="(book, index) in books" :key="index" :book="book" />
+    </div>
+    <div v-else class="empty-state">
+      <UiAseAdinkraGlyph />
+      <p class="empty-text">No books yet</p>
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { getLikedBooks } from '~/services/book';
-import type{ BOOK } from '~/types/book';
+import type { BOOK } from '~/types/book';
 
 const books = ref<BOOK[] | null>(null);
 const loading = ref<boolean>(true);
@@ -45,21 +48,9 @@ definePageMeta({
 </script>
 
 <style scoped>
-.list-container {
-    width: 100%;
-    padding: 10px;
-    box-sizing: border-box;
-}
-
-.list-card-container {
-    width: 100%;
-    /* margin-bottom: 60%; */
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: center;
-    /* Center children horizontally */
-    gap: 1%;
-}
+.library-page { padding: var(--d-pad); }
+.section-heading { font-family: var(--font-serif); font-weight: 600; font-size: 1.1rem; color: var(--ink); margin: 0 0 16px; }
+.book-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: var(--d-gap); }
+.empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 48px 0; gap: 16px; }
+.empty-text { font-family: var(--font-serif); color: var(--muted); margin: 0; }
 </style>

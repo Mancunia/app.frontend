@@ -2,10 +2,9 @@
     <div class="subscription-form">
         <form @submit.prevent="linkSub">
             <label for="ref">@</label>
-            <input type="text" name="" placeholder="Enter Subscription Reference" v-model="reference.ref"/>
+            <input type="text" name="" placeholder="Enter Subscription Reference" v-model="reference.ref" />
             <UiAdminButton type="submit">apply</UiAdminButton>
         </form>
-        
     </div>
     <div v-if="loading" class="subscription-container">
         <UiAppLoadersSubscription />
@@ -17,17 +16,16 @@
         </span>
     </div>
     <div v-else>
-        <p>There are no subscriptions available</p>
+        <p class="no-subs">There are no subscriptions available</p>
     </div>
-
 </template>
 
 <script setup lang="ts">
 import { type Subscription } from '~/types/common';
-import { getSubscriptions,linkSubscription } from '~/services/subscription';
+import { getSubscriptions, linkSubscription } from '~/services/subscription';
 
 const subscription = ref<Subscription[] | null>(null)
-const reference = ref<{ref:string,loading:boolean}>({ref:'',loading:false})
+const reference = ref<{ ref: string, loading: boolean }>({ ref: '', loading: false })
 const loading = ref(true);
 
 const fetchSubscriptions = async () => {
@@ -49,7 +47,7 @@ const fetchSubscriptions = async () => {
 const linkSub = async () => {
     try {
         reference.value.loading = true;
-        const { data } = await linkSubscription({ref:reference.value.ref});
+        const { data } = await linkSubscription({ ref: reference.value.ref });
         if (data) {
             console.log(data);
         }
@@ -75,42 +73,12 @@ definePageMeta({
 </script>
 
 <style scoped>
-.subscription-form {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-top: 5%;
-}
-.subscription-form form {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width:100%;
-    gap: 10px;
-}
-.subscription-form label {
-    font-size: 1rem;
-    font-weight: 600;
-    white-space: nowrap;
-}
-
-.subscription-form input {
-    padding: 15px;
-    border-radius: 5px;
-    border: 1px solid var(--calabash);
-}
-
-.subscription-container {
-    display: flex;
-    align-items: center;
-    flex-flow: row wrap;
-    justify-content: space-around;
-    width: 100%;
-    max-width: 990px;
-    margin-top: 5%;
-}
-
-
+.subscription-form { display: flex; justify-content: center; align-items: center; padding: var(--d-pad); }
+.subscription-form form { display: flex; justify-content: center; align-items: center; width: 100%; gap: 10px; flex-wrap: wrap; max-width: 480px; }
+.subscription-form label { font-family: var(--font-mono); color: var(--muted); font-size: 1rem; font-weight: 600; white-space: nowrap; }
+.subscription-form input { padding: 8px 12px; border-radius: var(--d-radius); border: 1px solid var(--hairline); background: var(--card); font-family: var(--font-sans); color: var(--ink); flex: 1; min-width: 0; }
+.subscription-container { display: flex; align-items: center; flex-flow: row wrap; justify-content: space-around; width: 100%; max-width: 990px; padding: 0 var(--d-pad); }
+.no-subs { text-align: center; font-family: var(--font-serif); color: var(--muted); padding: var(--d-pad); }
 
 input[type="radio"] {
     display: none;
