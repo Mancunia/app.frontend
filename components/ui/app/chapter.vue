@@ -50,7 +50,6 @@ const play = async () => emits('play',)
 
 .cover {
     width: 100px;
-    /* height: 100px; */
     overflow: hidden;
 }
 
