@@ -93,7 +93,7 @@ definePageMeta({
     max-width: 400px;
     height: auto;
     border-radius: 10px;
-    border: 2px solid #503519;
+    border: 2px solid var(--kola-2);
 }
 
 .search-box input {

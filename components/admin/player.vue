@@ -99,7 +99,7 @@ watch(() => chapter, () => {
     position: relative;
     padding: 5px;
     border-radius: 50px;
-    background-color: #4D2316;
+    background-color: var(--kola);
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -131,7 +131,7 @@ watch(() => chapter, () => {
     display: flex;
     flex-direction: column;
     gap: 5px;
-    color: whitesmoke;
+    color: var(--cream);
     overflow-x: scroll;
     font-size: 10px;
 }
@@ -165,7 +165,7 @@ watch(() => chapter, () => {
     width: 100%;
     height: 10px;
     border-radius: 10px;
-    background-color: #4D2316;
+    background-color: var(--kola);
     color: rgb(173, 38, 38);
     cursor: pointer;
 }

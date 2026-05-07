@@ -45,14 +45,14 @@ form {
 }
 
 form .title {
-    font-family: "Rammetto One";
+    font-family: var(--font-display);
     font-size: 1.5rem;
 }
 
 form .signup {
     margin-top: 10%;
-    color: #4D2316;
-    font-family: "Rammetto One";
+    color: var(--kola);
+    font-family: var(--font-display);
     font-size: 16px;
     font-style: normal;
     font-weight: 400;
@@ -63,8 +63,8 @@ form .signup {
 
 .link {
     margin-top: 10%;
-    color: #4D2316;
-    font-family: "Rammetto One";
+    color: var(--kola);
+    font-family: var(--font-display);
     font-size: 16px;
     font-style: normal;
     font-weight: 400;

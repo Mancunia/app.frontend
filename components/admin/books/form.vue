@@ -176,7 +176,7 @@ watch(() => book, () => {
 .cover {
     width: 200px;
     height: 200px;
-    background-color: #f0f0f0;
+    background-color: var(--paper);
 }
 
 .cover img {
@@ -192,10 +192,10 @@ watch(() => book, () => {
 }
 
 .cover .actions button {
-    background-color: #dc8b20;
+    background-color: var(--ochre);
     border: none;
     border-radius: 5px;
-    color: #ffffff;
+    color: var(--cream);
     cursor: pointer;
     font-size: 16px;
     padding: 10px 20px;

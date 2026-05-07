@@ -51,7 +51,7 @@ onMounted(() => {
     margin-top: 20px;
     flex-shrink: 0;
     border-radius: 16px;
-    background: #6E4C29;
+    background: var(--kola-2);
     box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
 }
 </style>

@@ -112,13 +112,13 @@ definePageMeta({
     display: flex;
     flex-direction: row;
     height: 90vh;
-    background-color: #f5f5f5;
+    background-color: var(--paper);
 }
 
 .book-list-container {
     width: 30%;
     padding: 20px;
-    border-right: 1px solid #ddd;
+    border-right: 1px solid var(--calabash);
     overflow-y: auto;
     overflow-x: hidden;
 }

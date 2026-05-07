@@ -239,21 +239,21 @@ watch(bookId,
 .tabs button {
     background: unset;
     padding: 5px;
-    color: black;
+    color: var(--ink);
     border: unset;
-    border-bottom: 1px solid black;
+    border-bottom: 1px solid var(--ink);
     margin: 0px 5px
 }
 
 .tabs .active {
-    border-bottom: 5px solid black;
+    border-bottom: 5px solid var(--ink);
 }
 
 .btn {
-    background: #dc8b20;
+    background: var(--ochre);
     border: none;
     border-radius: 5px;
-    color: #ffffff;
+    color: var(--cream);
     cursor: pointer;
     font-size: 16px;
     margin-right: 10px;

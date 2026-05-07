@@ -77,7 +77,7 @@ const play = async () => {
     margin: 10px;
     border-radius: 10px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    background-color: #ffffff;
+    background-color: var(--card);
     cursor: pointer;
     position: relative;
     overflow: hidden;
@@ -94,7 +94,7 @@ const play = async () => {
 }
 
 .chapter:hover {
-    background-color: #f5f5f5;
+    background-color: var(--paper);
 }
 
 .typography {
@@ -110,10 +110,10 @@ const play = async () => {
 }
 
 .btn-group .btn {
-    background: #dc8b20;
+    background: var(--ochre);
     border: none;
     border-radius: 5px;
-    color: #ffffff;
+    color: var(--cream);
     cursor: pointer;
     font-size: 8px;
     margin-right: 10px;

@@ -131,7 +131,7 @@ onMounted(() => {
 .select-menu .select-btn {
     display: flex;
     height: 30px;
-    background: #fff;
+    background: var(--card);
     padding: 20px;
     font-size: 12px;
     font-weight: 400;
@@ -151,7 +151,7 @@ onMounted(() => {
     padding: 10px;
     margin-top: 10px;
     border-radius: 8px;
-    background: #fff;
+    background: var(--card);
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     animation-name: fadeInDown;
     -webkit-animation-name: fadeInDown;
@@ -168,11 +168,11 @@ onMounted(() => {
     padding: 0 16px;
     border-radius: 8px;
     align-items: center;
-    background: #fff;
+    background: var(--card);
 }
 
 .select-menu .options .option:hover {
-    background: #f2f2f2;
+    background: var(--paper);
 }
 
 .select-menu .options .option i {
@@ -182,7 +182,7 @@ onMounted(() => {
 
 .select-menu .options .option .option-text {
     font-size: 18px;
-    color: #333;
+    color: var(--ink);
 }
 
 .select-btn i {
@@ -203,7 +203,7 @@ onMounted(() => {
 
 .item {
     background-color: rgb(165, 161, 161);
-    color: #fff;
+    color: var(--cream);
     border-radius: 5px;
     padding: 2px 4px;
     text-wrap: nowrap;
@@ -224,15 +224,15 @@ onMounted(() => {
 .options .option input[type="text"] {
     width: 100%;
     padding: 10px;
-    border: 1px solid #f2f2f2;
+    border: 1px solid var(--paper);
     border-radius: 8px;
     margin-bottom: 10px;
 }
 
 .options .option input[type="checkbox"] {
-    border: 1px solid #f2f2f2;
+    border: 1px solid var(--paper);
     border-radius: 8px;
-    accent-color: #6e4c29;
+    accent-color: var(--kola-2);
 }
 
 .option-text {

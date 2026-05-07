@@ -59,7 +59,7 @@ const {checkForOldFile} = useUtils()
     justify-self: center;
     flex-shrink: 0;
     border-radius: 33px;
-    background: #191413;
+    background: var(--ink);
     bottom: 0;
     transition-duration: 1s;
 }
@@ -77,14 +77,14 @@ const {checkForOldFile} = useUtils()
     border-radius: 20px;
 }
 .nav .icon.active {
-    border-bottom: 2px solid #fff;
+    border-bottom: 2px solid var(--cream);
     padding: 2%;
     transition-duration: 0.5s;
 }
 
 @media only screen and (min-width: 750px) {
     .nav .icon:hover {
-        border-bottom: 2px solid #fff;
+        border-bottom: 2px solid var(--cream);
         border-radius: 1px;
         transition-duration: 0.5s;
     }

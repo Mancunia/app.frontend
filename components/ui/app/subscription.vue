@@ -109,7 +109,7 @@ const initSubscription = async () => {
     padding: 10px;
     margin-top: 20px;
     font-size: 20px;
-    color: black;
+    color: var(--ink);
     width: 100%;
     border-top-left-radius: 10px;
     border-top-right-radius: 10px;
@@ -128,7 +128,7 @@ const initSubscription = async () => {
     width: 90%;
     text-align: center;
     font-size: 32px;
-    color: black;
+    color: var(--ink);
     padding-bottom: 10px;
     border-bottom: 2px solid #EFF1F3;
 }
@@ -148,11 +148,11 @@ const initSubscription = async () => {
     display: flex;
     margin: 20px 0;
     font-size: 16px;
-    color: black;
+    color: var(--ink);
 }
 
 .subscription__item-text {
-    color: black;
+    color: var(--ink);
     font-size: 14px;
 }
 
@@ -165,12 +165,12 @@ const initSubscription = async () => {
     display: flex;
     flex-direction: column;
     align-items: center;
-    font-family: Roboto, sans-serif;
+    font-family: var(--font-sans), sans-serif;
     width: 275px;
     margin: 5px 0;
     padding: 0;
     border-radius: 10px;
-    background: #FFF;
+    background: var(--paper);
     box-shadow: 0 4px 13px 0 rgba(0, 0, 0, 0.45);
     transition: transform .5s;
     cursor: pointer;
@@ -180,7 +180,7 @@ const initSubscription = async () => {
         display: block;
         text-align: center;
         padding: 10px;
-        color: black;
+        color: var(--ink);
         width: 80%;
         border-radius: 5px;
         margin-bottom: 25px;
@@ -196,10 +196,10 @@ const initSubscription = async () => {
 }
 
 .logout button {
-    font-family: "Rammetto One";
+    font-family: var(--font-display);
     font-size: 1.5rem;
-    color: #ffffff;
-    background-color: #0a0a0a;
+    color: var(--cream);
+    background-color: var(--ink);
     border: none;
     padding: 5px 10px;
     border-radius: 22px;
@@ -225,10 +225,10 @@ const initSubscription = async () => {
 }
 
 .logout_form .buttons button {
-    font-family: "Rammetto One";
+    font-family: var(--font-display);
     font-size: 1.5rem;
-    color: #ffffff;
-    background-color: #0a0a0a;
+    color: var(--cream);
+    background-color: var(--ink);
     border: none;
     padding: 5px 10px;
     border-radius: 22px;

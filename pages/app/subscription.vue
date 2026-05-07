@@ -97,7 +97,7 @@ definePageMeta({
 .subscription-form input {
     padding: 15px;
     border-radius: 5px;
-    border: 1px solid #ccc;
+    border: 1px solid var(--calabash);
 }
 
 .subscription-container {
@@ -117,11 +117,11 @@ input[type="radio"] {
 
     &:checked+label:after {
         background-color: orange;
-        color: white;
+        color: var(--cream);
     }
 
     &:checked+label {
-        background: white;
+        background: var(--paper);
         transform: scale(1.09);
         transition: transform .5s;
         box-shadow: 0 4px 15px 0 rgba(0, 0, 0, 0.65);

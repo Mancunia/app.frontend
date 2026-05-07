@@ -8,7 +8,7 @@
                 <UiAdminInputField @update:model-value="form.password = $event" place-holder="password"
                     type="password" />
                 <UiAdminButton type="submit">
-                    <UiLoader v-if="loading" :theme="{ color: '#fff' }" />
+                    <UiLoader v-if="loading" :theme="{ color: 'var(--cream)' }" />
                     Login
                 </UiAdminButton>
             </form>
@@ -46,7 +46,7 @@ definePageMeta({
     justify-content: center;
     align-items: center;
     height: 100vh;
-    background-color: #f5f5f5;
+    background-color: var(--paper);
     background-image: url('@/assets/images/bookShelve.png');
     padding: 15% 5%;
 }
@@ -59,7 +59,7 @@ definePageMeta({
     align-items: center;
     padding: 5%;
     background-color: rgba(255, 255, 255, 1);
-    box-shadow: 1px 1px 1px 1px #000;
+    box-shadow: 1px 1px 1px 1px var(--ink);
     border-radius: 10px;
 }
 
@@ -70,8 +70,8 @@ form {
 
 .link {
     margin-top: 10%;
-    color: #4D2316;
-    font-family: "Rammetto One";
+    color: var(--kola);
+    font-family: var(--font-display);
     font-size: 16px;
     font-style: normal;
     font-weight: 400;

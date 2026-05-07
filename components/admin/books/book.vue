@@ -302,16 +302,16 @@ onMounted(() => {
 
 .details .info p .title {
     font-weight: bold;
-    background-color: #0000008c;
-    border-right: 5px solid #000;
-    color: #fff;
+    background-color: rgba(0, 0, 0, 0.55);
+    border-right: 5px solid var(--ink);
+    color: var(--cream);
     padding: 1%;
 }
 
 .details .info p .titleText {
     font-weight: black;
-    background-color: #ffffff8c;
-    color: #000000;
+    background-color: rgba(255, 255, 255, 0.55);
+    color: var(--ink);
     padding: 1%;
 }
 

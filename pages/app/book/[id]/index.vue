@@ -178,7 +178,7 @@ definePageMeta({
 }
 
 .reaction button:hover {
-    color: #454343;
+    color: var(--ink);
     scale: 1.5;
     transition-duration: 5s ease-in-out;
 }
@@ -189,7 +189,7 @@ definePageMeta({
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: #f0f0f0;
+    background-color: var(--paper);
     border-radius: 10px;
 }
 
@@ -238,8 +238,8 @@ definePageMeta({
 }
 
 .active {
-    background-color: #454343;
-    color: #fff;
+    background-color: var(--ink);
+    color: var(--cream);
 }
 
 @media only screen and (min-width: 750px) {

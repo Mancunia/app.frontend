@@ -25,7 +25,7 @@
                     Make Associate
                 </UiAdminButton>
                 <UiAdminButton v-if="selectedUser.account != USER_ROLES.ADMIN" :loading="loading.makeAdmin"
-                    :style="`background-color: black`" @click="makeAdmin">
+                    :style="`background-color: var(--ink)`" @click="makeAdmin">
                     Make Admin
                 </UiAdminButton>
                 <UiAdminButton v-if="selectedUser.account != USER_ROLES.USER" :loading="loading.makeUser"
@@ -162,7 +162,7 @@ onMounted(() => {
 .list {
     width: 25%;
     height: 100%;
-    border: 1px solid #ccc;
+    border: 1px solid var(--calabash);
     border-radius: 10px;
     padding: 20px;
 }
@@ -181,7 +181,7 @@ onMounted(() => {
 .profile {
     width: 50%;
     height: 100%;
-    border: 1px solid #ccc;
+    border: 1px solid var(--calabash);
     padding: 20px;
 }
 

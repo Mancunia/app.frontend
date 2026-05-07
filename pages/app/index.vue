@@ -122,9 +122,9 @@ definePageMeta({
 }
 
 .btnallcat {
-    color: #000;
+    color: var(--ink);
     font-size: 16px;
-    font-family: Pontano Sans;
+    font-family: var(--font-sans);
     font-weight: 500;
     word-wrap: break-word;
     text-align: center;

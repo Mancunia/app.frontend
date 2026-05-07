@@ -43,7 +43,7 @@ const play = async () => emits('play',)
     width: 100%;
     padding: 10px;
     border: 0px;
-    background-color: #d2d1d123;
+    background-color: rgba(210, 209, 209, 0.14);
     border-radius: 10px;
     transition: 0.5s ease-in-out;
     margin-bottom: 10%;
@@ -81,8 +81,8 @@ const play = async () => emits('play',)
 .description button {
     width: 100px;
     height: 30px;
-    background-color: #191413;
-    color: white;
+    background-color: var(--ink);
+    color: var(--cream);
     border: none;
     border-radius: 5px;
 }

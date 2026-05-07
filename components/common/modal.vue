@@ -62,7 +62,7 @@ function onBackdropClick() {
 }
 
 .modal-content {
-    background: white;
+    background: var(--paper);
     padding: 4%;
     border-radius: 10px;
     position: relative;

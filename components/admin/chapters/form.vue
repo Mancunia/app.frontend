@@ -148,7 +148,7 @@ watch(() => props.chapter, () => {
     width: 100%;
     padding: 8px;
     margin-bottom: 10px;
-    border: 1px solid #ccc;
+    border: 1px solid var(--calabash);
     border-radius: 4px;
     box-sizing: border-box;
     font-size: 16px;
@@ -156,10 +156,10 @@ watch(() => props.chapter, () => {
 }
 
 .save-btn {
-    background-color: #6e4c29;
+    background-color: var(--kola-2);
     width: 300px;
     border: none;
-    color: white;
+    color: var(--cream);
     padding: 5px 40px;
     text-align: center;
     text-decoration: none;
@@ -172,7 +172,7 @@ watch(() => props.chapter, () => {
 }
 
 .save-btn:hover {
-    background-color: #8c5a28;
+    background-color: var(--ochre);
 }
 
 .close-btn {

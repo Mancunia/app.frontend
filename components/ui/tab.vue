@@ -34,18 +34,18 @@ onMounted(() => {
   cursor: pointer;
   padding: 10px 20px;
   display: inline-block;
-  background: #f1f1f1;
+  background: var(--paper);
   margin-right: 2px;
 }
 
 .tab.active {
-  background: #ccc;
+  background: var(--calabash);
 }
 
 .tab-content {
   display: none;
   padding: 20px;
-  border: 1px solid #ccc;
+  border: 1px solid var(--calabash);
   margin-top: 10px;
 }
 

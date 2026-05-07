@@ -83,9 +83,9 @@ const logout = () => {
     gap: 20px;
 }
 .links a{
-    font-family: "Rammetto One";
+    font-family: var(--font-display);
     font-size: 1rem;
-    color: #0a0a0a;
+    color: var(--ink);
     border: none;
     border-radius: 22px;
 
@@ -97,10 +97,10 @@ const logout = () => {
 }
 
 .logout button {
-    font-family: "Rammetto One";
+    font-family: var(--font-display);
     font-size: 1.5rem;
-    color: #ffffff;
-    background-color: #0a0a0a;
+    color: var(--cream);
+    background-color: var(--ink);
     border: none;
     padding: 5px 10px;
     border-radius: 22px;
@@ -120,10 +120,10 @@ const logout = () => {
 }
 
 .logout_form .buttons button {
-    font-family: "Rammetto One";
+    font-family: var(--font-display);
     font-size: 1.5rem;
-    color: #ffffff;
-    background-color: #0a0a0a;
+    color: var(--cream);
+    background-color: var(--ink);
     border: none;
     padding: 5px 10px;
     border-radius: 22px;

@@ -45,8 +45,8 @@ const sendNewPasswordRequest = async () => {
 
 .link {
     margin-top: 10%;
-    color: #4D2316;
-    font-family: "Rammetto One";
+    color: var(--kola);
+    font-family: var(--font-display);
     font-size: 16px;
     font-style: normal;
     font-weight: 400;
@@ -57,11 +57,11 @@ const sendNewPasswordRequest = async () => {
 
 .card {
     padding: 5%;
-    box-shadow: 1px 1px 5px #ccc;
+    box-shadow: 1px 1px 5px var(--calabash);
 }
 
 .title {
-    font-family: "Rammetto One";
+    font-family: var(--font-display);
     font-size: 1.5rem;
 }
 
@@ -71,7 +71,7 @@ const sendNewPasswordRequest = async () => {
     font-weight: 500;
     color: rgba(0, 0, 0, 0.5);
     padding: 20px;
-    box-shadow: 1px 1px 1px 1px #000;
+    box-shadow: 1px 1px 1px 1px var(--ink);
     border-radius: 10px;
 }
 
@@ -87,7 +87,7 @@ const sendNewPasswordRequest = async () => {
     margin-bottom: 10px;
     width: 15rem;
     padding: 10px;
-    border: 1px solid #ccc;
+    border: 1px solid var(--calabash);
     border-radius: 5px;
 }
 
@@ -95,13 +95,13 @@ const sendNewPasswordRequest = async () => {
     padding: 10px 20px;
     border: none;
     border-radius: 5px;
-    background-color: #4D2316;
-    color: #fff;
+    background-color: var(--kola);
+    color: var(--cream);
     cursor: pointer;
 }
 
 .form button:hover {
-    background-color: #6D3C29;
+    background-color: var(--kola-2);
 }
 @media (min-width: 768px) {
     .page {

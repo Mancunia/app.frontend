@@ -3,7 +3,7 @@
         <button @click="emit('click')" :style="style">
             <slot></slot>
         </button>
-        <UiLoader v-if="loading" :theme="{ color: '#fff' }" />
+        <UiLoader v-if="loading" :theme="{ color: 'var(--cream)' }" />
     </div>
 </template>
 
@@ -32,16 +32,16 @@ const emit = defineEmits(['click'])
 }
 
 .button button {
-    font-family: "Rammetto One";
+    font-family: var(--font-display);
     font-size: 1.5rem;
-    color: #ffffff;
-    background-color: #673305;
+    color: var(--cream);
+    background-color: var(--kola);
     border: none;
     padding: 5px 10px;
     border-radius: 22px;
 }
 
 button:hover {
-    background-color: #4d3319;
+    background-color: var(--kola-2);
 }
 </style>

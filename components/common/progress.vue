@@ -45,7 +45,7 @@ watch(() => progress, () => {
 <style scoped>
 .progress-container {
     width: 300px;
-    background-color: #e0e0e0;
+    background-color: var(--calabash);
     border-radius: 8px;
     position: relative;
 }
@@ -80,7 +80,7 @@ watch(() => progress, () => {
     left: 50%;
     transform: translateX(-50%);
     font-size: 14px;
-    color: #fff;
+    color: var(--cream);
     line-height: 24px;
 }
 
@@ -88,7 +88,7 @@ watch(() => progress, () => {
     display: block;
     margin-top: 8px;
     font-size: 14px;
-    color: #333;
+    color: var(--ink);
     text-align: center;
 }
 
@@ -101,7 +101,7 @@ watch(() => progress, () => {
 .int-container button {
     align-self: center;
     background-color: #097e03;
-    color: white;
+    color: var(--cream);
     padding: 5px;
     width: 100px;
     border: unset;
