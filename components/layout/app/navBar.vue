@@ -44,7 +44,7 @@ const {checkForOldFile} = useUtils()
 .appbar .anansesem {
     color: var(--ink);
     font-size: 30px;
-    font-family: Pontano Sans;
+    font-family: var(--font-sans);
     font-weight: 400;
     word-wrap: break-word;
 }
