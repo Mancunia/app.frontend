@@ -2,7 +2,7 @@
 
 ## Goal
 
-Apply the Anansesemfie Akan-themed design system across every consumer-facing page and shared component. Every screen the user sees must feel like it belongs to the same fire-warm, Akan-rooted world.
+Apply the Anansesemfie Akan-themed design system across every page and shared component — consumer and admin alike. Every screen the user or administrator sees must feel like it belongs to the same fire-warm, Akan-rooted world.
 
 ## Design Principles
 
@@ -428,7 +428,7 @@ Currently just `<h1>Web</h1>`. Apply a minimal branded landing:
 
 ---
 
-## Responsive Behaviour Summary
+## Responsive Behaviour Summary — Consumer
 
 | Surface | Mobile (<750px) | Desktop (≥750px) |
 |---|---|---|
@@ -441,3 +441,302 @@ Currently just `<h1>Web</h1>`. Apply a minimal branded landing:
 | Book detail | Full-width stacked | 70% content column |
 | Player/Reader panel | Slides in full-screen from right | 30% sticky right column (always visible) |
 | Callback pages | Full-width centred | Same |
+
+---
+
+---
+
+# Admin Section
+
+The admin section targets desktop-first (dashboard tool). The same design tokens and Akan aesthetic apply — warm paper backgrounds, kola/ochre accents, Fraunces/Pontano Sans typography — but with a more structured, data-focused layout. No fire motes in data areas; fire motes only on the login page.
+
+---
+
+## Admin Architecture
+
+```
+layouts/admin-layout.vue              — sidebar (17%) + body (83%)
+
+components/layout/admin/
+  sidebar.vue                         — reskin: Anansi mark header, token nav, already mostly OK
+  navbar.vue                          — reskin: replace logo images with Anansi mark + wordmark
+
+pages/admin/
+  login.vue                           — reskin: dark firelit, match consumer auth aesthetic
+  index.vue                           — books dashboard (30% list | 70% view) — fix violations
+  users.vue                           — user management page — fix violations
+  period.vue                          — period management — fix violations
+
+components/admin/
+  login.vue                           — currently empty shell; flesh out or remove
+  books/book.vue                      — fix: two rgba violations; reskin label/value display
+  books/bookItem.vue                  — fix: 'brown' named colour → var(--kola)
+  books/bookView.vue                  — reskin tabs, action buttons
+  books/form.vue                      — reskin form layout
+  books/metrics.vue                   — reskin metric cards, chart wrapper
+  chapters/index.vue                  — fix: float button token styling
+  chapters/chapter.vue                — reskin chapter row
+  chapters/form.vue                   — reskin chapter form
+  period/index.vue                    — reskin period cards
+  period/form.vue                     — reskin period form
+  player.vue                          — reskin: replace image buttons with SVG/text glyphs
+  users.vue                           — already uses tokenised buttons; verify layout
+
+components/ui/admin/
+  card.vue                            — fix: arbitrary rgba box-shadow → var(--hairline)
+  inputField.vue                      — fix: arbitrary rgba focus shadow → var(--hairline)
+  button.vue                          — already tokenised from rollout ✓
+  bookView.vue                        — already tokenised from rollout ✓
+  profile.vue                         — already tokenised from rollout ✓
+  profileItem.vue                     — already tokenised from rollout ✓
+```
+
+---
+
+## Admin Layout (`layouts/admin-layout.vue`)
+
+**Structure:** `display: flex`, `flex-direction: row`, `height: 100vh`, `background: var(--paper)`.
+
+- Sidebar: `width: 17%`, `flex-shrink: 0` — dark ink, fixed
+- Body: `flex: 1`, `overflow-y: auto`, `padding: var(--d-pad)`
+
+No changes to the overall structure — just confirm token compliance and ensure `height: 100vh` on the page root.
+
+---
+
+## Admin Sidebar (`components/layout/admin/sidebar.vue`)
+
+Already uses tokens correctly. Minor additions:
+
+**Header area** (top of sidebar, above nav links): add `<AseAnansiMark :size="28" color="var(--cream)" />` + `anansesemfie` wordmark (`var(--font-display)`, `var(--ochre)`, `0.8rem`) as a branded header. Currently shows nothing at the top.
+
+**Nav links:** already styled correctly (`var(--ink)` bg, `var(--cream)` text, `var(--kola)` + `var(--paper)` on active/hover).
+
+**Font:** add `font-family: var(--font-sans)` to `nav a span` — currently inherits from `system-ui`.
+
+---
+
+## Admin Navbar (`components/layout/admin/navbar.vue`)
+
+Currently renders two logo images and isn't mounted in `admin-layout.vue` (the sidebar replaces it). Keep it but update for completeness — it may be used on mobile or in future:
+
+- Replace `<img class="logo" src="~/assets/images/app_logo.png">` with `<AseAnansiMark :size="28" />` + wordmark
+- `background: var(--ink)`, `color: var(--cream)` (keep)
+
+---
+
+## Admin Login Page (`pages/admin/login.vue`)
+
+Apply the same dark firelit treatment as consumer auth — they're the same brand.
+
+**Full page:**
+- `background: var(--ink)` + `data-dark="true"` on root `.admin-container`
+- Remove `background-image: url('@/assets/images/bookShelve.png')` — replace with `<AseFireMotes :count="14" />`
+- Remove hardcoded padding percentages
+
+**Auth card:**
+- `background: rgba(255,255,255,0.04)` (replace `rgba(255,255,255,1)`)
+- `border: 1px solid var(--hairline)` (replace `box-shadow: 1px 1px 1px 1px var(--ink)`)
+- `border-radius: var(--d-radius)`
+- Add `<AseAnansiMark :size="36" color="var(--cream)" />` + "Admin" label above form
+
+**Form elements:** `UiAdminInputField` and `UiAdminButton` already token-compliant.
+
+**"Forgot Password" link:** `color: var(--ochre)`, `var(--font-sans)`, no uppercase.
+
+---
+
+## Admin Login Component (`components/admin/login.vue`)
+
+This is a stub component separate from the login page. It currently renders an empty `<div class="background">` with `background-color: var(--paper)` — this is incorrect for the admin dark theme.
+
+**Fix:**
+- `.background`: `background: var(--ink)` instead of `var(--paper)`, `height: 100vh`, `display: flex`, `justify-content: center`, `align-items: center`
+- If this component is unused (not mounted by any page), leave the fix in place for future use but no other action needed.
+
+---
+
+## Admin Dashboard Page (`pages/admin/index.vue`)
+
+**Layout stays the same:** book list (30%) | book view (70%).
+
+**Book list column:**
+- `border-right: 1px solid var(--hairline)` (keep, already token)
+- Heading: add "Books" section label in `var(--font-display)`, `var(--ink)`, `1rem`
+- Search field: already `UiAdminInputField`
+- "Add New Book" button: already `UiAdminButton`
+
+**Book view column:** contains `AdminBooksBookView` + `AdminPlayer` — both described below.
+
+No structural changes to this page — token compliance only.
+
+---
+
+## Book List Item (`components/admin/books/bookItem.vue`)
+
+**Fix violation:**
+- `.active { border: 2px solid brown }` → `border: 2px solid var(--kola)`
+
+**Reskin:**
+- `.book-card`: `background: var(--card)`, `border: 1px solid var(--hairline)` (remove raw `box-shadow: 0 2px 5px rgba(0,0,0,0.1)` → `box-shadow: 0 2px 8px var(--hairline)`)
+- `header` (title): `font-family: var(--font-serif)`, `font-weight: 600`, `font-size: 0.9rem`, `color: var(--ink)`
+- `p` (authors): `font-family: var(--font-serif)`, `font-style: italic`, `font-size: 0.8rem`, `color: var(--muted)`
+
+---
+
+## Book View (`components/admin/books/bookView.vue`)
+
+**Tabs:**
+- Tab buttons: `font-family: var(--font-display)`, `font-size: 0.85rem`, `background: none`, `border: none`, `border-bottom: 2px solid transparent`, `color: var(--muted)`, `padding: 6px 14px`, `cursor: pointer`
+- Active tab: `color: var(--kola)`, `border-bottom-color: var(--kola)`
+
+**Action buttons (Edit, Delete):**
+- Edit: `background: var(--calabash)`, `color: var(--ink)`, `border: 1px solid var(--hairline)`, `border-radius: var(--d-radius)`, `font-family: var(--font-sans)`
+- Delete: `background: var(--hibiscus)`, `color: var(--cream)`, `border: none`, `border-radius: var(--d-radius)`, `font-family: var(--font-sans)`
+
+**Book detail rows:**
+- `.title` label: `var(--font-sans)`, `font-weight: 600`, `var(--muted)`, `font-size: 0.8rem`
+- Values: `var(--font-serif)`, `var(--ink)`
+
+---
+
+## Book Detail (`components/admin/books/book.vue`)
+
+This component handles VIEW, EDIT, and NEW states for a single book. It was missing from the initial spec — add it.
+
+**Fix violations:**
+- `.details .info p .title`: `background-color: rgba(0, 0, 0, 0.55)` → `background: var(--kola)`, `color: var(--cream)`, `border-right: 3px solid var(--ochre)`
+- `.details .info p .titleText`: `background-color: rgba(255, 255, 255, 0.55)` → `background: var(--card)`, `color: var(--ink)`, `border: 1px solid var(--hairline)`
+
+**Reskin:**
+- `.bookWrapper`: `padding: var(--d-pad)`, `gap: var(--d-gap)`
+- `.details .info p .title` (label): `font-family: var(--font-sans)`, `font-size: 0.8rem`, `font-weight: 600`, `padding: 4px 8px`, `border-radius: 4px 0 0 4px`
+- `.details .info p .titleText` (value): `font-family: var(--font-serif)`, `font-size: 1rem`, `padding: 4px 8px`, `border-radius: 0 4px 4px 0`
+- `.cover img`: keep `object-fit: cover`, `border-radius: 10px` — no violations
+- `.details .btn`: `UiAdminButton` already token-compliant
+- Edit state select wrappers: `UiSelectDropDown` — fix `.item` violation as described in consumer section
+
+---
+
+## Book Form (`components/admin/books/form.vue`)
+
+**Wrapper:** `background: var(--card)`, `border-radius: var(--d-radius)`, `padding: var(--d-pad)`
+
+**Cover area:** dashed border upload zone — already handled by `UiUploadPicture` (described in consumer section)
+
+**Form fields:** `UiAdminInputField` already token-compliant.
+
+**Select dropdowns:** `UiSelectDropDown` — fix `.item` violation as described in consumer section.
+
+**Save button:** `UiAdminButton` already token-compliant.
+
+---
+
+## Metrics Component (`components/admin/books/metrics.vue`)
+
+**Chart wrapper:** `background: var(--card)`, `border: 1px solid var(--hairline)`, `border-radius: var(--d-radius)`, `padding: var(--d-pad)`
+
+**Summary cards:** `background: var(--card)`, `border: 1px solid var(--hairline)`, `border-radius: var(--d-radius)`, `padding: 12px 16px`
+- `.title`: `var(--font-sans)`, `var(--muted)`, `0.75rem`, `text-transform: uppercase`, `letter-spacing: 0.1em`
+- `.data`: `var(--font-display)`, `var(--ink)`, `1.8rem`
+
+---
+
+## Metric Card (`components/ui/admin/card.vue`)
+
+**Fix violation:**
+- `box-shadow: 0 0 10px 0 rgba(183,192,206,0.2)` → `box-shadow: 0 2px 8px var(--hairline)`
+
+**Reskin:**
+- `.primary-value`: `font-family: var(--font-display)` (add)
+- `h2` label: `font-family: var(--font-sans)`, `color: var(--muted)`, `font-size: 0.8rem`
+
+---
+
+## Admin Input Field (`components/ui/admin/inputField.vue`)
+
+**Fix violations:**
+- `:focus` `box-shadow: 0 0 5px rgba(0,0,0,0.1)` → `box-shadow: 0 0 0 2px var(--ochre)` (focus ring using brand colour)
+- `border: 1px solid var(--calabash)` on `.input-group` → keep (already token), just confirm
+
+**Reskin:**
+- `.input-label`: `font-family: var(--font-sans)` (add)
+- `input`, `textarea`: `font-family: var(--font-sans)`, `color: var(--ink)`, `background: transparent`
+
+---
+
+## Chapters Component (`components/admin/chapters/index.vue`)
+
+**Float button (+ Add Chapter):**
+- Currently unstyled `.float` button. Apply: `background: var(--ochre)`, `color: var(--ink)`, `border: none`, `border-radius: 50%`, `width: 48px`, `height: 48px`, `font-size: 1.5rem`, `position: fixed`, `bottom: 24px`, `right: 24px`, `box-shadow: 0 4px 16px var(--hairline)`, `cursor: pointer`
+
+---
+
+## Chapter Row (`components/admin/chapters/chapter.vue`)
+
+Read the actual file and apply token-compliant styling. Expected pattern:
+- Row: `background: var(--card)`, `border: 1px solid var(--hairline)`, `border-radius: var(--d-radius)`, `padding: 10px 14px`
+- Title: `var(--font-serif)`, `var(--ink)`, `font-weight: 600`
+- Edit/Delete buttons: same approach as bookView action buttons
+
+---
+
+## Chapter Form (`components/admin/chapters/form.vue`)
+
+Apply same token treatment as book form: `UiAdminInputField`, `UiAdminButton`, `UiSelectDropDown`, `UiUploadPicture` — all already token-compliant or described above.
+
+---
+
+## Period Page (`pages/admin/period.vue`) and Component (`components/admin/period/index.vue`)
+
+**Period cards:**
+- Base card: `background: var(--card)`, `border: 1px solid var(--hairline)`, `border-radius: var(--d-radius)`, `padding: 14px`
+- Active period: `background: var(--kola)`, `color: var(--cream)`, `border-color: transparent`
+- Icon: `color: var(--ochre)` (inactive), `color: var(--cream)` (active)
+- Label: `var(--font-sans)`, `var(--ink)` (inactive), `var(--cream)` (active)
+
+**"Add New Period" card:** `border: 2px dashed var(--hairline)`, `color: var(--muted)`, icon `color: var(--ochre)`
+
+---
+
+## Admin Player (`components/admin/player.vue`)
+
+The admin player is a horizontal mini-strip at the bottom of the book view. Same token treatment as the consumer mini player.
+
+**Fix:** replace all `<img src="@/assets/images/player/*.png">` buttons with Unicode glyphs or inline SVG:
+- Skip prev: `⏮`, skip next: `⏭`, rewind: `⏪`, forward: `⏩`, play: `▶`, pause: `⏸`
+- Button style: `background: none`, `border: none`, `color: var(--cream)`, `font-size: 1.2rem`, `cursor: pointer`
+- Play button: `background: var(--ochre)`, `color: var(--ink)`, `border-radius: 50%`, `width: 36px`, `height: 36px`
+
+**Player strip:**
+- `background: var(--ink)`, `data-dark="true"`, `border-radius: var(--d-radius)`, `padding: 8px 14px`
+- Book cover thumbnail: `border-radius: 6px`, `width: 40px`, `height: 40px`, `object-fit: cover`
+- Title/book label: `var(--font-serif)`, `var(--cream)`
+- Volume slider: `accent-color: var(--ochre)`
+
+---
+
+## Admin Users Page (`components/admin/users.vue`)
+
+Already uses tokenised `UiAdminButton` variants (default, `variant="dark"`, `variant="accent"`). No token violations expected from rollout.
+
+**Layout reskin:**
+- `.list` column: `border-right: 1px solid var(--hairline)`, `background: var(--paper)`
+- `.profile` column: `background: var(--paper)`
+- Placeholder image + "select a user" text: `color: var(--muted)`, `font-family: var(--font-serif)`
+- Search input: `UiAdminInputField` already token-compliant
+
+---
+
+## Responsive Behaviour Summary — Admin
+
+Admin is desktop-targeted. No mobile breakpoint required for this release.
+
+| Surface | Behaviour |
+|---|---|
+| Admin login | Full-screen dark, centred form, fire motes |
+| Admin sidebar | Fixed 17% wide, dark ink, Anansi mark header |
+| Admin dashboard | 30% book list \| 70% book view |
+| Admin users | 40% user list \| 60% profile view |
+| Admin period | Grid of period cards |
+| Modals | Dark glass overlay, token-compliant form content |
