@@ -1,35 +1,27 @@
 <template>
-    <div class="page">
-        <div class="sidebar">
-            <LayoutAdminSidebar />
-        </div>
-        <div class="body">
-            <slot />
-            
-        </div>
-    </div>
-
+  <div class="page">
+    <LayoutAdminSidebar />
+    <main class="body">
+      <slot />
+    </main>
+  </div>
 </template>
 
 <script setup lang="ts">
-
 </script>
 
 <style>
 .page {
-    display: flex;
-    flex-direction: row;
-    height: 100%;
-    width: 100%;
-    background: var(--paper);
+  display: grid;
+  grid-template-columns: 232px 1fr;
+  height: 100%;
+  min-height: 100vh;
+  width: 100%;
+  background: var(--paper);
 }
-.sidebar {
-    width: 10%;
-}
-
 .body {
-    padding: 20px;
-    width: 90%;
-    min-height: 100vh;
+  padding: 28px 32px;
+  overflow-y: auto;
+  min-height: 100vh;
 }
 </style>

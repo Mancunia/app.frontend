@@ -3,7 +3,13 @@ type ROUTES = {
     home: string;
     login: string;
     users: string;
-    period:string;
+    period: string;
+    books: string;
+    booksNew: string;
+    subscriptions: string;
+    storytellers: string;
+    revenue: string;
+    conversation: string;
   };
   app: {
     home: string;
@@ -21,22 +27,28 @@ type ROUTES = {
 
 const routes: ROUTES = {
   admin: {
-    home: "/admin",
-    login: "/admin/login",
-    users: "/admin/users",
-    period:"/admin/period"
+    home: '/admin',
+    login: '/admin/login',
+    users: '/admin/users',
+    period: '/admin/period',
+    books: '/admin/books',
+    booksNew: '/admin/books/new',
+    subscriptions: '/admin/subscriptions',
+    storytellers: '/admin/storytellers',
+    revenue: '/admin/revenue',
+    conversation: '/admin/conversation',
   },
   app: {
-    home: "/app",
-    login: "/app/auth/login",
-    signup: "/app/auth/signup",
-    forgotPassword: "/app/auth/forgot-password",
-    book: "/app/book/",
+    home: '/app',
+    login: '/app/auth/login',
+    signup: '/app/auth/signup',
+    forgotPassword: '/app/auth/forgot-password',
+    book: '/app/book/',
   },
   web: {
-    home: "/",
-    about: "/about",
-    contact: "/contact",
+    home: '/',
+    about: '/about',
+    contact: '/contact',
   },
 } as const;
 
