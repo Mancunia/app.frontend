@@ -55,7 +55,7 @@ watch(() => progress, () => {
     background-color: var(--ochre);
     border-radius: 8px;
     transition: width 0.3s ease;
-    background: linear-gradient(90deg, var(--ochre) 25%, var(--ochre) 50%, var(--ochre) 75%);
+    background: linear-gradient(90deg, var(--ochre) 25%, var(--ochre-deep) 50%, var(--ochre) 75%);
     background-size: 200% 100%;
     animation: shimmer 1.5s infinite;
 }

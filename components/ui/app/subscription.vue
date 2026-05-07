@@ -118,7 +118,7 @@ const initSubscription = async () => {
 .subscription__icon {
     margin-top: 10px;
     font-size: 38px;
-    background: black;
+    background: var(--ink);
     padding: 30px;
     border-radius: 50%;
 }
@@ -135,7 +135,7 @@ const initSubscription = async () => {
 
 .subscription__price-month {
     font-size: 18px;
-    color: grey;
+    color: var(--muted);
 }
 
 .subscription__list {
@@ -157,7 +157,7 @@ const initSubscription = async () => {
 }
 
 .icon-subscription {
-    color: grey;
+    color: var(--muted);
     margin-right: 5px;
 }
 
@@ -165,7 +165,7 @@ const initSubscription = async () => {
     display: flex;
     flex-direction: column;
     align-items: center;
-    font-family: var(--font-sans), sans-serif;
+    font-family: var(--font-sans);
     width: 275px;
     margin: 5px 0;
     padding: 0;
@@ -184,7 +184,7 @@ const initSubscription = async () => {
         width: 80%;
         border-radius: 5px;
         margin-bottom: 25px;
-        border: solid 2px black;
+        border: solid 2px var(--ink);
         transition: .5s;
     }
 }

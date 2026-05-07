@@ -166,7 +166,6 @@ watch(() => chapter, () => {
     height: 10px;
     border-radius: 10px;
     background-color: var(--kola);
-    color: rgb(173, 38, 38);
     cursor: pointer;
 }
 .controls img {

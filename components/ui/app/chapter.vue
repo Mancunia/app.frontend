@@ -5,7 +5,7 @@
         </div>
         <div class="description">
             <h3>{{ chapter.title }}</h3>
-            <UiLoader v-if="loading" :theme="{ color: 'black' }" />
+            <UiLoader v-if="loading" :theme="{ color: 'var(--ink)' }" />
             <button v-else-if="store.getPlaying.id !== chapter.id || !store.getPlayer.playing" @click="play">
                 {{ chapter.type === 'ebook' ? 'Read' : 'Play' }}
             </button>

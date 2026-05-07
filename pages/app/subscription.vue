@@ -116,7 +116,7 @@ input[type="radio"] {
     display: none;
 
     &:checked+label:after {
-        background-color: orange;
+        background-color: var(--ochre);
         color: var(--cream);
     }
 
