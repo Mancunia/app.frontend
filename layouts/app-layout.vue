@@ -32,17 +32,16 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: "Rammetto One";
+    font-family: var(--font-display);
+}
+
+.page {
+    background: var(--paper);
 }
 
 .body {
     width: 100%;
     height: 100%;
-
-}
-
-.page {
-    background-color: #f5f5f5;
 }
 
 .container {

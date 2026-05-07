@@ -21,11 +21,10 @@
     flex-direction: row;
     height: 100%;
     width: 100%;
-    background-color: #f5f5f5;
+    background: var(--paper);
 }
-.sidebar{
+.sidebar {
     width: 10%;
-
 }
 
 .body {
