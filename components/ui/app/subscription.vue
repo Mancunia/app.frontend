@@ -99,7 +99,7 @@ const initSubscription = async () => {
     font-family: 'Open Sans', sans-serif;
     margin-top: 0;
     margin-bottom: 0;
-    color: #85A9C1;
+    color: var(--calabash);
 }
 
 .subscription__title {
@@ -130,7 +130,7 @@ const initSubscription = async () => {
     font-size: 32px;
     color: var(--ink);
     padding-bottom: 10px;
-    border-bottom: 2px solid #EFF1F3;
+    border-bottom: 2px solid var(--calabash);
 }
 
 .subscription__price-month {

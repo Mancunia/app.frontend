@@ -171,7 +171,7 @@ watchEffect(() => {
     bottom: 120px;
     /* right: 40px; */
     left: 42%;
-    background-color: #0C9;
+    background-color: var(--ochre);
     color: var(--cream);
     border: unset;
     border-radius: 50px;

@@ -103,13 +103,13 @@ defineProps({
 }
 
 .green {
-    color: #2ecc71;
+    color: var(--ochre);
     font-size: 18px;
     margin: 0;
 }
 
 .red {
-    color: #e74c3c;
+    color: var(--hibiscus);
     font-size: 18px;
     margin: 0;
 }
