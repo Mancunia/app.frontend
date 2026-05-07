@@ -91,7 +91,7 @@ onMounted(() => {
 
 header {
     background-color: #1f2937;
-    color: #fff;
+    color: var(--cream);
     padding: 12px 20px;
     display: flex;
     justify-content: space-between;
@@ -109,7 +109,7 @@ header h1 {
 
 .controls button {
     background-color: #3b82f6;
-    color: #fff;
+    color: var(--cream);
     border: none;
     padding: 6px 12px;
     border-radius: 4px;
@@ -158,7 +158,7 @@ main {
 
 footer {
     background-color: #1f2937;
-    color: #fff;
+    color: var(--cream);
     padding: 10px 20px;
     text-align: center;
 }

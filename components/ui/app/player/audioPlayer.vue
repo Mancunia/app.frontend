@@ -52,7 +52,7 @@ const { checkForOldFile } = useUtils()
 }
 .peripherals a {
     text-decoration: none;
-    color: #000;
+    color: var(--ink);
     font-size: 1.2rem;
     display: flex;
     align-items: center;

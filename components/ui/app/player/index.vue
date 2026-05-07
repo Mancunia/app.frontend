@@ -1,8 +1,11 @@
 <template>
     <div>
         {{ secondsToMinutes(currentTime) }} / {{ secondsToMinutes(duration) }}
-        <input class="seek" type="range" min="0" :max="duration" :value="currentTime"
-            @input="seekAudio(Number(($event.target as HTMLInputElement).value))" />
+        <div class="seek-wrap">
+          <AseKenteWeft :progress="duration > 0 ? currentTime / duration : 0" :height="6" />
+          <input class="seek-input" type="range" min="0" :max="duration" :value="currentTime"
+              @input="seekAudio(Number(($event.target as HTMLInputElement).value))" />
+        </div>
 
         <div v-if="store.getPlaying.book" class="player">
             <div class="rectangleParent">
@@ -117,11 +120,15 @@ onMounted(async () => {
 }
 
 /* book details */
-.seek {
-    width: 90%;
+.seek-wrap { position: relative; width: 90%; }
+.seek-input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  opacity: 0;
+  cursor: pointer;
+  margin: 0;
 }
-
-
 
 /* player */
 .rectangleParent {
@@ -133,7 +140,7 @@ onMounted(async () => {
     width: 300px;
     height: 59px;
     border-radius: 19px;
-    background: #4D2316;
+    background: var(--kola);
     padding: 0px 10px;
     transform: translateX(45%)
 }
@@ -175,7 +182,7 @@ onMounted(async () => {
 
 .rectangleParent .play-button {
     flex-shrink: 0;
-    background-color: #F1EEE3;
+    background-color: var(--cream);
     border-radius: 50%;
     align-content: center;
     padding: 5%;
@@ -187,11 +194,11 @@ onMounted(async () => {
     }
 
     .bookDetails {
-        background: rgba(255, 255, 255, 0.2);
+        background: rgba(241, 238, 227, 0.2);
     }
 
     .player-item>button:hover {
-        border-bottom: 2px solid #F1EEE3;
+        border-bottom: 2px solid var(--cream);
         cursor: pointer;
     }
 
