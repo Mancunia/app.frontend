@@ -157,7 +157,7 @@ main {
 }
 
 footer {
-    background-color: #1f2937;
+    background: var(--ink);
     color: var(--cream);
     padding: 10px 20px;
     text-align: center;
