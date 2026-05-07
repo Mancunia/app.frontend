@@ -92,7 +92,7 @@ input[type="radio"] {
         background: var(--paper);
         transform: scale(1.09);
         transition: transform .5s;
-        box-shadow: 0 4px 15px 0 rgba(0, 0, 0, 0.65);
+        box-shadow: 0 4px 15px 0 var(--hairline);
     }
 }
 </style>

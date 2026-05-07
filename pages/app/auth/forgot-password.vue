@@ -31,6 +31,8 @@ const sendNewPasswordRequest = async () => {
         console.error({ error })
     }
 }
+
+definePageMeta({ title: 'Forgot Password', middleware: 'app', layout: 'app-auth' })
 </script>
 
 <style scoped>
@@ -39,7 +41,7 @@ const sendNewPasswordRequest = async () => {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    padding: 20% 5%;
+    padding: var(--d-pad);
 }
 
 .link {
@@ -49,7 +51,7 @@ const sendNewPasswordRequest = async () => {
 }
 
 .card {
-    padding: 5%;
+    padding: var(--d-pad);
 }
 
 .title {
@@ -69,7 +71,7 @@ const sendNewPasswordRequest = async () => {
 
 @media (min-width: 768px) {
     .page {
-        padding: 10% 5%;
+        padding: var(--d-pad);
     }
 }
 </style>
