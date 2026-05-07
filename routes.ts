@@ -17,6 +17,9 @@ type ROUTES = {
     signup: string;
     forgotPassword: string;
     book: string;
+    library: string;
+    search: string;
+    profile: string;
   };
   web?: {
     home: string;
@@ -44,6 +47,9 @@ const routes: ROUTES = {
     signup: '/app/auth/signup',
     forgotPassword: '/app/auth/forgot-password',
     book: '/app/book/',
+    library: '/app/library',
+    search: '/app/search',
+    profile: '/app/profile',
   },
   web: {
     home: '/',
