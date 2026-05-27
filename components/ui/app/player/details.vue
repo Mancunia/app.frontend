@@ -1,6 +1,6 @@
 <template>
   <div v-if="book" class="player-details">
-    <div v-if="store.getPlaying.type === 'ebook'">
+    <div v-if="store.getPlaying.type === 'ebook'" style="height: 100%">
       <UiAppPlayerEbookViewer />
     </div>
     <div v-else>
@@ -13,11 +13,11 @@
 const store = useAuthStore();
 const book = computed(() => store.getPlaying.book ?? null);
 
-const { init, initPDF, playAudio, stopAudio, fetchChapter, player } = usePlayer(USER_ROLES.USER);
+const { init, initPDF, playAudio, fetchChapter, player } = usePlayer(USER_ROLES.USER);
 
 const playReadChapter = async () => {
   const playerEle = document.getElementById('player');
-  if (store.getPlaying.id !== store.getPlaying.id || !player.value) {
+  if (!player.value) {
     const { data } = await fetchChapter(store.getPlaying.id ?? '');
     if (data) {
       if (data.chapter.type === 'ebook') {

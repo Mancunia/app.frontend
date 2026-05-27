@@ -4,6 +4,10 @@
       <h1 class="page-title">Listeners</h1>
     </header>
 
+    <div class="search-bar">
+      <input v-model="search" type="search" class="search-input" placeholder="Search by email…" aria-label="Search users" />
+    </div>
+
     <!-- Filter tabs -->
     <div class="tabs">
       <button
@@ -27,79 +31,90 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="user in filteredUsers" :key="user.id" class="user-row">
+          <tr v-for="user in users" :key="user.id" class="user-row">
             <td>
-              <div class="user-cell">
-                <img v-if="user.picture" :src="user.picture" class="avatar" alt="" />
-                <div v-else class="avatar-placeholder">{{ initials(user.name) }}</div>
-                <div class="user-info">
-                  <span class="user-name">{{ user.name }}</span>
-                  <span class="user-email">{{ user.email }}</span>
+              <NuxtLink :to="routes.admin.usersDetail + user.id" class="user-cell-link">
+                <div class="user-cell">
+                  <img v-if="user.dp" :src="user.dp" class="avatar" alt="" />
+                  <div v-else class="avatar-placeholder">{{ initials(user.username) }}</div>
+                  <div class="user-info">
+                    <span class="user-name">{{ user.username }}</span>
+                    <span class="user-email">{{ user.email }}</span>
+                  </div>
                 </div>
-              </div>
+              </NuxtLink>
             </td>
             <td>
-              <span class="role-pill" :class="rolePillClass(user.account)">
-                {{ roleLabel(user.account) }}
-              </span>
+              <select
+                class="role-select"
+                :value="user.account"
+                @change="handleRoleChange(user, Number(($event.target as HTMLSelectElement).value))"
+              >
+                <option :value="0">Listener</option>
+                <option :value="1">Storyteller</option>
+                <option :value="2">Admin</option>
+              </select>
             </td>
             <td class="date-cell">{{ formatDate(user.createdAt) }}</td>
             <td class="date-cell">{{ user.lastSeen ? formatDate(user.lastSeen) : '—' }}</td>
           </tr>
         </tbody>
       </table>
-      <p v-if="!loading && filteredUsers.length === 0" class="empty">No users in this group.</p>
+      <p v-if="!loading && users.length === 0" class="empty">No users found.</p>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-definePageMeta({ title: 'Listeners', middleware: 'admin', layout: 'admin-layout' });
+import { getUserProfiles, changeRole } from '@/services/admin/users'
+import routes from '~/routes'
 
-const { setCommon } = useCommon(USER_ROLES.ADMIN);
+definePageMeta({ title: 'Listeners', middleware: 'admin', layout: 'admin-layout' })
+
+const { setCommon } = useCommon(USER_ROLES.ADMIN)
+const { debounce } = useUtils()
 
 const tabs = [
-  { id: 'all',           label: 'Everyone'      },
-  { id: 'listeners',     label: 'Listeners'     },
-  { id: 'storytellers',  label: 'Storytellers'  },
-  { id: 'admins',        label: 'Admins'        },
-];
-const activeTab = ref('all');
+  { id: 'all',          label: 'Everyone'     },
+  { id: 'listeners',    label: 'Listeners'    },
+  { id: 'storytellers', label: 'Storytellers' },
+  { id: 'admins',       label: 'Admins'       },
+]
+const activeTab = ref('all')
+const search = ref('')
+const loading = ref(false)
+const users = ref<any[]>([])
 
-const loading = ref(false);
-const users = ref<any[]>([]);
-
-const filteredUsers = computed(() => {
-  if (activeTab.value === 'all') return users.value;
-  if (activeTab.value === 'listeners')    return users.value.filter(u => u.account === 0);
-  if (activeTab.value === 'storytellers') return users.value.filter(u => u.account === 1);
-  if (activeTab.value === 'admins')       return users.value.filter(u => u.account === 2);
-  return users.value;
-});
-
-const initials = (name: string) =>
-  name?.split(' ').map(p => p[0]).slice(0, 2).join('').toUpperCase() ?? '?';
-
-const roleLabel = (account: number) =>
-  account === 2 ? 'Admin' : account === 1 ? 'Storyteller' : 'Listener';
-
-const rolePillClass = (account: number) =>
-  account === 2 ? 'pill-admin' : account === 1 ? 'pill-storyteller' : 'pill-listener';
-
-const formatDate = (iso: string) =>
-  iso ? new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '—';
+const accountFilter = computed(() => {
+  if (activeTab.value === 'listeners')    return USER_ROLES.USER
+  if (activeTab.value === 'storytellers') return USER_ROLES.ASSOCIATE
+  if (activeTab.value === 'admins')       return USER_ROLES.ADMIN
+  return undefined
+})
 
 const fetchUsers = async () => {
-  loading.value = true;
+  loading.value = true
   try {
-    const res = await useRequest<any[]>({ url: '/admin/user', method: HTTP_METHODS.GET }, USER_ROLES.ADMIN);
-    if (res.data) users.value = res.data;
-  } finally {
-    loading.value = false;
-  }
-};
+    const res = await getUserProfiles({
+      search: search.value,
+      account: accountFilter.value as any,
+    })
+    if (res?.data) users.value = res.data as any
+  } finally { loading.value = false }
+}
 
-onMounted(() => { fetchUsers(); setCommon(); });
+const debouncedFetch = debounce(fetchUsers, 400)
+watch([search, activeTab], debouncedFetch)
+
+const handleRoleChange = async (user: any, newRole: number) => {
+  await changeRole({ userId: user.id, type: newRole as any })
+  user.account = newRole
+}
+
+const initials = (name: string) => name?.split(' ').map((p: string) => p[0]).slice(0, 2).join('').toUpperCase() ?? '?'
+const formatDate = (iso: string) => iso ? new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '—'
+
+onMounted(() => { fetchUsers(); setCommon() })
 </script>
 
 <style scoped>
@@ -107,6 +122,10 @@ onMounted(() => { fetchUsers(); setCommon(); });
 
 .listeners-header { display: flex; align-items: center; }
 .page-title { font-family: var(--font-display); font-size: 22px; color: var(--ink); margin: 0; }
+
+.search-bar { margin-bottom: 4px; }
+.search-input { width: 100%; max-width: 340px; padding: 9px 14px; background: var(--card); border: 1px solid var(--hairline); border-radius: 8px; font-family: var(--font-sans); font-size: 13px; color: var(--ink); outline: none; }
+.search-input:focus { border-color: var(--ochre); }
 
 .tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--hairline); }
 .tab {
@@ -130,6 +149,7 @@ onMounted(() => { fetchUsers(); setCommon(); });
 .user-row:last-child td { border-bottom: none; }
 .user-row:hover td { background: rgba(201,122,58,0.04); }
 
+.user-cell-link { text-decoration: none; display: block; }
 .user-cell { display: flex; align-items: center; gap: 10px; }
 .avatar { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
 .avatar-placeholder {
@@ -142,13 +162,7 @@ onMounted(() => { fetchUsers(); setCommon(); });
 .user-name { font-family: var(--font-sans); font-size: 13.5px; font-weight: 600; color: var(--ink); }
 .user-email { font-family: var(--font-sans); font-size: 11.5px; color: var(--muted); }
 
-.role-pill {
-  display: inline-flex; align-items: center; padding: 3px 10px;
-  border-radius: 20px; font-family: var(--font-sans); font-size: 11px; font-weight: 600;
-}
-.pill-listener    { background: rgba(226,211,197,0.5); color: var(--kola); }
-.pill-storyteller { background: rgba(201,122,58,0.15); color: var(--ochre); }
-.pill-admin       { background: rgba(31,23,20,0.10); color: var(--ink); }
+.role-select { padding: 4px 8px; background: var(--card); border: 1px solid var(--hairline); border-radius: 6px; font-family: var(--font-sans); font-size: 12px; color: var(--ink); outline: none; cursor: pointer; }
 
 .date-cell { font-family: var(--font-mono); font-size: 12px; color: var(--muted); }
 .empty { padding: 40px; text-align: center; font-family: var(--font-sans); font-size: 13px; color: var(--muted); }

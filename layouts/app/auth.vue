@@ -1,99 +1,118 @@
 <template>
-    <section>
-        <div class="form">
-            <slot />
+  <div class="auth-layout">
+    <div class="auth-form-container ase-paper">
+      <div class="auth-content">
+        <div class="auth-header">
+          <UiAseAnansiMark :size="48" color="var(--kola)" />
+          <h1 class="auth-brand ase-display">anansesemfie</h1>
         </div>
-        <div class="sideImage">
-            <img src="@/assets/images/bookShelve.png" alt="">
-        </div>
-
-    </section>
+        <slot />
+      </div>
+    </div>
+    <div class="auth-image-container">
+      <div class="image-overlay"></div>
+      <img src="@/assets/images/bookShelve.png" alt="Library" class="auth-bg-image">
+      <div class="image-content">
+        <UiAseFireMotes :count="12" />
+        <p class="image-tagline ase-display">Voices of the Ancestors,<br>Stories for the Soul.</p>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
-
 </script>
 
 <style scoped>
-section {
-    display: flex;
-    flex-direction: row;
-    width: 100%;
-    height: 100vh;
-    background-image: url('/assets/images/bookShelve.png');
+.auth-layout {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
 }
 
-section .form {
-    width: 100%;
-    height: 80vh;
-    align-items: center;
-    background: var(--paper);
-    margin-top:50%;
-    border-radius: 33px;
+.auth-form-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 24px;
+  background-color: var(--paper);
+  z-index: 2;
 }
 
-form {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: 40% 20%;
+.auth-content {
+  width: 100%;
+  max-width: 400px;
 }
 
-.sideImage {
-    display: none;
+.auth-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 40px;
+  text-align: center;
 }
 
+.auth-brand {
+  font-size: 1.8rem;
+  color: var(--kola);
+  margin-top: 12px;
+  letter-spacing: -0.02em;
+}
 
-@media (min-width: 768px) {
-    section {
-        flex-direction: row;
-        background-image: unset;
-    }
+.auth-image-container {
+  display: none;
+  flex: 1.2;
+  position: relative;
+  overflow: hidden;
+}
 
-    section .form {
-        width: 50%;
-        align-items: center;
-        height: unset;
-        margin: unset;
-        border: unset;
-    }
+.auth-bg-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
 
-    form {
-        padding: 40% 20%;
-    }
+.image-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(77, 35, 22, 0.4) 0%, rgba(31, 23, 20, 0.8) 100%);
+  z-index: 1;
+}
 
-    .sideImage {
-        flex: 1;
-        display: flex;
-        width: 50%;
-    }
+.image-content {
+  position: relative;
+  z-index: 2;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 60px;
+  color: var(--cream);
+}
 
-    .sideImage img {
-        max-width: 100%;
-        max-height: 100%;
-        object-fit: cover
-    }
+.image-tagline {
+  font-size: 2.4rem;
+  line-height: 1.2;
+  margin-top: 20px;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.3);
 }
 
 @media (min-width: 1024px) {
-    section {
-        flex-direction: row;
-    }
+  .auth-image-container {
+    display: block;
+  }
+}
 
-    section .form {
-        width: 50%;
-        align-items: center;
-
-    }
-
-    form {
-        padding: 30% 15%;
-    }
-
-    .sideImage {
-        flex: 1;
-        width: 50%;
-    }
+@media (max-width: 1023px) {
+  .auth-layout {
+    flex-direction: column;
+  }
+  
+  .auth-form-container {
+    min-height: 100vh;
+  }
 }
 </style>

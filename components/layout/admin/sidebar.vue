@@ -1,7 +1,7 @@
 <template>
   <aside class="sidebar">
     <div class="brand">
-      <span class="brand-mark">◆</span>
+      <!-- <span class="brand-mark">◆</span> -->
       <span class="brand-name">Anansesem</span>
     </div>
 

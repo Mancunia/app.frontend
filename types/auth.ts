@@ -5,6 +5,7 @@ export type USER = {
   username: string;
   dp: string;
   bio: string;
+  whatsappNumber: string;
   token: string;
   role:number;
   subscription: {
@@ -33,6 +34,7 @@ export type USER_PROFILE = {
   active: boolean;
   dp: string;
   bio: string;
+  whatsappNumber: string;
   subscription: string;
   createdAt: string;
 };

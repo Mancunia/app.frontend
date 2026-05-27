@@ -28,11 +28,11 @@
             <th>Category</th>
             <th>Played</th>
             <th>Views</th>
-            <th></th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="book in books" :key="book.id" class="book-row">
+          <tr v-for="book in books" :key="book.id || (book as any)._id" class="book-row">
             <td>
               <div class="book-cell">
                 <img v-if="book.cover" :src="book.cover" class="book-thumb" alt="" />
@@ -51,7 +51,10 @@
             <td class="num-cell">{{ book.meta?.played ?? '—' }}</td>
             <td class="num-cell">{{ book.meta?.views ?? '—' }}</td>
             <td>
-              <NuxtLink :to="`/admin/books/${book.id}`" class="open-btn">Analytics →</NuxtLink>
+              <div class="row-actions">
+                <NuxtLink :to="`/admin/books/${book.id || (book as any)._id}`" class="action-link">Edit →</NuxtLink>
+                <button class="action-del" @click="handleDelete(book)">Delete</button>
+              </div>
             </td>
           </tr>
         </tbody>
@@ -63,6 +66,7 @@
 <script setup lang="ts">
 import routes from '~/routes';
 import { getBooks } from '@/services/book';
+import { deleteBook } from '@/services/admin/book';
 import type { BOOK } from '~/types/book';
 
 definePageMeta({ title: 'Stories', middleware: 'admin', layout: 'admin-layout' });
@@ -85,6 +89,14 @@ const fetchBooks = async () => {
     loading.value = false;
   }
 };
+
+const handleDelete = async (book: BOOK) => {
+  const bookId = book.id || (book as any)._id
+  if (!window.confirm(`Delete "${book.title}" and all its chapters? This cannot be undone.`)) return
+  await deleteBook(bookId)
+  books.value = books.value.filter(b => (b.id || (b as any)._id) !== bookId)
+  totalBooks.value = Math.max(0, totalBooks.value - 1)
+}
 
 const debouncedFetch = debounce(fetchBooks, 400);
 watch(search, debouncedFetch);
@@ -142,10 +154,10 @@ onMounted(fetchBooks);
   border-radius: 20px; font-family: var(--font-sans); font-size: 11px; font-weight: 500;
 }
 .num-cell { font-family: var(--font-mono); font-size: 12.5px; color: var(--ink); }
-.open-btn {
-  font-family: var(--font-sans); font-size: 12px; color: var(--ochre);
-  text-decoration: none; font-weight: 500;
-}
-.open-btn:hover { text-decoration: underline; }
+.row-actions { display: flex; gap: 12px; align-items: center; }
+.action-link { font-family: var(--font-sans); font-size: 12px; color: var(--ochre); text-decoration: none; font-weight: 500; }
+.action-link:hover { text-decoration: underline; }
+.action-del { font-family: var(--font-sans); font-size: 12px; color: var(--hibiscus); background: none; border: none; cursor: pointer; padding: 0; }
+.action-del:hover { text-decoration: underline; }
 .empty { padding: 40px; text-align: center; font-family: var(--font-sans); font-size: 13px; color: var(--muted); }
 </style>

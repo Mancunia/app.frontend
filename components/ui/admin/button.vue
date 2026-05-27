@@ -1,6 +1,6 @@
 <template>
     <div class="button">
-        <button :class="['btn', variant && `btn--${variant}`]" @click="emit('click')">
+        <button v-bind="$attrs" :class="['btn', variant && `btn--${variant}`]" @click="emit('click')">
             <slot></slot>
         </button>
         <UiLoader v-if="loading" :theme="{ color: 'var(--cream)' }" />
@@ -8,6 +8,9 @@
 </template>
 
 <script setup lang="ts">
+defineOptions({
+    inheritAttrs: false
+})
 const props = defineProps({
     variant: {
         type: String,

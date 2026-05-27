@@ -25,3 +25,10 @@ export const changeRole = async (params: {
     },
     USER_ROLES.ADMIN
   );
+
+export const getUser = (id: string) =>
+  useRequest<USER_PROFILE>(
+    { url: `admin/user/${id}`, method: HTTP_METHODS.GET },
+    USER_ROLES.ADMIN
+  )
+

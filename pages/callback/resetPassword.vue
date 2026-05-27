@@ -1,17 +1,38 @@
 <template>
-    <div class="page">
-        <div class="card">
-            <h1 class="title">New Password</h1>
-            <div class="email">
-                {{ email }}
-            </div>
-            <form class="form" @submit.prevent="sendResetPasswordRequest">
-                <UiPassword @password="form.passwordOne = $event" />
-                <UiPassword @password="form.passwordTwo = $event" />
-                <UiAdminButton type="submit">Reset Password</UiAdminButton>
-            </form>
-        </div>
+  <div class="reset-password-page">
+    <div class="reset-intro">
+      <h2 class="ase-serif">Create New Password</h2>
+      <p class="ase-sans" v-if="email">Resetting password for: <strong>{{ email }}</strong></p>
+      <p class="ase-sans" v-else>Enter your new password below.</p>
     </div>
+
+    <form class="reset-form" @submit.prevent="sendResetPasswordRequest">
+      <div class="form-group">
+        <label class="ase-eyebrow">New Password</label>
+        <UiPassword 
+          placeholder="Enter new password" 
+          @password="form.passwordOne = $event" 
+        />
+      </div>
+
+      <div class="form-group">
+        <label class="ase-eyebrow">Confirm New Password</label>
+        <UiPassword 
+          placeholder="Repeat new password" 
+          @password="form.passwordTwo = $event" 
+        />
+      </div>
+
+      <button type="submit" class="submit-btn" :disabled="loading">
+        <UiLoader v-if="loading" :theme="{ color: 'var(--cream)' }" />
+        <span v-else>Update Password</span>
+      </button>
+
+      <div class="auth-footer">
+        <p>Back to <NuxtLink :to="routes.app.login" class="login-link">Sign In</NuxtLink></p>
+      </div>
+    </form>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -19,98 +40,166 @@ import routes from '~/routes';
 import { resetPassword } from '~/services/auth';
 
 const route = useRoute();
-
 const verificationCode = route.query.token as string
 const email = route.query.email as string
 
 const form = ref({
     passwordOne: '',
     passwordTwo: ''
-
 })
+const loading = ref(false)
 
 const { addError, addSuccess } = useToast()
+
 const sendResetPasswordRequest = async () => {
+    if (!checkPasswords()) return
+    
+    loading.value = true
     try {
-        if (!checkPasswords()) return
-        const res = await resetPassword({ token: verificationCode, newPassword: form.value.passwordOne })
-        if(res){
+        const res = await resetPassword({ 
+            token: verificationCode, 
+            newPassword: form.value.passwordOne 
+        })
+        
+        // Following the pattern from useAuth where res.data is expected on success
+        if (res) {
              addSuccess('Password reset successfully')
              navigateTo(routes.app.login)
         }
-       
     } catch (error: unknown) {
         console.error({ error })
-        addError('An error occurred')
+        // useHandleError (called in useRequest) will already show a toast if it's an API error
+    } finally {
+        loading.value = false
     }
-
 }
 
 const checkPasswords = () => {
+    if (!form.value.passwordOne || !form.value.passwordTwo) {
+        addError('Please fill in both password fields')
+        return false
+    }
     if (form.value.passwordOne !== form.value.passwordTwo) {
         addError('Passwords do not match')
+        return false
+    }
+    if (form.value.passwordOne.length < 6) {
+        addError('Password must be at least 6 characters long')
         return false
     }
     return true
 }
 
+definePageMeta({ 
+    title: 'Reset Password', 
+    middleware: 'app', 
+    layout: 'app-auth' 
+})
 </script>
 
 <style scoped>
-.page {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: 20% 5%;
+.reset-password-page {
+  width: 100%;
 }
 
-.card {
-    padding: 5%;
-    box-shadow: 1px 1px 5px var(--hairline);
+.reset-intro {
+  margin-bottom: 32px;
 }
 
-.title {
-    font-family: var(--font-display);
-    font-size: 1.5rem;
+.reset-intro h2 {
+  font-size: 1.8rem;
+  color: var(--ink);
+  margin-bottom: 8px;
 }
 
-.email {
-    margin-bottom: 10px;
-    font-size: 1.2rem;
-    font-weight: 500;
-    color: var(--muted);
-    padding: 20px;
-    box-shadow: 0 0 0 1px var(--hairline);
-    border-radius: 10px;
+.reset-intro p {
+  color: var(--muted);
+  font-size: 0.95rem;
 }
 
-.form {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: 5%;
+.reset-form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
 }
 
-.form input {
-    margin-bottom: 10px;
-    width: 15rem;
-    padding: 10px;
-    border: 1px solid var(--hairline);
-    border-radius: 5px;
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
-.form button {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    background-color: var(--kola);
-    color: var(--cream);
-    cursor: pointer;
+/* 
+ * We need to override the default padding in UiPassword to fit the 
+ * app-auth layout aesthetic 
+ */
+:deep(.form-group div) {
+  padding: 0 !important;
+  width: 100%;
 }
 
-.form button:hover {
-    background-color: var(--kola-2);
+:deep(.form-group input) {
+  width: 100% !important;
+  padding: 14px 16px !important;
+  background: white !important;
+  border: 1px solid var(--hairline) !important;
+  border-radius: 12px !important;
+  font-family: var(--font-sans) !important;
+  font-size: 1rem !important;
+  transition: all 0.2s ease !important;
+  box-sizing: border-box !important;
+}
+
+:deep(.form-group input:focus) {
+  outline: none !important;
+  border-color: var(--ochre) !important;
+  box-shadow: 0 0 0 4px rgba(201, 122, 58, 0.1) !important;
+}
+
+.submit-btn {
+  background: var(--kola);
+  color: var(--cream);
+  padding: 16px;
+  border-radius: 12px;
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  margin-top: 8px;
+}
+
+.submit-btn:hover:not(:disabled) {
+  background: var(--ink);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.submit-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.auth-footer {
+  margin-top: 16px;
+  text-align: center;
+}
+
+.auth-footer p {
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.login-link {
+  color: var(--ochre);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.login-link:hover {
+  text-decoration: underline;
 }
 </style>

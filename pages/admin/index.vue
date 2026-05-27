@@ -25,23 +25,15 @@
           <div class="panel-head">
             <span class="panel-title">Listening pulse — 14 days</span>
           </div>
-          <svg class="pulse-svg" viewBox="0 0 420 90" preserveAspectRatio="none">
-            <defs>
-              <linearGradient id="pulseGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stop-color="var(--ochre)" stop-opacity="0.35"/>
-                <stop offset="100%" stop-color="var(--ochre)" stop-opacity="0.02"/>
-              </linearGradient>
-            </defs>
-            <path :d="pulseArea" fill="url(#pulseGrad)" />
-            <path :d="pulseLine" fill="none" stroke="var(--ochre)" stroke-width="2" stroke-linejoin="round"/>
-          </svg>
-          <div class="pulse-labels">
-            <span v-for="lbl in pulseLabels" :key="lbl" class="pulse-lbl">{{ lbl }}</span>
+          <div style="height:90px; position:relative;">
+            <ClientOnly>
+              <Line :data="pulseChartData" :options="pulseChartOptions" />
+            </ClientOnly>
           </div>
         </div>
 
         <!-- Genre weft -->
-        <div class="panel">
+        <!-- <div class="panel">
           <div class="panel-head">
             <span class="panel-title">Listening by genre</span>
           </div>
@@ -54,7 +46,7 @@
               <span class="genre-pct">{{ g.pct }}%</span>
             </div>
           </div>
-        </div>
+        </div> -->
       </div>
 
       <!-- Right column -->
@@ -69,20 +61,18 @@
               <tr>
                 <th>Title</th>
                 <th>Listens</th>
-                <th>Hrs</th>
-                <th>Cmpl.</th>
+                <!-- <th>Hrs</th>
+                <th>Cmpl.</th> -->
               </tr>
             </thead>
             <tbody>
-              <tr v-for="s in topStories" :key="s.title">
+              <tr v-for="s in topStories" :key="s.id ?? s.title" class="story-row">
                 <td class="story-title">{{ s.title }}</td>
-                <td>{{ s.listens }}</td>
-                <td>{{ s.hrs }}</td>
-                <td>
-                  <div class="cmpl-track">
-                    <div class="cmpl-bar" :style="{ width: s.completion + '%' }" />
-                  </div>
-                </td>
+                <td>{{ s.meta?.played ?? '—' }}</td>
+                <!-- <td>—</td> -->
+                <!-- <td>
+                  <div class="cmpl-track"><div class="cmpl-bar" style="width:0%" /></div>
+                </td> -->
               </tr>
             </tbody>
           </table>
@@ -106,42 +96,60 @@
 </template>
 
 <script setup lang="ts">
-import { getBooks } from '@/services/book';
+import { getDashboardStats, getDashboardPulse } from '@/services/admin/dashboard'
+import { getBooks } from '@/services/book'
+import { Line } from 'vue-chartjs'
+import type { DashboardStats, PulsePoint } from '~/types/admin/dashboard'
+import type { BOOK } from '~/types/book'
 
-definePageMeta({ title: 'Hearth', middleware: 'admin', layout: 'admin-layout' });
+definePageMeta({ title: 'Hearth', middleware: 'admin', layout: 'admin-layout' })
 
-const todayLabel = new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' });
+const todayLabel = new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' })
 
-const bookCount = ref('…');
+const stats = ref<DashboardStats | null>(null)
+const pulse = ref<PulsePoint[]>([])
+const topStories = ref<BOOK[]>([])
+
 onMounted(async () => {
-  const { data } = await getBooks(USER_ROLES.ADMIN, { page: 1, limit: 1 });
-  if (data) bookCount.value = String(data.records ?? '—');
-});
+  const [statsRes, pulseRes, booksRes] = await Promise.all([
+    getDashboardStats(),
+    getDashboardPulse(14),
+    getBooks(USER_ROLES.ADMIN, { page: 1, limit: 5 }),
+  ])
+  if (statsRes?.data) stats.value = statsRes.data
+  if (pulseRes?.data) pulse.value = pulseRes.data
+  if (booksRes?.data) topStories.value = (booksRes.data as any).results ?? []
+})
 
 const kpis = computed(() => [
-  { label: 'Listeners tonight', value: '—', delta: 0 },
-  { label: 'Hours listened (7d)', value: '—', delta: 0 },
-  { label: 'Stories in library', value: bookCount.value, delta: 0 },
-  { label: 'MRR (GHC)', value: '—', delta: 0 },
-]);
+  // { label: 'Listeners tonight',   value: '—',                                    delta: 0 },
+  // { label: 'Hours listened (7d)', value: '—',                                    delta: 0 },
+  { label: 'Stories in library',  value: stats.value?.books ?? '…',              delta: 0 },
+  { label: 'Active subscribers',  value: stats.value?.activeSubscribers ?? '…',  delta: 0 },
+])
 
-const pulseData = [42, 58, 51, 70, 63, 88, 74, 91, 85, 72, 95, 80, 110, 104];
-const W = 420; const H = 90; const PAD = 6;
-const max = Math.max(...pulseData);
-const pts = pulseData.map((v, i) => ({
-  x: PAD + (i / (pulseData.length - 1)) * (W - PAD * 2),
-  y: H - PAD - (v / max) * (H - PAD * 2),
-}));
-const pulseLine = pts.map((p, i) => `${i === 0 ? 'M' : 'L'}${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');
-const pulseArea = `${pulseLine} L${pts[pts.length-1].x.toFixed(1)},${H} L${pts[0].x.toFixed(1)},${H} Z`;
-const pulseLabels = (() => {
-  const out: string[] = [];
-  for (let i = 13; i >= 0; i--) {
-    const d = new Date(); d.setDate(d.getDate() - i);
-    out.push(d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }));
-  }
-  return out.filter((_, i) => i % 4 === 0);
-})();
+const pulseChartData = computed(() => ({
+  labels: pulse.value.map(p => p.date.slice(5)),
+  datasets: [{
+    label: 'Plays',
+    data: pulse.value.map(p => p.plays),
+    borderColor: '#C97A3A',
+    backgroundColor: 'rgba(201,122,58,0.12)',
+    tension: 0.3,
+    fill: true,
+    pointRadius: 2,
+  }],
+}))
+
+const pulseChartOptions = {
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: { legend: { display: false }, tooltip: { mode: 'index' as const } },
+  scales: {
+    x: { grid: { display: false }, ticks: { color: '#888', font: { size: 10 } } },
+    y: { grid: { color: 'rgba(0,0,0,0.06)' }, ticks: { color: '#888', font: { size: 10 } } },
+  },
+}
 
 const genres = [
   { name: 'Folklore',    pct: 38 },
@@ -149,23 +157,11 @@ const genres = [
   { name: 'Fiction',     pct: 18 },
   { name: 'Children',    pct: 11 },
   { name: 'Non-fiction', pct: 7  },
-];
-
-const topStories = [
-  { title: 'Ananse and the Sky God', listens: 1240, hrs: 312, completion: 78 },
-  { title: 'The Drum of the Forest', listens: 890,  hrs: 201, completion: 65 },
-  { title: 'Yaa Asantewaa',          listens: 760,  hrs: 198, completion: 82 },
-  { title: 'Kofi and the River',     listens: 610,  hrs: 134, completion: 55 },
-  { title: 'Tales of Kweku',         listens: 490,  hrs: 98,  completion: 48 },
-];
+]
 
 const fireLog = [
-  { time: '09:41', msg: 'New listener joined — Accra' },
-  { time: '09:38', msg: '"Ananse and the Sky God" completed' },
-  { time: '09:22', msg: 'New story published: Kofi and the River' },
-  { time: '08:55', msg: 'Subscription renewed — Kumasi' },
-  { time: '08:31', msg: '3 new listeners this morning' },
-];
+  { time: '—', msg: 'Activity log coming soon' },
+]
 </script>
 
 <style scoped>

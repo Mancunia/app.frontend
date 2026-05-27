@@ -1,28 +1,12 @@
-import { ref, onUnmounted } from "vue";
-import * as pdfjsLib from "pdfjs-dist";
-// Import the worker file as a URL so the bundler includes the exact
-// worker that matches the installed `pdfjs-dist` version.
-// Vite (used by Nuxt 3) supports the `?url` import suffix which returns
-// the resolved public URL for the asset. This prevents mismatches where
-// a static `public/pdf.worker.mjs` file doesn't match the library version.
-// If your build system doesn't support `?url`, copy `node_modules/pdfjs-dist/build/pdf.worker.mjs`
-// into `public/` during your build instead.
-import pdfWorkerUrl from "pdfjs-dist/build/pdf.worker.mjs?url";
-import type {
-  PDFDocumentProxy,
-  PDFPageProxy,
-} from "pdfjs-dist/types/src/display/api";
-import { useFileDownloader } from "~/composables/useDownloadFile";
-import type { PdfFileData, PdfPageData } from "~/types/book";
-import { jwtDecode } from "jwt-decode";
-
-pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorkerUrl;
+import { ref } from "vue";
+import { useFileDownloader } from "./useDownloadFile";
+import { useUtils } from "./useUtils";
+import type { PdfFileData } from "~/types/book";
 
 export function usePdfReader() {
   const pdfData = ref<PdfFileData | null>(null);
   const loading = ref(false);
   const error = ref<string | null>(null);
-  let pdfDoc: PDFDocumentProxy | null = null;
 
   const { downloadFile } = useFileDownloader();
   const { decryptJWT } = useUtils();
@@ -41,14 +25,23 @@ export function usePdfReader() {
       let fileSize = 0;
       let decodedPassword = "";
       if (password) {
-        decodedPassword = decryptJWT<{ id: string; exp: number; iat: number }>(
-          password
-        ).id;
+        try {
+          decodedPassword = decryptJWT<{ id: string; exp: number; iat: number }>(
+            password
+          ).id;
+        } catch (e) {
+          console.error("Failed to decode PDF password JWT:", e);
+        }
       }
 
       if (typeof source === "string") {
         const downloaded = await downloadFile(source, false);
         if (!downloaded) throw new Error("Failed to download remote PDF file");
+        
+        if (downloaded.mimeType.includes("text/html") || downloaded.name.endsWith(".html")) {
+          throw new Error("The server returned an HTML page instead of a PDF file. This usually happens due to an expired link, authentication error, or a 404 page.");
+        }
+
         fileName = downloaded.name;
         fileSize = downloaded.size;
         arrayBuffer = await downloaded.blob.arrayBuffer();
@@ -58,28 +51,12 @@ export function usePdfReader() {
         arrayBuffer = await source.arrayBuffer();
       }
 
-      pdfDoc = await pdfjsLib.getDocument({
-        data: arrayBuffer,
-        password: decodedPassword,
-      }).promise;
-
-      const totalPages = pdfDoc.numPages;
-      const pages: PdfPageData[] = [];
-
-      for (let pageNum = 1; pageNum <= totalPages; pageNum++) {
-        const page: PDFPageProxy = await pdfDoc.getPage(pageNum);
-        const textContent = await page.getTextContent();
-        const textItems = textContent.items
-          .map((item) => ("str" in item ? item.str : ""))
-          .join(" ");
-        pages.push({ pageNumber: pageNum, textContent: textItems });
-      }
-
       const result: PdfFileData = {
         name: fileName,
         size: fileSize,
-        totalPages,
-        pages,
+        totalPages: 0, // Will be set by the viewer component once loaded
+        data: new Uint8Array(arrayBuffer),
+        password: decodedPassword
       };
 
       pdfData.value = result;
@@ -98,10 +75,6 @@ export function usePdfReader() {
       loading.value = false;
     }
   }
-
-  onUnmounted(() => {
-    if (pdfDoc) pdfDoc.destroy();
-  });
 
   return {
     pdfData,
