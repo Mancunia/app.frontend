@@ -35,13 +35,19 @@ export default defineNuxtConfig({
     public: {
       apiBase: process.env.NUXT_BASE_URL,
       defaultToken: "",
-      oldResource: process.env.NUXT_OLD_RESOURCE,
+      oldResource: process.env.NUXT_OLD_RESOURCE || "https://api.anansesemfie.com",
     },
   },
 
   routeRules: {
-    "/": { redirect: "/app" },
+  "/": { redirect: "/app" },
+  "/**": {
+    headers: {
+      "Cross-Origin-Embedder-Policy": "unsafe-none",
+      "Cross-Origin-Opener-Policy": "same-origin-allow-popups",
+    },
   },
+},
 
   plugins: ["~/plugins/chartjs.client.ts"],
 
