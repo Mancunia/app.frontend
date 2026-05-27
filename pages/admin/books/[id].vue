@@ -185,7 +185,7 @@ const onCoverChange = async (e: Event) => {
   if (!file) return
   coverUpdating.value = true
   try {
-    const { signedURL } = await generateSignedUrl(file)
+    const signedURL = await generateSignedUrl(file)
     if (!signedURL) throw new Error('No signed URL')
     const fileLoc = await uploadFile(file, signedURL)
     const coverUrl = fileLoc || signedURL.split('?')[0]
@@ -246,7 +246,7 @@ const onChapterFilePick = async (e: Event) => {
   chForm.type = file.type.includes('pdf') ? 'ebook' : 'audio'
   chUploading.value = true; chError.value = ''
   try {
-    const { signedURL } = await generateSignedUrl(file)
+    const signedURL = await generateSignedUrl(file)
     if (!signedURL) throw new Error('No signed URL')
     const fileLoc = await uploadFile(file, signedURL)
     chForm.file = fileLoc || signedURL.split('?')[0]
