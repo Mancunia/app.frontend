@@ -204,7 +204,7 @@ const onCoverPick = async (e: Event) => {
   coverPreview.value = URL.createObjectURL(file)
   uploading.value = true
   try {
-    const { signedURL } = await generateSignedUrl(file)
+    const signedURL = await generateSignedUrl(file)
     if (!signedURL) throw new Error('No signed URL returned')
     const uploadRes = await uploadFile(file, signedURL)
     form.cover = uploadRes ?? signedURL.split('?')[0] // Fallback to URL without query if response is empty

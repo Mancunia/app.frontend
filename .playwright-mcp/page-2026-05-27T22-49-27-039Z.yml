@@ -1,0 +1,44 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e3]:
+    - region "Notifications alt+T":
+      - list
+    - generic [ref=e4]:
+      - generic [ref=e6]:
+        - generic [ref=e7]:
+          - img "Anansesemfie" [ref=e8]
+          - heading "anansesemfie" [level=1] [ref=e18]
+        - generic [ref=e19]:
+          - generic [ref=e20]:
+            - heading "Welcome Back" [level=2] [ref=e21]
+            - paragraph [ref=e22]: Enter your details to continue your journey.
+          - generic [ref=e23]:
+            - generic [ref=e24]:
+              - generic [ref=e25]: Email Address
+              - textbox "Email Address" [ref=e27]:
+                - /placeholder: e.g. kwame@example.com
+            - generic [ref=e28]:
+              - generic [ref=e29]:
+                - generic [ref=e30]: Password
+                - link "Forgot?" [ref=e31] [cursor=pointer]:
+                  - /url: /app/auth/forgot-password
+              - textbox "Password" [ref=e33]:
+                - /placeholder: ••••••••
+            - button "Sign In" [ref=e34] [cursor=pointer]:
+              - generic [ref=e35]: Sign In
+            - paragraph [ref=e37]:
+              - text: Don't have an account?
+              - link "Create one" [ref=e38] [cursor=pointer]:
+                - /url: /app/auth/signup
+      - generic [ref=e39]:
+        - img "Library" [ref=e41]
+        - paragraph [ref=e43]:
+          - text: Voices of the Ancestors,
+          - text: Stories for the Soul.
+  - generic [ref=e44]:
+    - button "Toggle Nuxt DevTools" [ref=e45] [cursor=pointer]:
+      - img [ref=e46]
+    - generic "Page load time" [ref=e49]:
+      - generic [ref=e50]: "92"
+      - generic [ref=e51]: ms
+    - button "Toggle Component Inspector" [ref=e53] [cursor=pointer]:
+      - img [ref=e54]
