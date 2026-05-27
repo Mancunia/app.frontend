@@ -154,14 +154,14 @@ watchEffect(() => {
     padding: 2%;
     width: 95%;
     border: 0px;
-    background-color: #00000023;
+    background-color: rgba(0, 0, 0, 0.14);
     border-radius: 10px;
     transition: 0.5s ease-in-out;
 }
 
 .add-chapter:hover {
-    background-color: #fff;
-    box-shadow: inset -1px 1px 2px 0px #000000;
+    background-color: var(--card);
+    box-shadow: inset -1px 1px 2px 0px var(--ink);
 }
 
 .float {
@@ -171,12 +171,12 @@ watchEffect(() => {
     bottom: 120px;
     /* right: 40px; */
     left: 42%;
-    background-color: #0C9;
-    color: #FFF;
+    background-color: var(--ochre);
+    color: var(--cream);
     border: unset;
     border-radius: 50px;
     text-align: center;
-    box-shadow: 2px 2px 3px #999;
+    box-shadow: 2px 2px 3px var(--calabash);
 }
 
 .my-float {

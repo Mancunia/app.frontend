@@ -48,7 +48,7 @@ const edit = () => {
     padding: 10px;
     margin-bottom: 30px;
     border-radius: 10px;
-    background-color: #fff;
+    background-color: var(--paper);
     cursor: pointer;
     transition: all 0.3s ease;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);

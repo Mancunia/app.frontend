@@ -1,10 +1,158 @@
-@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Rammetto+One&display=swap");
+/* ─── Anansesemfie design tokens ──────────────────────────────────── */
+:root {
+  /* WARM palette (default) — kola brown, ochre, hibiscus, calabash, cream */
+  --ink:        #1F1714;
+  --ink-soft:   #2A201B;
+  --kola:       #4D2316;
+  --kola-2:     #6E4C29;
+  --ochre:      #C97A3A;
+  --ochre-deep: #A65A22;
+  --hibiscus:   #D04C4F;
+  --calabash:   #E2D3C5;
+  --cream:      #F1EEE3;
+  --paper:      #F8F4EA;
+  --muted:      rgba(31,23,20,0.55);
+  --hairline:   rgba(31,23,20,0.12);
+  --card:       #FBF7EE;
+
+  /* density — cozy default */
+  --d-pad:    16px;
+  --d-gap:    14px;
+  --d-radius: 18px;
+
+  /* type stacks */
+  --font-serif:   "Fraunces", "Iowan Old Style", Georgia, serif;
+  --font-sans:    "Pontano Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Rammetto One", "Fraunces", serif;
+  --font-mono:    "JetBrains Mono", ui-monospace, monospace;
+
+  color-scheme: light;
+}
+
+/* palette variants */
+[data-palette="editorial"] {
+  --ink:        #15140F;
+  --kola:       #1B1916;
+  --kola-2:     #3A352D;
+  --ochre:      #B5894B;
+  --ochre-deep: #8C6630;
+  --hibiscus:   #B23E3E;
+  --calabash:   #DBD3C0;
+  --cream:      #F4F0E5;
+  --paper:      #FBF8EE;
+  --card:       #FFFCF1;
+}
+[data-palette="cool"] {
+  --ink:        #0F1620;
+  --kola:       #1A2433;
+  --kola-2:     #2C3B52;
+  --ochre:      #D8A14C;
+  --ochre-deep: #A77822;
+  --hibiscus:   #6F8FB2;
+  --calabash:   #C9D2DA;
+  --cream:      #EEF1F4;
+  --paper:      #F6F8FB;
+  --card:       #FCFDFF;
+}
+
+/* dark / fireside mode */
+[data-dark="true"] {
+  --paper:      #14100D;
+  --card:       #1B1612;
+  --cream:      #221C16;
+  --calabash:   #3A2E22;
+  --ink:        #F4ECDD;
+  --ink-soft:   #E5D9C3;
+  --kola:       #C97A3A;
+  --kola-2:     #DA9457;
+  --ochre:      #E0A05E;
+  --ochre-deep: #C97A3A;
+  --hibiscus:   #E16A6E;
+  --muted:      rgba(244,236,221,0.55);
+  --hairline:   rgba(244,236,221,0.14);
+  color-scheme: dark;
+}
+
+/* density overrides */
+[data-density="compact"]  { --d-pad: 12px; --d-gap: 10px; --d-radius: 14px; }
+[data-density="spacious"] { --d-pad: 20px; --d-gap: 18px; --d-radius: 22px; }
+
+/* ─── Base reset ──────────────────────────────────────────────────── */
 * {
   margin: 0;
   line-height: normal;
-  font-family: "Roboto", sans-serif;
+  font-family: var(--font-sans);
 }
+
+html, body {
+  background: var(--paper);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: none;
+}
+
+/* ─── Design system utility classes ──────────────────────────────── */
+.ase-display {
+  font-family: var(--font-display);
+  letter-spacing: 0.01em;
+}
+.ase-serif {
+  font-family: var(--font-serif);
+}
+.ase-sans {
+  font-family: var(--font-sans);
+}
+.ase-mono {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+.ase-eyebrow {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* soft handwoven paper texture — CSS only, no images */
+.ase-paper {
+  background-color: var(--paper);
+  background-image:
+    radial-gradient(rgba(77,35,22,0.04) 1px, transparent 1px),
+    radial-gradient(rgba(77,35,22,0.025) 1px, transparent 1px);
+  background-size: 7px 7px, 11px 11px;
+  background-position: 0 0, 3px 4px;
+}
+
+.ase-scroll {
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+.ase-scroll::-webkit-scrollbar { display: none; }
+
+/* ─── Keyframe animations ─────────────────────────────────────────── */
+@keyframes ase-shimmer {
+  0%, 100% { opacity: 0.7; }
+  50%       { opacity: 1;   }
+}
+@keyframes ase-pulse {
+  0%, 100% { transform: scale(1);    }
+  50%       { transform: scale(1.04); }
+}
+@keyframes ase-mote {
+  0%   { transform: translateY(0) translateX(0); opacity: 0; }
+  15%  { opacity: 0.9; }
+  100% { transform: translateY(-110%) translateX(var(--dx, 8px)); opacity: 0; }
+}
+
+/* ─── Legacy utility classes (preserved) ─────────────────────────── */
 .align-center {
   display: flex;
   justify-content: center;
@@ -25,20 +173,20 @@
   width: inherit;
   padding: 10% 5%;
   margin: 15px 0;
-  border: 2px solid #4d2316;
+  border: 2px solid var(--kola);
   border-radius: 20px;
 }
 
 .appAuthInput input:focus {
   outline: none;
-  border: 2px solid #4d2316;
+  border: 2px solid var(--kola);
 }
 
 .appAuthButton {
   width: 90%;
   padding: 8%;
   margin-top: 5px;
-  background-color: #4d2316;
+  background-color: var(--kola);
   border-radius: 20px;
-  color: white;
+  color: var(--cream);
 }

@@ -1,17 +1,20 @@
 <template>
     <div class="button">
-        <button @click="emit('click')" :style="style">
+        <button v-bind="$attrs" :class="['btn', variant && `btn--${variant}`]" @click="emit('click')">
             <slot></slot>
         </button>
-        <UiLoader v-if="loading" :theme="{ color: '#fff' }" />
+        <UiLoader v-if="loading" :theme="{ color: 'var(--cream)' }" />
     </div>
 </template>
 
 <script setup lang="ts">
+defineOptions({
+    inheritAttrs: false
+})
 const props = defineProps({
-    style: {
+    variant: {
         type: String,
-        default: 'button'
+        default: ''
     },
     loading: {
         type: Boolean,
@@ -19,7 +22,6 @@ const props = defineProps({
     }
 })
 const emit = defineEmits(['click'])
-
 </script>
 
 <style scoped>
@@ -31,17 +33,19 @@ const emit = defineEmits(['click'])
     padding: 6px 16px 6px 16px;
 }
 
-.button button {
-    font-family: "Rammetto One";
+.btn {
+    font-family: var(--font-display);
     font-size: 1.5rem;
-    color: #ffffff;
-    background-color: #673305;
+    color: var(--cream);
+    background-color: var(--kola);
     border: none;
     padding: 5px 10px;
     border-radius: 22px;
 }
 
-button:hover {
-    background-color: #4d3319;
-}
+.btn:hover { background-color: var(--kola-2); }
+.btn--dark  { background-color: var(--ink); }
+.btn--dark:hover { background-color: var(--ink-soft); }
+.btn--accent { background-color: var(--ochre); }
+.btn--accent:hover { background-color: var(--ochre-deep); }
 </style>

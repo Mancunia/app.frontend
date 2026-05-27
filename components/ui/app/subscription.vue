@@ -96,10 +96,10 @@ const initSubscription = async () => {
 .subscription__main-feature,
 .subscription__price {
     text-transform: uppercase;
-    font-family: 'Open Sans', sans-serif;
+    font-family: var(--font-sans);
     margin-top: 0;
     margin-bottom: 0;
-    color: #85A9C1;
+    color: var(--calabash);
 }
 
 .subscription__title {
@@ -109,7 +109,7 @@ const initSubscription = async () => {
     padding: 10px;
     margin-top: 20px;
     font-size: 20px;
-    color: black;
+    color: var(--ink);
     width: 100%;
     border-top-left-radius: 10px;
     border-top-right-radius: 10px;
@@ -118,7 +118,7 @@ const initSubscription = async () => {
 .subscription__icon {
     margin-top: 10px;
     font-size: 38px;
-    background: black;
+    background: var(--ink);
     padding: 30px;
     border-radius: 50%;
 }
@@ -128,14 +128,14 @@ const initSubscription = async () => {
     width: 90%;
     text-align: center;
     font-size: 32px;
-    color: black;
+    color: var(--ink);
     padding-bottom: 10px;
-    border-bottom: 2px solid #EFF1F3;
+    border-bottom: 2px solid var(--calabash);
 }
 
 .subscription__price-month {
     font-size: 18px;
-    color: grey;
+    color: var(--muted);
 }
 
 .subscription__list {
@@ -148,16 +148,16 @@ const initSubscription = async () => {
     display: flex;
     margin: 20px 0;
     font-size: 16px;
-    color: black;
+    color: var(--ink);
 }
 
 .subscription__item-text {
-    color: black;
+    color: var(--ink);
     font-size: 14px;
 }
 
 .icon-subscription {
-    color: grey;
+    color: var(--muted);
     margin-right: 5px;
 }
 
@@ -165,13 +165,14 @@ const initSubscription = async () => {
     display: flex;
     flex-direction: column;
     align-items: center;
-    font-family: Roboto, sans-serif;
+    font-family: var(--font-sans);
     width: 275px;
     margin: 5px 0;
     padding: 0;
-    border-radius: 10px;
-    background: #FFF;
-    box-shadow: 0 4px 13px 0 rgba(0, 0, 0, 0.45);
+    border-radius: var(--d-radius);
+    background: var(--paper);
+    border: 1px solid var(--hairline);
+    box-shadow: 0 4px 16px var(--hairline);
     transition: transform .5s;
     cursor: pointer;
 
@@ -180,29 +181,14 @@ const initSubscription = async () => {
         display: block;
         text-align: center;
         padding: 10px;
-        color: black;
+        font-family: var(--font-display);
+        color: var(--ink);
         width: 80%;
         border-radius: 5px;
         margin-bottom: 25px;
-        border: solid 2px black;
+        border: solid 2px var(--ink);
         transition: .5s;
     }
-}
-
-.logout {
-    width: 100%;
-    display: flex;
-    padding: 10% 20%;
-}
-
-.logout button {
-    font-family: "Rammetto One";
-    font-size: 1.5rem;
-    color: #ffffff;
-    background-color: #0a0a0a;
-    border: none;
-    padding: 5px 10px;
-    border-radius: 22px;
 }
 
 .logout_form {
@@ -210,27 +196,31 @@ const initSubscription = async () => {
     flex-direction: column;
     justify-content: space-between;
     align-items: center;
-    padding: 10% 20%;
+    padding: var(--d-pad);
+    gap: 16px;
 }
+
 .logout_form h1 {
-    font-size: 2rem;
+    font-family: var(--font-display);
+    font-size: 1.2rem;
     font-weight: 600;
-    margin-bottom: 20px;
-    white-space: nowrap;
+    margin: 0;
+    text-align: center;
 }
 
 .logout_form .buttons {
     display: flex;
-    gap: 20px;
+    gap: 16px;
 }
 
 .logout_form .buttons button {
-    font-family: "Rammetto One";
-    font-size: 1.5rem;
-    color: #ffffff;
-    background-color: #0a0a0a;
+    font-family: var(--font-display);
+    font-size: 1rem;
+    color: var(--cream);
+    background: var(--ink);
     border: none;
-    padding: 5px 10px;
+    padding: 6px 16px;
     border-radius: 22px;
+    cursor: pointer;
 }
 </style>

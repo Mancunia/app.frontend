@@ -45,23 +45,23 @@ watch(() => progress, () => {
 <style scoped>
 .progress-container {
     width: 300px;
-    background-color: #e0e0e0;
+    background-color: var(--calabash);
     border-radius: 8px;
     position: relative;
 }
 
 .progress-bar {
     height: 24px;
-    background-color: #4caf50;
+    background-color: var(--ochre);
     border-radius: 8px;
     transition: width 0.3s ease;
-    background: linear-gradient(90deg, #4caf50 25%, #66bb6a 50%, #4caf50 75%);
+    background: linear-gradient(90deg, var(--ochre) 25%, var(--ochre-deep) 50%, var(--ochre) 75%);
     background-size: 200% 100%;
     animation: shimmer 1.5s infinite;
 }
 
 .error{
-    background-color: #c10909;
+    background-color: var(--hibiscus);
 }
 
 @keyframes shimmer {
@@ -80,7 +80,7 @@ watch(() => progress, () => {
     left: 50%;
     transform: translateX(-50%);
     font-size: 14px;
-    color: #fff;
+    color: var(--cream);
     line-height: 24px;
 }
 
@@ -88,7 +88,7 @@ watch(() => progress, () => {
     display: block;
     margin-top: 8px;
     font-size: 14px;
-    color: #333;
+    color: var(--ink);
     text-align: center;
 }
 
@@ -100,8 +100,8 @@ watch(() => progress, () => {
 
 .int-container button {
     align-self: center;
-    background-color: #097e03;
-    color: white;
+    background-color: var(--ochre);
+    color: var(--cream);
     padding: 5px;
     width: 100px;
     border: unset;

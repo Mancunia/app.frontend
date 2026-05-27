@@ -61,7 +61,7 @@ defineProps({
     justify-content: center;
     align-content: center;
     font-size: 3rem;
-    color: #4caf50;
+    color: var(--ochre);
     margin-bottom: 1rem;
 }
 
@@ -70,7 +70,7 @@ defineProps({
     flex-direction: column;
     font-size: 1rem;
     margin-bottom: 1.5rem;
-    color: #333;
+    color: var(--ink);
 }
 
 .modal-buttons {
@@ -88,29 +88,29 @@ defineProps({
 }
 
 .modal-button.primary {
-    background-color: #4caf50;
-    color: white;
+    background-color: var(--ochre);
+    color: var(--cream);
 }
 
 .modal-button.danger {
-    background-color: #cf1b07;
-    color: white;
+    background-color: var(--hibiscus);
+    color: var(--cream);
 }
 
 .modal-button.secondary {
-    background-color: #e0e0e0;
-    color: #333;
+    background-color: var(--calabash);
+    color: var(--ink);
 }
 
 .modal-button.info {
-    background-color: #1e1e1e;
-    color: #ffffff;
+    background-color: var(--ink);
+    color: var(--cream);
 }
 
 .modal-button.subtle {
     background-color: unset;
     border: unset;
-    color: #000000;
-    border-bottom: 1px dashed black;
+    color: var(--ink);
+    border-bottom: 1px dashed var(--ink);
 }
 </style>

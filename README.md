@@ -2,6 +2,10 @@
 
 Look at the [Nuxt 3 documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
 
+## Project Status
+
+For details on currently implemented features and pending tasks, see [UNEXECUTED_PLANS.md](./docs/UNEXECUTED_PLANS.md).
+
 ## Setup
 
 Make sure to install the dependencies:

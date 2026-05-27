@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node -e ' *)",
+      "Skill(commands-utilities-debugging:debug-error)",
+      "Skill(commands-utilities-debugging:debug-error:*)",
+      "Bash(npx nuxi *)",
+      "Skill(commands-utilities-debugging:git-status)",
+      "Skill(commands-utilities-debugging:git-status:*)"
+    ]
+  }
+}

@@ -74,7 +74,7 @@ export const usePlayer = (app: USER_ROLES) => {
     try{
       const data = await readPdf(
       chapter.chapter.content as string,
-      chapter.chapter.password as string
+      chapter.chapter.password ?? undefined
     );
     if (data) {
       pdfFile.value = data;
@@ -207,7 +207,7 @@ export const usePlayer = (app: USER_ROLES) => {
     playerDetails,
     player: audioFile,
     fetchChapter,
-    loading: loading.value ?? pdfLoading.value,
+    loading: computed(() => loading.value || pdfLoading.value),
     pdfData,
     error,
   };

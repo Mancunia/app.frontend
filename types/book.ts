@@ -67,5 +67,7 @@ export type PdfFileData = {
   name: string;
   size: number;
   totalPages: number;
-  pages: PdfPageData[];
+  pages?: PdfPageData[];
+  data: Uint8Array | string | null;
+  password?: string;
 };

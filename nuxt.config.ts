@@ -13,6 +13,12 @@ export default defineNuxtConfig({
   app: {
     head: {
       link: [
+        { rel: "preconnect", href: "https://fonts.googleapis.com" },
+        { rel: "preconnect", href: "https://fonts.gstatic.com", crossorigin: "" },
+        {
+          href: "https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT,WONK@9..144,300..900,0..100,0..1&family=Pontano+Sans:wght@300..700&family=Rammetto+One&family=JetBrains+Mono:wght@400..700&display=swap",
+          rel: "stylesheet",
+        },
         {
           href: "https://cdn.boxicons.com/3.0.6/fonts/basic/boxicons.min.css",
           rel: "stylesheet",
@@ -36,6 +42,8 @@ export default defineNuxtConfig({
   routeRules: {
     "/": { redirect: "/app" },
   },
+
+  plugins: ["~/plugins/chartjs.client.ts"],
 
   modules: ["@pinia/nuxt"],
 

@@ -29,27 +29,13 @@ onMounted(() => {
 });
 </script>
 
-<style>
+<style scoped>
 .tab {
-  cursor: pointer;
-  padding: 10px 20px;
-  display: inline-block;
-  background: #f1f1f1;
-  margin-right: 2px;
+  cursor: pointer; padding: 6px 14px; display: inline-block;
+  font-family: var(--font-display); font-size: 0.85rem; color: var(--muted);
+  background: transparent; border-bottom: 2px solid transparent;
 }
-
-.tab.active {
-  background: #ccc;
-}
-
-.tab-content {
-  display: none;
-  padding: 20px;
-  border: 1px solid #ccc;
-  margin-top: 10px;
-}
-
-.tab-content.active {
-  display: block;
-}
+.tab.active { color: var(--kola); border-bottom-color: var(--kola); background: transparent; }
+.tab-content { display: none; padding: 20px; border-top: 1px solid var(--hairline); }
+.tab-content.active { display: block; }
 </style>

@@ -1,47 +1,63 @@
 <template>
-    <div class="page">
-        <div v-if="loading" class="book">
-            <div class="book-image">
-                <UiSkeletonLoader width="100%" height="200px" />
-            </div>
-            <div class="book-description">
-                <UiSkeletonLoader width="100%" height="50px" />
-                <UiSkeletonLoader width="100%" height="50px" />
-            </div>
-        </div>
-        <div v-else-if="book" class="book">
-            <div class="book-image">
-                <img :src="checkForOldFile(book.cover)" alt="book.title" />
-            </div>
-            <div class="book-description">
-                <h1>{{ book.title }}</h1>
-                <p>{{ book.description }}</p>
-            </div>
-        </div>
-        <div class="reaction">
-            <button @click="like"><i class='bx  bx-thumb-up'></i> </button>
-            <!-- <button @click="disLike"><i class='bx  bx-thumb-down'></i> </button> -->
-        </div>
-        <div class="tabs">
-            <div class="tab" :class="{ active: tab === TABS.CHAPTERS }" @click="tab = TABS.CHAPTERS">Chapters {{
-                tabData.chapters }}</div>
-            <div class="tab" v-if="false" :class="{ active: tab === TABS.COMMENTS }" @click="tab = TABS.COMMENTS">
-                Comments {{
-                    book?.meta.comments }}</div>
-        </div>
-        <div class="tabPage">
-            <div v-if="tab === TABS.CHAPTERS">
-                <div class="chapters" v-if="chapters.chapters">
-                    <UiAppChapter v-for="(chapter, index) in chapters.chapters" :key="index" :chapter="chapter"
-                        :loading="loadingChapter === chapter.id" @play="playReadChapter(chapter)" />
-                </div>
-
-            </div>
-            <div v-else-if="tab === TABS.COMMENTS">
-                <AppComments :id="id" />
-            </div>
-        </div>
+  <div class="book-page">
+    <!-- Loading skeleton -->
+    <div v-if="loading">
+      <UiSkeletonLoader width="100%" height="260px" />
+      <div class="skeleton-wrap">
+        <UiSkeletonLoader width="60%" height="28px" />
+        <UiSkeletonLoader width="40%" height="20px" />
+      </div>
     </div>
+
+    <!-- Book hero -->
+    <div v-else-if="book" class="hero-wrap">
+      <img :src="checkForOldFile(book.cover)" class="hero-img" :alt="book.title" />
+      <div class="hero-overlay"></div>
+    </div>
+
+    <!-- Meta strip -->
+    <div v-if="book && !loading" class="meta-strip">
+      <h1 class="meta-title">{{ book.title }}</h1>
+      <p class="meta-author">{{ book.authors?.join(', ') }}</p>
+      <div class="meta-chips">
+        <span class="chip" v-if="book.language">{{ book.language }}</span>
+        <span class="chip">{{ book.meta?.views ?? 0 }} views</span>
+      </div>
+    </div>
+
+    <!-- Synopsis -->
+    <div v-if="book && !loading" class="synopsis">
+      <p class="synopsis-text" :class="{ clamped: !synopsisExpanded }">{{ book.description }}</p>
+      <button class="synopsis-toggle" @click="synopsisExpanded = !synopsisExpanded">
+        {{ synopsisExpanded ? 'Read less' : 'Read more' }}
+      </button>
+    </div>
+
+    <!-- Reaction -->
+    <div class="reaction">
+      <button class="like-btn" @click="like">👍 Like</button>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab" :class="{ active: tab === TABS.CHAPTERS }" @click="tab = TABS.CHAPTERS">
+        Chapters {{ tabData.chapters }}
+      </button>
+    </div>
+
+    <!-- Chapter list -->
+    <div class="tab-content">
+      <div v-if="tab === TABS.CHAPTERS && chapters.chapters">
+        <UiAppChapter
+          v-for="(chapter, index) in chapters.chapters"
+          :key="index"
+          :chapter="chapter"
+          :loading="loadingChapter === chapter.id"
+          @play="playReadChapter(chapter)"
+        />
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -59,6 +75,7 @@ const book = useState<BOOK | null>('appBook')
 const chapters = ref<{ chapters: CHAPTER[] | null, loading: boolean }>({ chapters: null, loading: false })
 const loading = ref<boolean>(false);
 const loadingChapter = ref('')
+const synopsisExpanded = ref(false)
 
 const id = useRoute().params.id as string
 
@@ -142,134 +159,25 @@ definePageMeta({
 </script>
 
 <style scoped>
-.page {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 2%;
-    margin-bottom: 30%;
-    gap: 20px;
-}
-
-.book {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    width: inherit;
-    height: 50vh;
-    background-color: rgb(231, 231, 231);
-    box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.1);
-    border-radius: 20px;
-    transition-duration: 1s ease-in-out;
-
-}
-
-.reaction {
-    display: flex;
-    flex-direction: row;
-    gap: 10px;
-}
-
-.reaction button {
-    background-color: transparent;
-    border: none;
-    font-size: 1.5rem;
-    cursor: pointer;
-}
-
-.reaction button:hover {
-    color: #454343;
-    scale: 1.5;
-    transition-duration: 5s ease-in-out;
-}
-
-.book-image {
-    width: inherit;
-    height: 70%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: #f0f0f0;
-    border-radius: 10px;
-}
-
-.book-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.book-description {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    width: 100%;
-    height: 60%;
-    padding: 10px;
-    overflow: scroll;
-}
-
-.tabs {
-    display: flex;
-    flex-direction: row;
-    gap: 10px;
-    width: 100%;
-    padding: 10px;
-    box-sizing: border-box;
-    justify-content: center;
-}
-
-.tabs .chapters {
-    display: flex;
-    flex-direction: row;
-    gap: 10px;
-    padding: 10px;
-    box-sizing: border-box;
-    width: 100%;
-    height: 100%;
-    overflow: scroll;
-}
-
-.tabs .tab {
-    padding: 10px;
-    border-radius: 10px;
-    /* background-color: #f0f0f0; */
-    cursor: pointer;
-}
-
-.active {
-    background-color: #454343;
-    color: #fff;
-}
-
-@media only screen and (min-width: 750px) {
-    .page {
-        margin-bottom: unset;
-    }
-
-    .book {
-        flex-direction: row;
-        height: 20rem;
-    }
-
-    .book-image {
-        width: 30rem;
-        height: inherit;
-
-    }
-
-    .book-description {
-        width: 100%;
-        height: 100%;
-    }
-
-    .tabPage {
-        width: 100%;
-        display: flex;
-        flex-direction: row;
-        gap: 10px;
-        padding: 10px;
-        box-sizing: border-box;
-    }
-}
+.book-page { display: flex; flex-direction: column; padding-bottom: var(--d-pad); }
+.skeleton-wrap { padding: var(--d-pad); }
+.hero-wrap { position: relative; width: 100%; }
+.hero-img { width: 100%; max-height: 260px; object-fit: cover; border-radius: var(--d-radius) var(--d-radius) 0 0; display: block; }
+.hero-overlay { position: absolute; bottom: 0; left: 0; right: 0; height: 80px; background: linear-gradient(to top, var(--paper), transparent); }
+.meta-strip { padding: 16px var(--d-pad) 8px; }
+.meta-title { font-family: var(--font-serif); font-weight: 600; font-size: 1.4rem; color: var(--ink); margin: 0 0 4px; }
+.meta-author { font-family: var(--font-serif); font-style: italic; color: var(--muted); margin: 0 0 10px; }
+.meta-chips { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip { background: var(--calabash); color: var(--ink); font-family: var(--font-mono); font-size: 0.7rem; border-radius: 999px; padding: 2px 8px; }
+.synopsis { padding: 0 var(--d-pad) 8px; }
+.synopsis-text { font-family: var(--font-serif); line-height: 1.7; color: var(--ink); margin: 0 0 6px; }
+.synopsis-text.clamped { display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
+.synopsis-toggle { background: none; border: none; color: var(--kola); font-family: var(--font-sans); font-size: 0.85rem; cursor: pointer; padding: 0; }
+.reaction { padding: 0 var(--d-pad) 8px; }
+.like-btn { background: var(--calabash); border: 1px solid var(--hairline); border-radius: 999px; font-family: var(--font-sans); color: var(--muted); padding: 6px 16px; cursor: pointer; }
+.like-btn:hover { background: var(--ochre); color: var(--ink); }
+.tabs { display: flex; border-bottom: 1px solid var(--hairline); padding: 0 var(--d-pad); }
+.tab { background: none; border: none; border-bottom: 2px solid transparent; color: var(--muted); font-family: var(--font-display); font-size: 0.85rem; padding: 8px 14px; cursor: pointer; margin-bottom: -1px; }
+.tab.active { color: var(--kola); border-bottom-color: var(--kola); }
+.tab-content { padding: var(--d-pad); }
 </style>

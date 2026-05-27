@@ -131,7 +131,7 @@ onMounted(() => {
 .select-menu .select-btn {
     display: flex;
     height: 30px;
-    background: #fff;
+    background: var(--card);
     padding: 20px;
     font-size: 12px;
     font-weight: 400;
@@ -139,7 +139,8 @@ onMounted(() => {
     align-items: center;
     cursor: pointer;
     justify-content: space-between;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 8px var(--hairline);
+    border: 1px solid var(--hairline); font-family: var(--font-sans);
 }
 
 .select-menu .options {
@@ -151,8 +152,8 @@ onMounted(() => {
     padding: 10px;
     margin-top: 10px;
     border-radius: 8px;
-    background: #fff;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    background: var(--card);
+    box-shadow: 0 4px 16px var(--hairline); border: 1px solid var(--hairline);
     animation-name: fadeInDown;
     -webkit-animation-name: fadeInDown;
     animation-duration: 0.35s;
@@ -168,11 +169,11 @@ onMounted(() => {
     padding: 0 16px;
     border-radius: 8px;
     align-items: center;
-    background: #fff;
+    background: var(--card);
 }
 
 .select-menu .options .option:hover {
-    background: #f2f2f2;
+    background: var(--calabash);
 }
 
 .select-menu .options .option i {
@@ -182,7 +183,8 @@ onMounted(() => {
 
 .select-menu .options .option .option-text {
     font-size: 18px;
-    color: #333;
+    color: var(--ink);
+    font-family: var(--font-sans);
 }
 
 .select-btn i {
@@ -202,8 +204,7 @@ onMounted(() => {
 }
 
 .item {
-    background-color: rgb(165, 161, 161);
-    color: #fff;
+    background: var(--calabash); color: var(--ink);
     border-radius: 5px;
     padding: 2px 4px;
     text-wrap: nowrap;
@@ -224,19 +225,20 @@ onMounted(() => {
 .options .option input[type="text"] {
     width: 100%;
     padding: 10px;
-    border: 1px solid #f2f2f2;
+    border: 1px solid var(--paper);
     border-radius: 8px;
     margin-bottom: 10px;
 }
 
 .options .option input[type="checkbox"] {
-    border: 1px solid #f2f2f2;
+    border: 1px solid var(--paper);
     border-radius: 8px;
-    accent-color: #6e4c29;
+    accent-color: var(--kola-2);
 }
 
 .option-text {
     margin-left: 10px;
+    font-family: var(--font-sans); color: var(--ink);
 }
 
 @keyframes fadeInUp {

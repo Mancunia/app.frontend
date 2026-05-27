@@ -1,11 +1,17 @@
 <template>
     <div>
-        <input :type="isPasswordVisible ? 'text' : 'password'" placeholder="Password" v-model="password" />
+        <input :type="isPasswordVisible ? 'text' : 'password'" :placeholder="placeholder" v-model="password" />
         <i @click="togglePasswordVisibility" :class="isPasswordVisible ? 'bx bx-hide' : 'bx bx-show'"></i>
     </div>
 </template>
 
 <script setup lang="ts">
+const props = defineProps({
+    placeholder: {
+        type: String,
+        default: 'Password'
+    }
+})
 const emit = defineEmits(['password'])
 const password = ref('')
 const isPasswordVisible = ref(false);
@@ -31,7 +37,7 @@ input {
     margin-bottom: 5px;
     width: 13rem;
     padding: 10px;
-    border: 1px solid #ccc;
+    border: 1px solid var(--hairline);
     border-radius: 5px;
 }
 </style>

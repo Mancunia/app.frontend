@@ -302,17 +302,23 @@ onMounted(() => {
 
 .details .info p .title {
     font-weight: bold;
-    background-color: #0000008c;
-    border-right: 5px solid #000;
-    color: #fff;
-    padding: 1%;
+    background: var(--kola);
+    border-right: 3px solid var(--ochre);
+    color: var(--cream);
+    padding: 4px 8px;
+    border-radius: 4px 0 0 4px;
+    font-family: var(--font-sans);
+    font-size: 0.8rem;
 }
 
 .details .info p .titleText {
-    font-weight: black;
-    background-color: #ffffff8c;
-    color: #000000;
-    padding: 1%;
+    font-family: var(--font-serif);
+    font-size: 1rem;
+    background: var(--card);
+    color: var(--ink);
+    padding: 4px 8px;
+    border: 1px solid var(--hairline);
+    border-radius: 0 4px 4px 0;
 }
 
 .details .btn {

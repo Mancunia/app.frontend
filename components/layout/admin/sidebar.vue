@@ -1,155 +1,184 @@
 <template>
-    <aside>
-        <nav>
-            <ul>
-                <li v-for="(nav, index) in navItems" :key="index">
-                    <NuxtLink v-if="nav.hasAccess.includes(admin.role)" :to="nav.url" :class="{ active: nav.url === activeRoute }">
-                        <i :class="nav.icon"></i>
-                        <span>{{ nav.title }}</span>
-                    </NuxtLink>
-                </li>
-                <li>
-                    <NuxtLink :to="routes.app.home">
-                        <i class="bx bx-left-arrow"></i>
-                        <span>App</span>
-                    </NuxtLink>
-                    <a @click="admin_logout">
-                        <i class="bx bx-log-out"></i>
-                        <span>Log Out</span>
-                    </a>
-                </li>
-            </ul>
-        </nav>
-    </aside>
+  <aside class="sidebar">
+    <div class="brand">
+      <!-- <span class="brand-mark">◆</span> -->
+      <span class="brand-name">Anansesem</span>
+    </div>
+
+    <nav class="nav">
+      <NuxtLink
+        v-for="item in navItems"
+        :key="item.url"
+        :to="item.url"
+        class="nav-item"
+        :class="{ active: isActive(item.url) }"
+      >
+        <span class="diamond">{{ isActive(item.url) ? '◆' : '◇' }}</span>
+        <span class="label">{{ item.title }}</span>
+      </NuxtLink>
+    </nav>
+
+    <div class="spacer" />
+
+    <div class="proverb-card">
+      <p class="proverb-text">"Wisdom is like a baobab tree; no one person can embrace it."</p>
+    </div>
+
+    <div class="footer-links">
+      <NuxtLink :to="routes.app.home" class="footer-link">
+        <span class="diamond">◇</span>
+        <span>Back to app</span>
+      </NuxtLink>
+      <button class="footer-link logout-btn" @click="admin_logout">
+        <span class="diamond">◇</span>
+        <span>Log out</span>
+      </button>
+    </div>
+  </aside>
 </template>
+
 <script setup lang="ts">
 import routes from '~/routes';
-const { navItems, activeRoute } = useNavigation()
-const { admin_logout } = useAuth()
-const admin = useAuthStore().getAdmin
+const { navItems } = useNavigation();
+const { admin_logout } = useAuth();
+const route = useRoute();
 
-
+const isActive = (url: string) => {
+  if (url === routes.admin.home) return route.path === url;
+  return route.path.startsWith(url);
+};
 </script>
+
 <style scoped>
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+.sidebar {
+  position: fixed;
+  inset: 0 auto 0 0;
+  width: 232px;
+  background: var(--ink);
+  display: flex;
+  flex-direction: column;
+  padding: 24px 0 20px;
+  overflow: hidden;
 }
 
-body {
-    --sb-width: 10%;
-    font-family: system-ui, sans-serif;
-    font-size: 16px;
-    line-height: 1.7;
-    color: #333;
-    background-color: #fff;
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 20px 24px;
+  border-bottom: 1px solid rgba(241,238,227,0.08);
 }
 
-body.sb-expanded {
-    --sb-width: 12.5rem;
+.brand-mark {
+  color: var(--ochre);
+  font-size: 18px;
+  line-height: 1;
 }
 
-h1 {
-    font-size: 1.5rem;
-    font-weight: bold;
+.brand-name {
+  font-family: var(--font-display);
+  font-size: 15px;
+  color: var(--cream);
+  letter-spacing: 0.04em;
 }
 
-p {
-    margin-bottom: 1.5rem;
+.nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 16px 12px 0;
 }
 
-aside {
-    position: fixed;
-
-    inset: 0 auto 0 0;
-    padding: 1rem;
-    width: 17%;
-    background-image: linear-gradient(#464748, #1f1e1f, #030303);
-    transition: width 0.5s ease-in-out;
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  border-radius: 8px;
+  text-decoration: none;
+  color: rgba(241,238,227,0.85);
+  font-family: var(--font-sans);
+  font-size: 13.5px;
+  font-weight: 400;
+  transition: background 0.15s, color 0.15s;
 }
 
-nav {
-    height: 100%;
+.nav-item:hover {
+  background: rgba(201,122,58,0.10);
+  color: var(--cream);
 }
 
-nav .app-logo {
-    width: 70px;
-    height: 35px;
-    position: relative;
+.nav-item.active {
+  background: rgba(201,122,58,0.18);
+  color: var(--ochre);
+  font-weight: 600;
 }
 
-nav ul {
-    list-style: none;
-    height: 100%;
-    width: 100%;
-    display: flex;
-    flex-flow: column;
-    gap: 0.25rem;
+.nav-item.active .diamond {
+  color: var(--ochre);
 }
 
-nav li:last-child {
-    margin-top: auto;
+.diamond {
+  font-size: 9px;
+  line-height: 1;
+  flex-shrink: 0;
+  color: rgba(241,238,227,0.40);
 }
 
-nav a {
-    display: flex;
-    align-items: center;
-    gap: 0.625rem;
-    padding: 0.625rem 0.875rem;
-    font-size: 1.25rem;
-    line-height: 1;
-    color: #fff;
-    text-decoration: none;
-    border-radius: 0.375rem;
-    transition: background-color 0.5s ease-in-out, color 0.5s ease-in-out;
+.label {
 }
 
-nav a.active,
-nav a:hover,
-nav a:focus-visible {
-    outline: none;
-    color: #000000;
-    background-color: #fff;
+.spacer {
+  flex: 1;
 }
 
-nav a.active span,
-nav a:hover span {
-    color: #000000;
+.proverb-card {
+  margin: 0 12px 16px;
+  padding: 12px 14px;
+  background: rgba(201,122,58,0.12);
+  border: 1px solid rgba(201,122,58,0.18);
+  border-radius: 10px;
 }
 
-nav a span {
-    font-size: 0.875rem;
-    visibility: hidden;
-    transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+.proverb-text {
+  font-family: var(--font-serif);
+  font-size: 11px;
+  font-style: italic;
+  line-height: 1.6;
+  color: rgba(241,238,227,0.70);
+  margin: 0;
 }
 
-.sb-expanded nav a span {
-    opacity: 1;
-    visibility: visible;
+.footer-links {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 0 12px;
 }
 
-.sb-expanded aside .bx-chevrons-right {
-    rotate: 180deg;
+.footer-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-family: var(--font-sans);
+  font-size: 12.5px;
+  color: rgba(241,238,227,0.50);
+  background: none;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+  transition: color 0.15s;
 }
 
-@media (min-width: 768px) {
-    aside {
-        width: 10%;
-    }
-
-    nav a span {
-        font-size: 0.875rem;
-        opacity: 1;
-        visibility: unset;
-        color: #fff;
-        transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
-    }
+.footer-link:hover {
+  color: rgba(241,238,227,0.80);
 }
 
-@media (min-width: 1024px) {
-    aside {
-        width: 10%;
-    }
+.logout-btn {
+  font-family: var(--font-sans);
 }
 </style>

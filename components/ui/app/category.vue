@@ -14,8 +14,8 @@ const props = defineProps({
 <style scoped>
 .cat-tag {
     width: fit-content;
-    background-color: #d9d9d9;
-    color: #190a06;
+    background-color: var(--calabash);
+    color: var(--ink);
     font-weight: 600;
     padding: 10px 30px;
     border-radius: 50px;
@@ -30,14 +30,14 @@ const props = defineProps({
 }
 
 .cat-tag.active {
-    background-color: #4d2316;
-    color: #ffffff;
+    background-color: var(--kola);
+    color: var(--cream);
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
 }
 
 .cat-tag:hover {
-    background-color: #7f4d3e;
-    color: #ffffff;
+    background-color: var(--kola-2);
+    color: var(--cream);
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
 }
 </style>

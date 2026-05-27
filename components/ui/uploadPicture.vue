@@ -61,48 +61,13 @@ watch(() => fileData.value, () => {
 </script>
 
 <style scoped>
-.file {
-    position: relative;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+.file { position: relative; display: flex; justify-content: center; align-items: center; }
+.file > input[type='file'] { display: none; }
+.file > label {
+  font-family: var(--font-sans); color: var(--kola); cursor: pointer;
+  border: 1px dashed var(--hairline); border-radius: var(--d-radius);
+  padding: 10px 16px; display: inline-flex; align-items: center; gap: 6px;
 }
-
-.file>input[type='file'] {
-    display: none
-}
-
-.file>label {
-    font-size: 1rem;
-    font-weight: 300;
-    cursor: pointer;
-    outline: 0;
-    user-select: none;
-    border-color: rgb(216, 216, 216) rgb(209, 209, 209) rgb(186, 186, 186);
-    border-style: solid;
-    border-radius: 4px;
-    border-width: 1px;
-    background-color: hsl(0, 0%, 100%);
-    color: hsl(0, 0%, 29%);
-    padding-left: 16px;
-    padding-right: 16px;
-    padding-top: 16px;
-    padding-bottom: 16px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-}
-
-.file>label:hover {
-    border-color: hsl(0, 0%, 21%);
-}
-
-.file>label:active {
-    background-color: hsl(0, 0%, 96%);
-}
-
-.file>label>i {
-    padding-right: 5px;
-}
+.file > label:hover { background: var(--calabash); }
+.file > label > i { padding-right: 5px; }
 </style>

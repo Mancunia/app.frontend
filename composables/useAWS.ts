@@ -9,7 +9,7 @@ export const useAWS = (app: USER_ROLES = USER_ROLES.USER) => {
       fileType: file.type,
     };
     const { data } = await getSignedUrl(request, app);
-    return data;
+    return data?.signedURL;
   };
 
   const uploadFile = async (file: File, signedUrl: string) => {

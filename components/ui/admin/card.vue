@@ -37,7 +37,7 @@ defineProps({
 </script>
 <style scoped>
 .metric {
-    background-color: #fff;
+    background-color: var(--card);
     border-radius: 10px;
     box-shadow: 0 0 10px 0 rgba(183, 192, 206, 0.2);
     margin-bottom: 20px;
@@ -55,7 +55,7 @@ defineProps({
 }
 
 .metric-title {
-    color: #2c3e50;
+    color: var(--ink);
     font-size: 18px;
     font-weight: 600;
     margin: 0;
@@ -83,7 +83,7 @@ defineProps({
 }
 
 .primary-value {
-    color: #2c3e50;
+    color: var(--ink);
     font-size: 36px;
     font-weight: 600;
     margin: 0;
@@ -103,13 +103,13 @@ defineProps({
 }
 
 .green {
-    color: #2ecc71;
+    color: var(--ochre);
     font-size: 18px;
     margin: 0;
 }
 
 .red {
-    color: #e74c3c;
+    color: var(--hibiscus);
     font-size: 18px;
     margin: 0;
 }

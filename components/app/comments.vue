@@ -119,7 +119,7 @@ onMounted(() => {
     max-width: 400px;
     height: auto;
     border-radius: 10px;
-    border: 2px solid #503519;
+    border: 2px solid var(--kola-2);
 }
 
 .input-box input {
@@ -131,8 +131,8 @@ onMounted(() => {
 }
 
 .input-box button {
-    background: #503519;
-    color: white;
+    background: var(--kola-2);
+    color: var(--cream);
     padding: 5px 10px;
     border: none;
     border-radius: 5px;
