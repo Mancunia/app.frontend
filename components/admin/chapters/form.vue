@@ -84,7 +84,7 @@ const save = async () => {
         const response = await generateSignedUrl(audioData.value.file)
         if (response) {
             uploading.value.progress = 20
-            const fileLoc = await uploadFile(audioData.value.file, response.signedURL)
+            const fileLoc = await uploadFile(audioData.value.file, response)
             if (fileLoc) {
                 form.value.content = fileLoc
                 uploading.value.progress = 30

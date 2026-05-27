@@ -1,46 +1,34 @@
 <template>
-
-    <label :for="String(id)" class="subscription__button" @click="initSub">
-        <h3 class="subscription__title subscription__title--enterprise">
-            {{ subscription.name }}
-            <i class="subscription__icon fas fa-pepper-hot"
-                :style="`background-color:${subscription.accent}; opacity:0.5`"></i>
-        </h3>
-        <span class="subscription__price">GHS{{ subscription.amount }} <span class="subscription__price-month"></span>
-        </span>
-        <ul class="subscription__list">
-            <li class="subscription__item">
-                <i class="icon-subscription fas fa-check-circle"></i>
-                <spa>
-                    Users: <span class="subscription__item-text">{{ subscription.users }}</span>
-                </spa>
-            </li>
-            <li class="subscription__item">
-                <i class="icon-subscription fas fa-check-circle"></i>
-                <span>
-                    Duration: <span class="subscription__item-text">{{ millisecondsToDays(subscription.duration)
-                        }} Days</span>
-                </span>
-
+    <label :for="String(id)" class="plan-card" :style="{ '--accent': subscription.accent }" @click="initSub">
+        <p class="plan-name">{{ subscription.name }}</p>
+        <div class="plan-accent"></div>
+        <span class="plan-price">GHS{{ subscription.amount }}</span>
+        <hr class="plan-divider" />
+        <ul class="plan-details">
+            <li class="plan-detail">Users: <strong>{{ subscription.users }}</strong></li>
+            <li class="plan-detail">
+                Duration: <strong>{{ millisecondsToDays(subscription.duration) }} Days</strong>
             </li>
         </ul>
+        <span class="plan-cta">Subscribe</span>
     </label>
+
     <CommonModal v-model="modal">
-        <div class="logout_form">
-            <h1>Confirm Subscription creation</h1>
-            <div class="buttons">
-                <button @click="modal = false">No</button>
-                <button @click="initSubscription">Yes</button>
+        <div class="confirm-form">
+            <h2 class="confirm-title">Confirm subscription</h2>
+            <p class="confirm-plan">{{ subscription.name }} — GHS{{ subscription.amount }}</p>
+            <div class="confirm-buttons">
+                <button class="confirm-btn confirm-btn--ghost" @click="modal = false">Cancel</button>
+                <button class="confirm-btn" @click="initSubscription">Confirm</button>
             </div>
         </div>
     </CommonModal>
-
 </template>
 
 <script setup lang="ts">
 import type { PropType } from 'vue';
-import { type Subscription } from '~/types/common';
 import { postSubscripition } from '~/services/user';
+import type { Subscription } from '~/types/common';
 
 const props = defineProps({
     subscription: {
@@ -64,14 +52,13 @@ const initSub = () => {
 
 const openLink = (url: string) => {
     if (window.open(url, '_blank', 'noopener,noreferrer')) {
-        console.log('Popup opened');
-    } else {
-        const link = document.createElement('a');
-        link.href = url;
-        link.target = '_blank';
-        link.rel = 'noopener noreferrer';
-        link.click();
+        return;
     }
+    const link = document.createElement('a');
+    link.href = url;
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+    link.click();
 }
 
 const initSubscription = async () => {
@@ -84,143 +71,174 @@ const initSubscription = async () => {
         }
     } catch (error: unknown) {
         console.error(error);
-    }
-    finally {
+    } finally {
         loading.value = false;
     }
 }
 </script>
 
 <style scoped>
-.subscription__title,
-.subscription__main-feature,
-.subscription__price {
-    text-transform: uppercase;
-    font-family: var(--font-sans);
-    margin-top: 0;
-    margin-bottom: 0;
-    color: var(--calabash);
-}
-
-.subscription__title {
+.plan-card {
+    --accent: #ccc;
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 10px;
-    margin-top: 20px;
-    font-size: 20px;
-    color: var(--ink);
-    width: 100%;
-    border-top-left-radius: 10px;
-    border-top-right-radius: 10px;
-}
-
-.subscription__icon {
-    margin-top: 10px;
-    font-size: 38px;
-    background: var(--ink);
-    padding: 30px;
-    border-radius: 50%;
-}
-
-.subscription__price {
-    display: block;
-    width: 90%;
-    text-align: center;
-    font-size: 32px;
-    color: var(--ink);
-    padding-bottom: 10px;
-    border-bottom: 2px solid var(--calabash);
-}
-
-.subscription__price-month {
-    font-size: 18px;
-    color: var(--muted);
-}
-
-.subscription__list {
-    padding: 0 15px;
-    margin: 10px 0;
-    list-style-type: none;
-}
-
-.subscription__item {
-    display: flex;
-    margin: 20px 0;
-    font-size: 16px;
-    color: var(--ink);
-}
-
-.subscription__item-text {
-    color: var(--ink);
-    font-size: 14px;
-}
-
-.icon-subscription {
-    color: var(--muted);
-    margin-right: 5px;
-}
-
-.subscription__button {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    font-family: var(--font-sans);
-    width: 275px;
-    margin: 5px 0;
-    padding: 0;
+    gap: 14px;
+    width: 260px;
+    padding: 28px 24px 24px;
     border-radius: var(--d-radius);
-    background: var(--paper);
-    border: 1px solid var(--hairline);
-    box-shadow: 0 4px 16px var(--hairline);
-    transition: transform .5s;
+    background: linear-gradient(
+        160deg,
+        color-mix(in srgb, var(--accent) 14%, var(--card)) 0%,
+        var(--card) 50%
+    );
+    border: 1px solid color-mix(in srgb, var(--accent) 20%, var(--hairline));
+    box-shadow: 0 2px 12px var(--hairline);
     cursor: pointer;
-
-    &:after {
-        content: "SUBSCRIBE";
-        display: block;
-        text-align: center;
-        padding: 10px;
-        font-family: var(--font-display);
-        color: var(--ink);
-        width: 80%;
-        border-radius: 5px;
-        margin-bottom: 25px;
-        border: solid 2px var(--ink);
-        transition: .5s;
-    }
+    transition: transform 0.25s, box-shadow 0.25s;
 }
 
-.logout_form {
+.plan-card:hover {
+    transform: translateY(-3px);
+    box-shadow:
+        0 8px 24px rgba(31, 23, 20, 0.1),
+        0 0 0 1px color-mix(in srgb, var(--accent) 35%, transparent);
+}
+
+.plan-name {
+    font-family: var(--font-display);
+    font-size: 0.7rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: color-mix(in srgb, var(--accent) 30%, var(--ink));
+    margin: 0;
+}
+
+.plan-accent {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow:
+        0 0 0 8px color-mix(in srgb, var(--accent) 18%, transparent),
+        0 6px 28px 0 color-mix(in srgb, var(--accent) 50%, transparent);
+    flex-shrink: 0;
+}
+
+.plan-price {
+    font-family: var(--font-serif);
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+}
+
+.plan-divider {
+    width: 80%;
+    border: none;
+    border-top: 1px solid var(--hairline);
+    margin: 0;
+    align-self: center;
+}
+
+.plan-details {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    width: 100%;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    gap: 6px;
+}
+
+.plan-detail {
+    font-family: var(--font-sans);
+    font-size: 0.82rem;
+    color: var(--muted);
+}
+
+.plan-detail strong {
+    color: var(--ink);
+    font-weight: 600;
+}
+
+.plan-cta {
+    display: block;
+    width: 100%;
+    text-align: center;
+    font-family: var(--font-display);
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink);
+    border: 2px solid color-mix(in srgb, var(--accent) 30%, var(--ink));
+    border-radius: 999px;
+    padding: 10px 0;
+    margin-top: 4px;
+    transition: background 0.25s, color 0.25s, border-color 0.25s;
+}
+
+.plan-card:hover .plan-cta {
+    background: color-mix(in srgb, var(--accent) 18%, var(--ink));
+    border-color: color-mix(in srgb, var(--accent) 18%, var(--ink));
+    color: var(--cream);
+}
+
+.confirm-form {
+    display: flex;
+    flex-direction: column;
     align-items: center;
     padding: var(--d-pad);
-    gap: 16px;
+    gap: 12px;
 }
 
-.logout_form h1 {
+.confirm-title {
     font-family: var(--font-display);
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     font-weight: 600;
+    color: var(--ink);
     margin: 0;
     text-align: center;
 }
 
-.logout_form .buttons {
-    display: flex;
-    gap: 16px;
+.confirm-plan {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: 0.9rem;
+    color: var(--muted);
+    margin: 0;
 }
 
-.logout_form .buttons button {
+.confirm-buttons {
+    display: flex;
+    gap: 12px;
+    margin-top: 8px;
+}
+
+.confirm-btn {
     font-family: var(--font-display);
-    font-size: 1rem;
+    font-size: 0.9rem;
     color: var(--cream);
     background: var(--ink);
     border: none;
-    padding: 6px 16px;
-    border-radius: 22px;
+    padding: 8px 22px;
+    border-radius: 999px;
     cursor: pointer;
+    transition: background 0.2s;
+}
+
+.confirm-btn:hover {
+    background: var(--kola-2);
+}
+
+.confirm-btn--ghost {
+    background: none;
+    color: var(--muted);
+    border: 1px solid var(--hairline);
+}
+
+.confirm-btn--ghost:hover {
+    background: var(--calabash);
+    color: var(--ink);
 }
 </style>
