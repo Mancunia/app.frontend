@@ -6,7 +6,8 @@
       "Skill(commands-utilities-debugging:debug-error:*)",
       "Bash(npx nuxi *)",
       "Skill(commands-utilities-debugging:git-status)",
-      "Skill(commands-utilities-debugging:git-status:*)"
+      "Skill(commands-utilities-debugging:git-status:*)",
+      "WebFetch(domain:api.anansesemfie.com)"
     ]
   }
 }
