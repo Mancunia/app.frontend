@@ -12,3 +12,9 @@
         </NuxtLayout>
     </div>
 </template>
+<script lang="ts" setup>
+import LogRocket from 'logrocket';
+LogRocket.init('y8dnyu/anansesemfie');
+
+
+</script>
