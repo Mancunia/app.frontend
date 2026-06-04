@@ -35,3 +35,11 @@ export type Metrics = {
   label: string;
   data: number;
 };
+
+export type QUOTE = {
+  id: string;
+  quote: string;
+  author: string;
+  active: boolean;
+  createdAt: string;
+};

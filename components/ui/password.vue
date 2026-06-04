@@ -3,8 +3,8 @@
     <input 
       :id="id"
       :type="isVisible ? 'text' : 'password'" 
-      :value="modelValue"
-      @input="onInput"
+      :value="localValue"
+      @input="handleInput"
       :placeholder="placeholder"
       :required="required"
       :name="name"
@@ -15,7 +15,7 @@
     <button 
       type="button" 
       class="peek-btn" 
-      @click="toggleVisibility"
+      @mousedown.prevent="toggleVisibility"
       tabindex="-1"
       aria-label="Toggle password visibility"
     >
@@ -59,15 +59,24 @@ const props = defineProps({
 const emit = defineEmits(['update:modelValue', 'password'])
 
 const isVisible = ref(false)
+const localValue = ref(props.modelValue)
+
+// Keep local value in sync with prop if it changes externally
+watch(() => props.modelValue, (newVal) => {
+  if (newVal !== localValue.value) {
+    localValue.value = newVal
+  }
+})
+
+const handleInput = (event: Event) => {
+  const value = (event.target as HTMLInputElement).value
+  localValue.value = value
+  emit('update:modelValue', value)
+  emit('password', value)
+}
 
 const toggleVisibility = () => {
   isVisible.value = !isVisible.value
-}
-
-const onInput = (event: Event) => {
-  const target = event.target as HTMLInputElement
-  emit('update:modelValue', target.value)
-  emit('password', target.value)
 }
 </script>
 

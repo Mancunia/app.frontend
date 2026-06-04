@@ -2,17 +2,17 @@
     <div class="mt-4">
         <nav
             v-if="props?.totalRecords > 0"
-            aria-label="Page navigation example"
+            aria-label="Page navigation"
         >
             <ul class="pagination justify-content-center">
                 <li class="page-item">
                     <a
                         class="page-link pointer"
-                        aria-label="Skip-Previous"
+                        aria-label="First"
                         @click.prevent="handleFirst()"
                     >
                         <span aria-hidden="true">
-                            <i className="fas fa-angle-double-left" />
+                            <i class="bx bx-chevrons-left" />
                         </span>
                     </a>
                 </li>
@@ -24,7 +24,7 @@
                         @click.prevent="handlePrev()"
                     >
                         <span aria-hidden="true">
-                            <i className="fas fa-angle-left" />
+                            <i class="bx bx-chevron-left" />
                         </span>
                     </a>
                 </li>
@@ -47,7 +47,7 @@
                         @click.prevent="handleNext()"
                     >
                         <span aria-hidden="true">
-                            <i class="fas fa-angle-right" />
+                            <i class="bx bx-chevron-right" />
                         </span>
                     </a>
                 </li>
@@ -56,11 +56,11 @@
                     <a
                         href="#"
                         class="page-link"
-                        aria-label="Skip-sNext"
+                        aria-label="Last"
                         @click.prevent="handleLast()"
                     >
                         <span aria-hidden="true">
-                            <i class="fas fa-angle-double-right" />
+                            <i class="bx bx-chevrons-right" />
                         </span>
                     </a>
                 </li>
@@ -155,3 +155,48 @@ const pageRange = computed(() => {
     return generateNumberArray(props.totalPages, selectedPage.value, 5);
 });
 </script>
+
+<style scoped>
+.pagination {
+    display: flex;
+    list-style: none;
+    padding: 0;
+    gap: 8px;
+    align-items: center;
+}
+.page-item {
+    display: flex;
+}
+.page-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    border: 1px solid var(--hairline);
+    background: var(--card);
+    color: var(--ink);
+    text-decoration: none;
+    font-family: var(--font-sans);
+    font-size: 13px;
+    transition: all 0.2s;
+    cursor: pointer;
+}
+.page-link:hover {
+    background: var(--hairline);
+    border-color: var(--muted);
+}
+.page-link.active {
+    background: var(--ochre);
+    border-color: var(--ochre);
+    color: white;
+    font-weight: 600;
+}
+.page-link.pointer {
+    font-size: 18px;
+}
+.page-number {
+    font-family: var(--font-mono);
+}
+</style>

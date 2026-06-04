@@ -13,6 +13,7 @@ type ROUTES = {
     languages: string
     organizations: string
     email: string
+    quotes: string
   }
   app: {
     home: string
@@ -46,6 +47,7 @@ const routes: ROUTES = {
     languages:     '/admin/languages',
     organizations: '/admin/organizations',
     email:         '/admin/email',
+    quotes:        '/admin/quotes',
   },
   app: {
     home:           '/app',
