@@ -1,19 +1,21 @@
 <template>
     <div v-if="common.includes(type.toLowerCase())" class="input-group" :style="`margin-bottom: ${marginBottom}`">
         <span class="input-label">{{ label }}</span>
-        <input :type="type" :required="required" :placeholder="placeHolder" v-model="inputField"
-            @input="$emit('update:modelValue', inputField)" />
+        <input :type="type" :required="required" :placeholder="placeHolder" :value="modelValue"
+            @input="$emit('update:modelValue', ($event.target as HTMLInputElement).value)" />
     </div>
     <div v-else-if="type.toLowerCase() === 'password'" class="input-group" :style="`margin-bottom: ${marginBottom}`">
         <span class="input-label">{{ label }}</span>
         <input :type="isPasswordVisible ? 'text' : 'password'" :required="required" :placeholder="placeHolder"
-            v-model="inputField" @input="$emit('update:modelValue', inputField)" />
-        <i @click="togglePasswordVisibility" :class="isPasswordVisible ? 'bx bx-hide' : 'bx bx-show'"></i>
+            :value="modelValue" @input="$emit('update:modelValue', ($event.target as HTMLInputElement).value)" />
+        <button type="button" class="peek-btn" @click="togglePasswordVisibility" aria-label="Toggle password visibility">
+            <i :class="isPasswordVisible ? 'bx bx-hide' : 'bx bx-show'"></i>
+        </button>
     </div>
     <div v-else-if="type.toLowerCase() === 'textArea'" class="input-group">
         <span class="input-label">{{ label }}</span>
-        <textarea :required="required" rows="4" cols="100" :placeholder="placeHolder" v-model="inputField"
-            @input="$emit('update:modelValue', inputField)">
+        <textarea :required="required" rows="4" cols="100" :placeholder="placeHolder" :value="modelValue"
+            @input="$emit('update:modelValue', ($event.target as HTMLTextAreaElement).value)">
         </textarea>
     </div>
 </template>
@@ -24,6 +26,12 @@ const props = defineProps({
         type: String,
         default: ''
     },
+    // Nuxt 3 v-model uses modelValue
+    modelValue: {
+        type: String,
+        default: ''
+    },
+    // Keep value for backward compatibility if needed, but prefer modelValue
     value: {
         type: String,
         default: ''
@@ -52,10 +60,9 @@ const props = defineProps({
 const common = ['text', 'email', 'search', 'tel', 'url', 'number', 'date', 'time', 'datetime-local', 'month', 'week']
 
 const emits = defineEmits(['update:modelValue'])
-const inputField = ref(props.value)
+
 const isPasswordVisible = ref(false);
 const togglePasswordVisibility = () => {
-
     isPasswordVisible.value = !isPasswordVisible.value;
 }
 </script>
@@ -69,6 +76,7 @@ const togglePasswordVisibility = () => {
     border: 1px solid var(--calabash);
     border-radius: 5px;
     padding: 10px;
+    box-sizing: border-box;
 }
 
 .input-label {
@@ -76,24 +84,42 @@ const togglePasswordVisibility = () => {
     margin-bottom: 5px;
     font-weight: bold;
     color: var(--ink);
+    white-space: nowrap;
+    margin-right: 10px;
 }
 
-input[type="email"],
-input[type="text"],
-input[type="password"],
-input[type="search"],
-input[type="tel"],
-input[type="url"],
-input[type="number"],
-input[type="date"],
-input[type="time"],
-input[type="datetime-local"],
-input[type="month"],
-input[type="week"] {
+input {
     width: 100%;
     padding: 10px 15px;
     border: unset;
+    background: transparent;
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    color: var(--ink);
+}
 
+input:focus {
+    outline: none;
+}
+
+.peek-btn {
+    background: none;
+    border: none;
+    padding: 5px;
+    cursor: pointer;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s ease;
+}
+
+.peek-btn:hover {
+    color: var(--ink);
+}
+
+.peek-btn i {
+    font-size: 1.2rem;
 }
 
 textarea {
@@ -104,23 +130,8 @@ textarea {
     border-radius: 5px;
 }
 
-input[type="email"]:focus,
-input[type="text"]:focus,
-input[type="password"]:focus {
-    outline: none;
-    border-color: var(--calabash);
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-}
-
-input[type="checkbox"] {
-    margin-right: 5px;
-}
-
 @media (min-width: 768px) {
-
-    input[type="email"],
-    input[type="text"],
-    input[type="password"] {
+    input {
         height: inherit;
     }
 }
