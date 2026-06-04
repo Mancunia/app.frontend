@@ -1,43 +1,134 @@
 <template>
-    <div>
-        <input :type="isPasswordVisible ? 'text' : 'password'" :placeholder="placeholder" v-model="password" />
-        <i @click="togglePasswordVisibility" :class="isPasswordVisible ? 'bx bx-hide' : 'bx bx-show'"></i>
-    </div>
+  <div class="password-wrapper" :class="containerClass">
+    <input 
+      :id="id"
+      :type="isVisible ? 'text' : 'password'" 
+      :value="modelValue"
+      @input="onInput"
+      :placeholder="placeholder"
+      :required="required"
+      :name="name"
+      autocomplete="current-password"
+      class="password-input"
+      :class="inputClass"
+    />
+    <button 
+      type="button" 
+      class="peek-btn" 
+      @click="toggleVisibility"
+      tabindex="-1"
+      aria-label="Toggle password visibility"
+    >
+      <i :class="isVisible ? 'bx bx-hide' : 'bx bx-show'"></i>
+    </button>
+  </div>
 </template>
 
 <script setup lang="ts">
 const props = defineProps({
-    placeholder: {
-        type: String,
-        default: 'Password'
-    }
+  modelValue: {
+    type: String,
+    default: ''
+  },
+  placeholder: {
+    type: String,
+    default: '••••••••'
+  },
+  required: {
+    type: Boolean,
+    default: false
+  },
+  id: {
+    type: String,
+    default: ''
+  },
+  name: {
+    type: String,
+    default: ''
+  },
+  containerClass: {
+    type: String,
+    default: ''
+  },
+  inputClass: {
+    type: String,
+    default: ''
+  }
 })
-const emit = defineEmits(['password'])
-const password = ref('')
-const isPasswordVisible = ref(false);
-const togglePasswordVisibility = () => {
 
-    isPasswordVisible.value = !isPasswordVisible.value;
+const emit = defineEmits(['update:modelValue', 'password'])
+
+const isVisible = ref(false)
+
+const toggleVisibility = () => {
+  isVisible.value = !isVisible.value
 }
-watch(password, (value) => {
-    emit('password', value)
-})
+
+const onInput = (event: Event) => {
+  const target = event.target as HTMLInputElement
+  emit('update:modelValue', target.value)
+  emit('password', target.value)
+}
 </script>
 
 <style scoped>
-div {
-    display: flex;
-    flex-direction: row;
-    gap: 1rem;
-    align-items: center;
-    padding: 5%;
+.password-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
 }
 
-input {
-    margin-bottom: 5px;
-    width: 13rem;
-    padding: 10px;
-    border: 1px solid var(--hairline);
-    border-radius: 5px;
+.password-input {
+  width: 100%;
+  padding-right: 44px !important; /* Space for the icon */
+  box-sizing: border-box;
+}
+
+/* Default styles - matching pages/app/auth/login.vue */
+.password-input:not([class*="field-input"]):not([class*="input-field"]) {
+  padding: 14px 16px;
+  background: white;
+  border: 1px solid var(--hairline);
+  border-radius: 12px;
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  transition: all 0.2s ease;
+}
+
+.password-input:not([class*="field-input"]):not([class*="input-field"]):focus {
+  outline: none;
+  border-color: var(--ochre);
+  box-shadow: 0 0 0 4px rgba(201, 122, 58, 0.1);
+}
+
+.peek-btn {
+  position: absolute;
+  right: 8px;
+  background: none;
+  border: none;
+  padding: 8px;
+  cursor: pointer;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s ease;
+  z-index: 1;
+}
+
+.peek-btn:hover {
+  color: var(--ink);
+}
+
+.peek-btn i {
+  font-size: 1.5rem;
+  display: block;
+  line-height: 1;
+}
+
+.password-input::placeholder {
+  color: var(--muted);
+  opacity: 0.6;
 }
 </style>

@@ -35,9 +35,8 @@
       <div class="form-group">
         <label for="password" class="ase-eyebrow">Password</label>
         <div class="input-wrapper">
-          <input 
+          <UiPassword 
             id="password"
-            type="password" 
             v-model="form.password" 
             placeholder="••••••••"
             required
@@ -48,9 +47,8 @@
       <div class="form-group">
         <label for="confirmPassword" class="ase-eyebrow">Confirm Password</label>
         <div class="input-wrapper">
-          <input 
+          <UiPassword 
             id="confirmPassword"
-            type="password" 
             v-model="form.confirmPassword" 
             placeholder="••••••••"
             required

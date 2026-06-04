@@ -138,9 +138,22 @@ definePageMeta({
   width: 100%;
 }
 
-:deep(.form-group input) {
+:deep(.form-group input:not(.password-input)) {
   width: 100% !important;
   padding: 14px 16px !important;
+  background: white !important;
+  border: 1px solid var(--hairline) !important;
+  border-radius: 12px !important;
+  font-family: var(--font-sans) !important;
+  font-size: 1rem !important;
+  transition: all 0.2s ease !important;
+  box-sizing: border-box !important;
+}
+
+:deep(.form-group .password-input) {
+  width: 100% !important;
+  padding: 14px 16px !important;
+  padding-right: 44px !important; /* Restore space for peek icon */
   background: white !important;
   border: 1px solid var(--hairline) !important;
   border-radius: 12px !important;

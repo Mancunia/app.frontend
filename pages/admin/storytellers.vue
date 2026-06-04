@@ -14,7 +14,9 @@
       <div class="field-row">
         <div class="field-group flex-1"><label class="field-label">Email</label><input v-model="newUser.email" class="field-input" /></div>
         <div class="field-group flex-1"><label class="field-label">Username</label><input v-model="newUser.username" class="field-input" /></div>
-        <div class="field-group flex-1"><label class="field-label">Password</label><input type="password" v-model="newUser.password" class="field-input" /></div>
+        <div class="field-group flex-1"><label class="field-label">Password</label>
+          <UiPassword v-model="newUser.password" input-class="field-input" placeholder="Password" />
+        </div>
       </div>
       <p v-if="addError" class="error-msg">{{ addError }}</p>
       <button class="btn-primary" @click="handleAdd" :disabled="adding">{{ adding ? 'Adding…' : 'Add storyteller' }}</button>

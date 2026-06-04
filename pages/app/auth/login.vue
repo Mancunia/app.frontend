@@ -25,9 +25,8 @@
           <NuxtLink :to="routes.app.forgotPassword" class="forgot-link">Forgot?</NuxtLink>
         </div>
         <div class="input-wrapper">
-          <input 
+          <UiPassword 
             id="password"
-            type="password" 
             v-model="form.password" 
             placeholder="••••••••"
             required
