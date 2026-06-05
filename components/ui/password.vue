@@ -1,9 +1,10 @@
 <template>
   <div class="password-wrapper" :class="containerClass">
+    {{ inputType }}
     <input 
       :id="id"
-      :type="isVisible ? 'text' : 'password'" 
-      :value="localValue"
+      :type="inputType"
+      :value="modelValue"
       @input="handleInput"
       :placeholder="placeholder"
       :required="required"
@@ -59,23 +60,16 @@ const props = defineProps({
 const emit = defineEmits(['update:modelValue', 'password'])
 
 const isVisible = ref(false)
-const localValue = ref(props.modelValue)
 
-// Keep local value in sync with prop if it changes externally
-watch(() => props.modelValue, (newVal) => {
-  if (newVal !== localValue.value) {
-    localValue.value = newVal
-  }
-})
-
+const inputType = computed(() => isVisible.value ? 'text' : 'password')
 const handleInput = (event: Event) => {
   const value = (event.target as HTMLInputElement).value
-  localValue.value = value
   emit('update:modelValue', value)
   emit('password', value)
 }
 
 const toggleVisibility = () => {
+  conole.log('Toggling password visibility')
   isVisible.value = !isVisible.value
 }
 </script>

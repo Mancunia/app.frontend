@@ -13,7 +13,7 @@
 <script setup lang="ts">
 import routes from '~/routes';
 
-definePageMeta({ layout: 'default', title: 'Anansesemfie' })
+definePageMeta({ layout: 'landing', title: 'Anansesemfie' })
 </script>
 
 <style scoped>

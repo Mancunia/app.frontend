@@ -5,6 +5,12 @@
         </div>
         <div class="description">
             <h3>{{ chapter.title }}</h3>
+            
+            <div class="format-badge" :class="chapter.type">
+                <span v-if="chapter.type === 'ebook'">📖 Ebook</span>
+                <span v-else>🎤 Audio</span>
+            </div>
+
             <UiLoader v-if="loading" :theme="{ color: 'var(--ink)' }" />
             <button v-else-if="store.getPlaying.id !== chapter.id || !store.getPlayer.playing" @click="play">
                 {{ chapter.type === 'ebook' ? 'Read' : 'Play' }}
@@ -45,7 +51,7 @@ const play = async () => emits('play',)
     background: var(--card); border: 1px solid var(--hairline);
     border-radius: 10px;
     transition: 0.5s ease-in-out;
-    margin-bottom: 10%;
+    margin-bottom: 20px; /* Reduced from 10% for better list density */
 }
 
 .cover {
@@ -63,28 +69,61 @@ const play = async () => emits('play',)
 .description {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    margin-left: 10%;
+    justify-content: flex-start;
+    margin-left: 20px;
     font-size: 14px;
-    gap: 10px;
+    gap: 8px;
     width: 100%;
 }
 
 .description h3 {
-    width: 250px;
+    width: 100%;
+    max-width: 250px;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
     font-family: var(--font-serif); font-weight: 600; color: var(--ink);
+    margin-bottom: 2px;
+}
+
+.format-badge {
+    font-family: var(--font-sans);
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 2px 8px;
+    border-radius: 12px;
+    width: fit-content;
+}
+
+.format-badge.ebook {
+    background: rgba(201, 122, 58, 0.1);
+    color: var(--ochre-deep);
+}
+
+.format-badge.audio {
+    background: rgba(77, 35, 22, 0.1);
+    color: var(--kola);
 }
 
 .description button {
+    margin-top: auto;
     width: 100px;
-    height: 30px;
+    height: 32px;
     background-color: var(--ink);
     color: var(--cream);
     border: none;
     border-radius: 20px;
-    font-family: var(--font-display); font-size: 0.85rem; padding: 4px 14px;
+    font-family: var(--font-sans); 
+    font-weight: 600;
+    font-size: 0.75rem; 
+    padding: 4px 14px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.description button:hover {
+    background: var(--kola);
 }
 </style>

@@ -10,16 +10,16 @@
       <div class="form-group">
         <label class="ase-eyebrow">New Password</label>
         <UiPassword 
+          v-model="form.passwordOne"
           placeholder="Enter new password" 
-          @password="form.passwordOne = $event" 
         />
       </div>
 
       <div class="form-group">
         <label class="ase-eyebrow">Confirm New Password</label>
         <UiPassword 
+          v-model="form.passwordTwo"
           placeholder="Repeat new password" 
-          @password="form.passwordTwo = $event" 
         />
       </div>
 

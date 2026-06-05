@@ -45,7 +45,9 @@
             </td>
             <td>
               <div class="tags">
-                <span v-for="cat in book.category?.slice(0, 2)" :key="cat" class="tag">{{ cat }}</span>
+                <span v-for="catId in book.category?.slice(0, 2)" :key="catId" class="tag">
+                  {{ getCategoryName(catId) }}
+                </span>
               </div>
             </td>
             <td class="num-cell">{{ book.meta?.played ?? '—' }}</td>
@@ -68,14 +70,22 @@ import routes from '~/routes';
 import { getBooks } from '@/services/book';
 import { deleteBook } from '@/services/admin/book';
 import type { BOOK } from '~/types/book';
+import { useAuthStore } from '~/stores';
 
 definePageMeta({ title: 'Stories', middleware: 'admin', layout: 'admin-layout' });
 
+const authStore = useAuthStore();
+const { setCommon } = useCommon(USER_ROLES.ADMIN);
 const search = ref('');
 const loading = ref(false);
 const books = ref<BOOK[]>([]);
 const totalBooks = ref(0);
 const { debounce } = useUtils();
+
+const getCategoryName = (id: string) => {
+  const category = authStore.getCategories?.find((c) => c.id === id);
+  return category?.name || id;
+};
 
 const fetchBooks = async () => {
   loading.value = true;
@@ -100,7 +110,10 @@ const handleDelete = async (book: BOOK) => {
 
 const debouncedFetch = debounce(fetchBooks, 400);
 watch(search, debouncedFetch);
-onMounted(fetchBooks);
+onMounted(() => {
+  fetchBooks();
+  setCommon();
+});
 </script>
 
 <style scoped>

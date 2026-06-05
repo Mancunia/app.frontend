@@ -1,7 +1,8 @@
 export type QUOTE = {
-  id: string;
+  id?: string;
+  _id?: string;
   quote: string;
   author: string;
   active: boolean;
-  createdAt: string;
+  createdAt?: string;
 };

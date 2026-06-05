@@ -6,7 +6,6 @@
         <span>+ Add Quote</span>
       </button>
     </header>
-
     <div class="table-wrap">
       <div v-if="loading" class="loading-state">Loading quotes…</div>
       <table v-else class="quotes-table">
@@ -19,7 +18,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="quote in quotes" :key="quote.id" class="quote-row">
+          <tr v-for="quote in quotes" :key="quote.id || (quote as any)._id" class="quote-row">
             <td class="quote-text-cell">{{ quote.quote }}</td>
             <td class="author-cell">{{ quote.author || 'Unknown' }}</td>
             <td>
@@ -144,12 +143,21 @@ const fetchQuotes = async () => {
   loading.value = true;
   try {
     const res = await getQuotes({ page: pagination.value.page, limit: pagination.value.limit });
+   
     if (res?.data) {
-      quotes.value = res.data.results || [];
-      pagination.value.totalRecords = res.data.records || 0;
-      pagination.value.totalPages = Math.ceil((res.data.records || 0) / pagination.value.limit);
+      if (Array.isArray(res.data)) {
+        quotes.value = res.data;
+        pagination.value.totalRecords = res.data.length;
+        pagination.value.totalPages = 1;
+      } else {
+        quotes.value = res.data.results || [];
+        pagination.value.totalRecords = res.data.records || 0;
+        pagination.value.totalPages = Math.ceil((res.data.records || 0) / pagination.value.limit);
+      }
     } else {
       quotes.value = [];
+      pagination.value.totalRecords = 0;
+      pagination.value.totalPages = 0;
     }
   } catch (e) {
     addError('Failed to fetch quotes');
@@ -176,7 +184,7 @@ const openCreateModal = () => {
 
 const openEditModal = (quote: QUOTE) => {
   isEditing.value = true;
-  currentId.value = quote.id;
+  currentId.value = (quote.id || quote._id) as string;
   form.value = {
     quote: quote.quote,
     author: quote.author,
@@ -210,7 +218,7 @@ const saveQuote = async () => {
 const toggleActive = async (quote: QUOTE) => {
   try {
     const nextStatus = !quote.active;
-    await updateQuote(quote.id, { active: nextStatus });
+    await updateQuote((quote.id || quote._id) as string, { active: nextStatus });
     quote.active = nextStatus;
     addSuccess(`Quote ${nextStatus ? 'activated' : 'deactivated'}`);
   } catch (e) {
@@ -221,7 +229,7 @@ const toggleActive = async (quote: QUOTE) => {
 const confirmDelete = async (quote: QUOTE) => {
   if (confirm('Are you sure you want to delete this quote? This action cannot be undone.')) {
     try {
-      await deleteQuote(quote.id);
+      await deleteQuote((quote.id || quote._id) as string);
       addSuccess('Quote deleted successfully');
       fetchQuotes();
     } catch (e) {

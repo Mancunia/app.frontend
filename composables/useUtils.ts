@@ -375,6 +375,11 @@ export const useUtils = () => {
     return decodedToken;
   };
 
+  const cleanTitle = (title: string): string => {
+    if (!title) return "";
+    return title.replace(/\.(mp3|wav|m4a|aac|ogg|flac)$/i, "");
+  };
+
   return {
     formatMobileNumber,
     formatCurrency,
@@ -403,5 +408,6 @@ export const useUtils = () => {
     getCurrentMonthBeginningAndEnd,
     decryptJWT,
     secondsToMinutes,
+    cleanTitle,
   };
 };
