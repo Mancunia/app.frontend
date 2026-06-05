@@ -1,6 +1,5 @@
 <template>
   <div class="password-wrapper" :class="containerClass">
-    {{ inputType }}
     <input 
       :id="id"
       :type="inputType"
