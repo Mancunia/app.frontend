@@ -35,7 +35,8 @@ const login = async () => {
 
 definePageMeta({
     title: 'Admin Login',
-    middleware: 'admin'
+    middleware: 'admin',
+    layout: ''
 })
 
 </script>

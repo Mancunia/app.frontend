@@ -1,8 +1,10 @@
+import { getActiveQuote } from "~/services/admin/quote";
 import { getLanguages, getCategories } from "~/services/common";
 export const useCommon = (env: USER_ROLES) => {
   const store = useAuthStore();
   const languages = computed(() => store.getLanguages);
   const categories = computed(() => store.getCategories);
+  const quotes = computed(() => store.getQuotes);
 
   const setLanguages = async () => {
     try {
@@ -28,8 +30,41 @@ export const useCommon = (env: USER_ROLES) => {
       }
     }
   };
+  const setQuotes = async () => {
+    try {
+      if(quotes.value.length > 0) return; // Avoid fetching if quotes are already set
+      const res = await getActiveQuote();
+      if (res?.data) {
+        store.setQuotes(res.data);
+      } else {
+        store.setQuotes([]);
+      }
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error(`Error in Setting Quotes: ${error.message}`);
+      }
+    }
+  };
 
-  const setCommon = () => Promise.all([setCategories(), setLanguages()]);
+  const getSingleQuote = async () => {
+    try {
+      const quotesSize = quotes.value.length;
+      const randomIndex = Math.floor(Math.random() * quotesSize);
+      const q = quotes.value[randomIndex];
+      return {
+        quote: q.quote,
+        author: q.author,
+      };
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error(`Error in fetching active quote: ${error.message}`);
+        return null;
+      }
+    }
+  }
 
-  return { languages, categories, setLanguages, setCategories, setCommon };
+  const setCommon = () =>
+    Promise.all([setCategories(), setLanguages(), setQuotes()]);
+
+  return { languages, categories,quotes, setLanguages, setCategories, setCommon, getSingleQuote };
 };

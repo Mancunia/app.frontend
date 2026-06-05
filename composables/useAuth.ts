@@ -12,6 +12,7 @@ export const useAuth = () => {
 
   const { addSuccess, addError } = useNotification();
   const user = useAuthStore();
+  const store = useAuthStore();
   const { stopAudio } = usePlayer();
   const user_login = async (credentials: USER_LOGIN) => {
     try {
@@ -67,6 +68,9 @@ export const useAuth = () => {
       navigateTo(routes.app.login);
     } catch (error) {
       addError("Error logging out");
+    }
+    finally{
+      store.setQuotes([]); // Clear quotes on logout to ensure fresh fetch on next login
     }
   };
   const admin_logout = async () => {

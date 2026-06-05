@@ -32,4 +32,5 @@ export const adminNavigationItems: {
   { title: 'Periods',       url: routes.admin.period,        hasAccess: [USER_ROLES.ADMIN] },
   { title: 'Languages',      url: routes.admin.languages,      hasAccess: [USER_ROLES.ADMIN] },
   { title: 'Organisations',  url: routes.admin.organizations,  hasAccess: [USER_ROLES.ADMIN] },
+  { title: 'Quotes',         url: routes.admin.quotes,         hasAccess: [USER_ROLES.ADMIN] },
 ];

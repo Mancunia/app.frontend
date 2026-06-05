@@ -1,10 +1,11 @@
 <template>
   <div class="password-wrapper" :class="containerClass">
+    {{ inputType }}
     <input 
       :id="id"
-      :type="isVisible ? 'text' : 'password'" 
+      :type="inputType"
       :value="modelValue"
-      @input="onInput"
+      @input="handleInput"
       :placeholder="placeholder"
       :required="required"
       :name="name"
@@ -15,7 +16,7 @@
     <button 
       type="button" 
       class="peek-btn" 
-      @click="toggleVisibility"
+      @mousedown.prevent="toggleVisibility"
       tabindex="-1"
       aria-label="Toggle password visibility"
     >
@@ -60,14 +61,16 @@ const emit = defineEmits(['update:modelValue', 'password'])
 
 const isVisible = ref(false)
 
-const toggleVisibility = () => {
-  isVisible.value = !isVisible.value
+const inputType = computed(() => isVisible.value ? 'text' : 'password')
+const handleInput = (event: Event) => {
+  const value = (event.target as HTMLInputElement).value
+  emit('update:modelValue', value)
+  emit('password', value)
 }
 
-const onInput = (event: Event) => {
-  const target = event.target as HTMLInputElement
-  emit('update:modelValue', target.value)
-  emit('password', target.value)
+const toggleVisibility = () => {
+  conole.log('Toggling password visibility')
+  isVisible.value = !isVisible.value
 }
 </script>
 

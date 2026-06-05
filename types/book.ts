@@ -45,6 +45,7 @@ export type PLAYER = {
   autoplay: boolean;
   loop: boolean;
   volume: number;
+  showDrawer: boolean;
 };
 
 export type Comment = {

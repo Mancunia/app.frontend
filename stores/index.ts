@@ -3,7 +3,7 @@ import { set, useLocalStorage } from "@vueuse/core";
 import { type USER } from "@/types/auth";
 import type { CHAPTER, PLAYER } from "~/types/book";
 import { USER_ROLES } from "~/constants";
-import type { Languages, Categories } from "~/types/common";
+import type { Languages, Categories, QUOTE } from "~/types/common";
 import { getCategories } from "~/services/common";
 
 const users = {
@@ -23,9 +23,11 @@ export const useAuthStore = defineStore("user", {
       loop: false,
       muted: false,
       volume: 1,
+      showDrawer: false,
     } as Partial<PLAYER>),
     languages: useLocalStorage("languages", [] as Languages[]),
     categories: useLocalStorage("categories", [] as Categories[]),
+    quotes: useLocalStorage("quotes", [] as QUOTE[]),
   }),
 
   actions: {
@@ -44,15 +46,21 @@ export const useAuthStore = defineStore("user", {
     setPlayingSeek(seek: number) {
       set(this.playing, "seek", seek);
     },
-    
+
     setPlayer(player: Partial<PLAYER>) {
-      this.player = player;
+      this.player = { ...this.player, ...player };
+    },
+    toggleDrawer(show?: boolean) {
+      this.player.showDrawer = show ?? !this.player.showDrawer;
     },
     setLanguages(languages: Languages[]) {
       this.languages = languages;
     },
     setCategories(categories: Categories[]) {
       this.categories = categories;
+    },
+    setQuotes(quotes: QUOTE[]) {
+      this.quotes = quotes;
     },
     clearPageAndSeek() {
       set(this.playing, "page", 1);
@@ -89,6 +97,9 @@ export const useAuthStore = defineStore("user", {
     },
     getCategories(state) {
       return state.categories;
+    },
+    getQuotes(state) {
+      return state.quotes;
     },
   },
 });

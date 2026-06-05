@@ -6,7 +6,7 @@
     </div>
     <div v-else-if="type.toLowerCase() === 'password'" class="input-group" :style="`margin-bottom: ${marginBottom}`">
         <span class="input-label">{{ label }}</span>
-        <input :type="isPasswordVisible ? 'text' : 'password'" :required="required" :placeholder="placeHolder"
+        <input :type="inputType" :required="required" :placeholder="placeHolder"
             :value="modelValue" @input="$emit('update:modelValue', ($event.target as HTMLInputElement).value)" />
         <button type="button" class="peek-btn" @click="togglePasswordVisibility" aria-label="Toggle password visibility">
             <i :class="isPasswordVisible ? 'bx bx-hide' : 'bx bx-show'"></i>
@@ -62,6 +62,13 @@ const common = ['text', 'email', 'search', 'tel', 'url', 'number', 'date', 'time
 const emits = defineEmits(['update:modelValue'])
 
 const isPasswordVisible = ref(false);
+
+const inputType = computed(() => {
+    if (props.type.toLowerCase() === 'password') {
+        return isPasswordVisible.value ? 'text' : 'password';
+    }
+    return type;
+});
 const togglePasswordVisibility = () => {
     isPasswordVisible.value = !isPasswordVisible.value;
 }

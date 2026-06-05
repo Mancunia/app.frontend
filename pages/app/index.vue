@@ -3,11 +3,10 @@
         <div v-if="false" class="category-container">
             <AppCategories />
         </div>
-
         <div class="greeting">
-            <p class="greeting-eyebrow">Tonight's storyteller</p>
-            <h1 class="greeting-headline">The fire is lit. Sit by it.</h1>
-            <p class="greeting-sub">"Anansesem nti, yɛhwɛ." — Because of stories, we look.</p>
+            <p class="greeting-eyebrow">A wise saying</p>
+            <h1 class="greeting-headline">{{ quote?.quote }}</h1>
+            <p class="greeting-sub">~ {{ quote?.author }}</p>
         </div>
 
         <div class="section-row">
@@ -68,6 +67,7 @@ const loading = ref<boolean>(false);
 const books = ref<BOOK[] | null>(null);
 const searchQuery = ref<string>('');
 const displayedBooks = ref<BOOK[]>([]);
+const quote = ref<Object | null>(null);
 
 watch([books, searchQuery], () => {
     const all = books.value ?? [];
@@ -85,7 +85,7 @@ const canFetchMore = ref<boolean>(true)
 const pagination = ref<{ page: number, limit: number, search: string }>({ page: 1, limit: 100, search: '' })
 
 const store = useAuthStore()
-const { setCommon } = useCommon(USER_ROLES.USER)
+const { setCommon, getSingleQuote } = useCommon(USER_ROLES.USER)
 
 const fetchBooks = async () => {
     try {
@@ -106,16 +106,26 @@ const fetchBooks = async () => {
         loading.value = false;
         fetchingMore.value = false;
     }
+}
 
+const fetchQuote = async () => {
+    try {
+        const res = await getSingleQuote();
+        if (res) {
+            quote.value = res || null;
+        }
+    } catch (error) {
+        console.error('Error fetching quote:', error);
+    }
 }
 
 onMounted(() => {
     loading.value = true;
-    Promise.all([fetchBooks(), setCommon()]);
+    Promise.all([fetchBooks(), setCommon(), fetchQuote()]);
 })
 
 definePageMeta({
-    title: 'Login',
+    title: 'Hearth',
     middleware: 'app',
     layout: 'app-layout'
 })

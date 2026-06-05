@@ -70,6 +70,26 @@
       </button>
     </div>
 
+    <!-- Volume -->
+    <div class="volume-section">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="volume-icon">
+        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+        <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+        <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+      </svg>
+      <div class="volume-bar-wrap">
+        <div class="volume-fill" :style="{ width: `${store.getPlayer.volume * 100}%` }"></div>
+        <input 
+          type="range" 
+          min="0" 
+          max="100" 
+          :value="store.getPlayer.volume * 100" 
+          @input="handleVolumeChange"
+          class="volume-slider"
+        />
+      </div>
+    </div>
+
     <!-- 6. Footer Actions -->
     <div class="footer-section">
       <button class="footer-btn">1.0×</button>
@@ -90,6 +110,12 @@ const {
 } = usePlayer(USER_ROLES.USER);
 
 const playing = computed(() => store.getPlayer.playing);
+
+const handleVolumeChange = (e: Event) => {
+  const val = Number((e.target as HTMLInputElement).value);
+  setVolume(val);
+  store.setPlayer({ volume: val / 100 });
+};
 </script>
 
 <style scoped>
@@ -101,10 +127,16 @@ const playing = computed(() => store.getPlayer.playing);
   flex-direction: column;
   align-items: center;
   justify-content: space-between;
-  padding: 40px 24px 30px;
+  padding: 60px 24px 30px;
   background: var(--paper); /* Uses dark variant via data-dark="true" */
   color: var(--cream);
   box-sizing: border-box;
+}
+
+@media (min-width: 750px) {
+  .audio-player {
+    padding: 40px 24px 30px;
+  }
 }
 
 /* 1. Cover */
@@ -237,6 +269,50 @@ const playing = computed(() => store.getPlayer.playing);
   justify-content: center;
   box-shadow: 0 8px 24px rgba(201, 122, 58, 0.3);
   cursor: pointer;
+}
+
+/* Volume Section */
+.volume-section {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  max-width: 300px;
+  margin-bottom: 24px;
+}
+
+.volume-icon {
+  color: var(--cream);
+  opacity: 0.6;
+}
+
+.volume-bar-wrap {
+  position: relative;
+  flex: 1;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+}
+
+.volume-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background: var(--ochre);
+  border-radius: 2px;
+  pointer-events: none;
+}
+
+.volume-slider {
+  position: absolute;
+  top: -8px;
+  left: 0;
+  width: 100%;
+  height: 20px;
+  opacity: 0;
+  cursor: pointer;
+  z-index: 2;
 }
 
 /* 6. Footer */

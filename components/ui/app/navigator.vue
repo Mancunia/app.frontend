@@ -46,22 +46,23 @@ const { checkForOldFile } = useUtils();
 .nav {
   display: flex;
   width: 345px;
-  padding: 10px 0;
+  padding: 12px 8px;
   justify-content: space-around;
   align-items: center;
   border-radius: 33px;
   background: var(--ink);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
 }
 .tab-item {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 3px;
+  gap: 4px;
   color: var(--cream);
   opacity: 0.5;
   text-decoration: none;
   transition: opacity 0.15s, color 0.15s;
-  padding: 4px 12px;
+  padding: 6px 12px;
 }
 .tab-item:hover { opacity: 0.8; }
 .tab-item.active { color: var(--ochre); opacity: 1; }
