@@ -75,7 +75,7 @@ watch([books, searchQuery], () => {
     if (!q) { displayedBooks.value = all; return; }
     displayedBooks.value = all.filter(book =>
         (book.title ?? '').toLowerCase().includes(q) ||
-        (book.authors ?? []).some(a => a.toLowerCase().includes(q)) ||
+        (book.authors ?? []).some(a => (typeof a === 'string' ? a : a.name).toLowerCase().includes(q)) ||
         (book.category ?? []).some(c => c.toLowerCase().includes(q))
     );
 }, { immediate: true });

@@ -188,10 +188,11 @@
             </template>
           </div>
 
-          <!-- Duration + autorenew -->
+          <!-- Duration + autorenew + origin -->
           <div class="pc-meta">
             <span class="pc-dur">{{ formatDuration(plan.duration) }}</span>
             <span v-if="plan.autorenew" class="pc-renew" title="Auto-renews">↻</span>
+            <span class="pc-origin" v-if="plan.origin">({{ plan.origin }})</span>
           </div>
 
           <!-- Inline toggles: Active · Visible -->
@@ -358,8 +359,14 @@
                 </div>
 
                 <div class="form-row">
-                  <label class="form-label">Duration</label>
-                  <div class="dur-presets">
+                  <label class="form-label" for="pf-origin">Origin</label>
+                  <input id="pf-origin" v-model="form.origin" class="form-input" type="text" placeholder="e.g. GH" />
+                </div>
+              </div>
+
+              <div class="form-row">
+                <label class="form-label">Duration</label>
+                <div class="dur-presets">
                     <button
                       v-for="pr in DURATION_PRESETS"
                       :key="pr.days"
@@ -377,7 +384,6 @@
                     placeholder="Custom days"
                   />
                 </div>
-              </div>
 
               <div class="form-row">
                 <label class="form-label">Accent colour</label>
@@ -394,6 +400,18 @@
                   />
                   <input v-model="form.accent" type="color" class="color-input" title="Custom colour" />
                 </div>
+              </div>
+
+              <div class="form-row">
+                <label class="form-label">Included Books</label>
+                <p class="form-hint">Leave empty for full access to all books.</p>
+                <UiSelectDropDown
+                  :data-list="allBooks.map(b => ({ name: b.title, id: b.id }))"
+                  :selected-option="form.books"
+                  place-holder="Books"
+                  generic="array"
+                  @selected="(val: string[]) => form.books = val"
+                />
               </div>
 
               <div class="form-toggles">
@@ -491,7 +509,9 @@ import {
   getSubscriptionStats,
   updatePlan,
 } from '@/services/admin/subscriptions'
+import { getBooks } from '@/services/book'
 import type { SubscriberRecord, SubscriptionPlan, SubscriptionStats } from '~/types/admin/subscriptions'
+import type { BOOK } from '~/types/book'
 
 definePageMeta({ title: 'Coins', middleware: 'admin', layout: 'admin-layout' })
 
@@ -512,6 +532,7 @@ const activeTab     = ref('overview')
 const stats         = ref<SubscriptionStats | null>(null)
 const plans         = ref<SubscriptionPlan[]>([])
 const loadingPlans  = ref(false)
+const allBooks      = ref<BOOK[]>([])
 
 // ── Subscriber list state ──────────────────────────────────────────
 const subscribers     = ref<SubscriberRecord[]>([])
@@ -528,6 +549,7 @@ onMounted(async () => {
   await Promise.all([
     getSubscriptionStats().then((res: any) => { if (res?.data) stats.value = res.data }),
     fetchPlans(),
+    fetchAllBooks(),
   ])
   // Pre-load first page of subscribers in background
   fetchSubscribers()
@@ -547,6 +569,17 @@ const fetchPlans = async () => {
     }
   } finally {
     loadingPlans.value = false
+  }
+}
+
+const fetchAllBooks = async () => {
+  try {
+    const res = await getBooks(USER_ROLES.ADMIN, { limit: 1000 })
+    if (res?.data?.results) {
+      allBooks.value = res.data.results
+    }
+  } catch (err) {
+    console.error('Failed to fetch books', err)
   }
 }
 
@@ -708,11 +741,13 @@ const saving        = ref(false)
 const defaultForm = () => ({
   name:         '',
   amount:       0,
+  origin:       'GH',
   durationDays: 30,
   accent:       '#C97A3A',
   active:       true,
   visible:      true,
   autorenew:    false,
+  books:        [] as string[],
 })
 const form = ref(defaultForm())
 
@@ -727,11 +762,13 @@ const openEdit = (plan: SubscriptionPlan) => {
   form.value = {
     name:         plan.name,
     amount:       plan.amount,
+    origin:       plan.origin || 'GH',
     durationDays: Math.round(plan.duration / 86_400_000),
     accent:       plan.accent,
     active:       plan.active,
     visible:      plan.visible,
     autorenew:    plan.autorenew,
+    books:        plan.books || [],
   }
   showSlideOver.value = true
 }
@@ -747,11 +784,13 @@ const savePlan = async () => {
     const payload = {
       name:      form.value.name,
       amount:    form.value.amount,
+      origin:    form.value.origin,
       duration:  form.value.durationDays * 86_400_000,
       accent:    form.value.accent,
       active:    form.value.active,
       visible:   form.value.visible,
       autorenew: form.value.autorenew,
+      books:     form.value.books,
     }
     if (editingPlan.value) {
       await updatePlan(editingPlan.value.id, payload)
@@ -941,6 +980,7 @@ const executePlanDelete = async () => {
 .pc-meta  { display: flex; align-items: center; gap: 6px; }
 .pc-dur   { font-family: var(--font-sans); font-size: 12px; color: var(--muted); }
 .pc-renew { font-family: var(--font-sans); font-size: 12px; color: var(--ochre); }
+.pc-origin { font-family: var(--font-sans); font-size: 11px; color: var(--muted); }
 
 /* Inline toggle rows inside plan card */
 .pc-toggles {
@@ -1077,6 +1117,10 @@ const executePlanDelete = async () => {
 .form-label {
   font-family: var(--font-sans); font-size: 10.5px; font-weight: 600;
   text-transform: uppercase; letter-spacing: 0.07em; color: var(--muted);
+}
+.form-hint {
+  font-family: var(--font-sans); font-size: 11px; color: var(--muted);
+  margin: -2px 0 4px;
 }
 .form-input {
   padding: 9px 12px; background: var(--app-bg, var(--cream));

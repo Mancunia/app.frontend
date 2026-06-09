@@ -11,7 +11,8 @@
         </div>
         <div>
           <h1 class="book-title">{{ book.title }}</h1>
-          <p class="book-authors">{{ book.authors?.join(', ') }}</p>
+          <p class="book-authors">{{ book.authors?.map(a => typeof a === 'string' ? a : a.name).join(', ') }}</p>
+          <p v-if="book.narrators?.length" class="book-narrators">Narrators: {{ book.narrators?.map(n => typeof n === 'string' ? n : n.name).join(', ') }}</p>
           <div v-if="coverUpdating" class="upload-status">Updating cover…</div>
         </div>
       </div>
@@ -31,7 +32,8 @@
         </div>
         <div class="field-group span-2">
           <label class="field-label">Description</label>
-          <textarea v-model="editForm.description" class="field-textarea" rows="4" />
+          <!-- <QuillEditor :key="book?.id" v-model="editForm.description" placeholder="Book description" /> -->
+          <textarea v-model="editForm.description" class="field-textarea" rows="4" placeholder="Book description (plain text)" />
         </div>
         <div class="field-group">
           <label class="field-label">Categories</label>
@@ -48,8 +50,24 @@
           <p class="field-help">Hold Ctrl/Cmd to select multiple</p>
         </div>
         <div class="field-group span-2">
-          <label class="field-label">Authors (comma-separated)</label>
-          <input v-model="authorInput" class="field-input" />
+          <label class="field-label">Authors</label>
+          <UiSelectDropDown
+            :data-list="authorOptions"
+            placeHolder="Authors"
+            generic="array"
+            @selected="editForm.authors = $event"
+            :selected-option="editForm.authors"
+          />
+        </div>
+        <div class="field-group span-2">
+          <label class="field-label">Narrators</label>
+          <UiSelectDropDown
+            :data-list="narratorOptions"
+            placeHolder="Narrators"
+            generic="array"
+            @selected="editForm.narrators = $event"
+            :selected-option="editForm.narrators"
+          />
         </div>
         <div class="field-group">
           <label class="field-label">Organisation</label>
@@ -138,10 +156,13 @@
 </template>
 
 <script setup lang="ts">
+import { QuillEditor } from '@vueup/vue-quill'
 import routes from '~/routes'
 import { getBook, getChapters } from '@/services/book'
 import { updateBook, getMetrics, getSignedUrl } from '@/services/admin/book'
 import { createChapter, deleteChapter, getChapterSignedUrl } from '@/services/admin/chapter'
+import { getAuthors } from '@/services/admin/author'
+import { getNarrators } from '@/services/admin/narrator'
 import { getPeriods } from '@/services/admin/period'
 import { getLanguages } from '@/services/admin/language'
 import { getCategories } from '@/services/common'
@@ -166,8 +187,10 @@ const availableCategories = ref<Categories[]>([])
 const orgs = ref<OrganizationType[]>([])
 
 // Edit form
-const editForm = reactive({ title: '', description: '', category: [] as string[], languages: [] as string[], authors: [] as string[], organization: '' })
-const authorInput = ref('')
+const authorOptions = ref<{ id: string; name: string }[]>([])
+const narratorOptions = ref<{ id: string; name: string }[]>([])
+
+const editForm = reactive({ title: '', description: '', category: [] as string[], languages: [] as string[], authors: [] as string[], narrators: [] as string[], organization: '' })
 const saving = ref(false)
 const saveError = ref('')
 const saveSuccess = ref(false)
@@ -196,7 +219,7 @@ const onCoverChange = async (e: Event) => {
   } finally { coverUpdating.value = false }
 }
 
-watch(authorInput, v => { editForm.authors = v.split(',').map(s => s.trim()).filter(Boolean) })
+
 
 const saveBook = async () => {
   saving.value = true; saveError.value = ''; saveSuccess.value = false
@@ -297,12 +320,14 @@ const loadMetrics = async () => {
 }
 
 onMounted(async () => {
-  const [bookRes, periodsRes, langsRes, catsRes, orgsRes] = await Promise.all([
+  const [bookRes, periodsRes, langsRes, catsRes, orgsRes, authorsRes, narratorsRes] = await Promise.all([
     getBook(id, USER_ROLES.ADMIN),
     getPeriods(),
     getLanguages(),
     getCategories(USER_ROLES.ADMIN),
     getOrgs(),
+    getAuthors(),
+    getNarrators(),
     loadChapters(),
     loadMetrics(),
   ])
@@ -310,20 +335,36 @@ onMounted(async () => {
   if (catsRes?.data) availableCategories.value = catsRes.data as any
   if (orgsRes?.data) orgs.value = orgsRes.data as any
 
+  if (authorsRes?.data) {
+    authorOptions.value = authorsRes.data.map((a: any) => ({ id: a.id ?? a._id, name: a.name }))
+  }
+  if (narratorsRes?.data) {
+    narratorOptions.value = narratorsRes.data.map((n: any) => ({ id: n.id ?? n._id, name: n.name }))
+  }
+
   if (bookRes?.data) {
     book.value = bookRes.data as any
     editForm.title = book.value!.title
-    editForm.description = book.value!.description
-    editForm.category = book.value!.category ?? []
-    editForm.languages = book.value!.languages ?? []
-    editForm.authors = book.value!.authors ?? []
+    editForm.description = book.value!.description ?? ''
+    editForm.category = (book.value!.category ?? []).map((c: any) => {
+      const cat = availableCategories.value.find(cat => cat.name === c || cat.id === c)
+      return cat?.id ?? c
+    })
+    editForm.languages = (book.value!.languages ?? []).map((l: any) => {
+      const lang = availableLanguages.value.find(lang => lang.name === l || lang.id === l)
+      return lang?.id ?? l
+    })
+    editForm.authors = (book.value!.authors ?? []).map((a: any) => a.id ?? a)
+    editForm.narrators = (book.value!.narrators ?? []).map((n: any) => n.id ?? n)
     editForm.organization = (book.value as any).organization ?? ''
-    authorInput.value = book.value!.authors?.join(', ') ?? ''
   }
   if (periodsRes?.data) periods.value = periodsRes.data as any
 })
 </script>
 
+<style>
+@import '@vueup/vue-quill/dist/vue-quill.snow.css';
+</style>
 <style scoped>
 .book-detail {
   display: flex;
@@ -416,7 +457,8 @@ onMounted(async () => {
   margin: 0 0 4px;
 }
 
-.book-authors {
+.book-authors,
+.book-narrators {
   font-family: var(--font-sans);
   font-size: 13px;
   color: var(--muted);
@@ -511,6 +553,10 @@ onMounted(async () => {
   font-size: 11px;
   color: var(--muted);
   margin-top: 4px;
+}
+
+:deep(.ql-editor) {
+  min-height: 120px;
 }
 
 .btn-primary {

@@ -38,6 +38,11 @@ export const useHandleError = (
       logout(link);
       return;
     }
+    if (statusCode === 403 && route.path.includes("/app/")) {
+        // Redirect to subscription page for restricted access
+        navigateTo("/app/subscription");
+        return;
+    }
     tempMessage.value = error.response?.data?.message;
     if (API_ERRORS.includes(tempMessage.value?.toLowerCase() ?? "")) {
       const errors = error?.response?.data?.errors || [];

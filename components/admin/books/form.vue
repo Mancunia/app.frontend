@@ -13,10 +13,23 @@
             <div class="bookDetails">
                 <UiAdminInputField @update:model-value="form.title = $event" place-holder="Title" type="text"
                     :value="form.title" />
-                <UiAdminInputField @update:model-value="form.authors = $event" place-holder="Authors" type="text"
-                    :value="form.authors.toString()" />
-                <UiAdminInputField @update:model-value="form.description = $event" place-holder="Description"
-                    :value="form.description" type="text" />
+                <div class="selectWrapper">
+                    <UiSelectDropDown
+                        :data-list="authorOptions"
+                        placeHolder="Authors"
+                        generic="array"
+                    @selected="form.authors = $event"
+                    :selected-option="form.authors as unknown as string[]"
+                    />
+                    <UiSelectDropDown
+                        :data-list="narratorOptions"
+                        placeHolder="Narrators"
+                        generic="array"
+                    @selected="form.narrators = $event"
+                    :selected-option="form.narrators as unknown as string[]"
+                    />
+                </div>
+                <QuillEditor v-model:html="form.description" placeholder="Description" />
                 <div class="selectWrapper">
                     <UiSelectDropDown :data-list="languages ?? []" placeHolder="languages" generic="array"
                         @selected="form.languages = $event" :selected-option="form.languages" />
@@ -37,7 +50,10 @@
 
 <script setup lang="ts">
 import type { PropType } from 'vue';
+import { QuillEditor } from '@vueup/vue-quill'
 import { createBook, updateBook } from '~/services/admin/book';
+import { getAuthors } from '~/services/admin/author';
+import { getNarrators } from '~/services/admin/narrator';
 import { getUserProfiles } from '~/services/admin/users';
 import type { USER_PROFILE } from '~/types/auth';
 import type { BOOK } from '~/types/book';
@@ -62,6 +78,7 @@ const form = ref<BOOK>({
         dislikes: 0
     },
     authors: [],
+    narrators: [],
     cover: '',
     title: '',
     description: '',
@@ -70,9 +87,26 @@ const form = ref<BOOK>({
     associates: [],
 })
 const associates = ref<{ id: string, name: string }[] | null>(null)
+const authorOptions = ref<{ id: string, name: string }[]>([])
+const narratorOptions = ref<{ id: string, name: string }[]>([])
 
 const { uploadFile, generateSignedUrl } = useAWS(USER_ROLES.ADMIN)
 const { languages, categories } = useCommon(USER_ROLES.ADMIN)
+
+const fetchAuthorOptions = async () => {
+    const res = await getAuthors()
+    if (res?.data) {
+        authorOptions.value = res.data.map((a: any) => ({ id: a.id ?? a._id, name: a.name }))
+    }
+}
+
+const fetchNarratorOptions = async () => {
+    const res = await getNarrators()
+    if (res?.data) {
+        narratorOptions.value = res.data.map((n: any) => ({ id: n.id ?? n._id, name: n.name }))
+    }
+}
+
 const postBook = async () => {
     uploading.value.loading = true
     if (imageData.value) {
@@ -158,11 +192,16 @@ const dropImage = () => {
 
 watch(() => book, () => {
     if (book) {
-        form.value = book
+        form.value = { ...book, authors: (book.authors ?? []).map((a: any) => a.id ?? a), narrators: (book.narrators ?? []).map((n: any) => n.id ?? n) }
     }
 }, {
     deep: true,
     immediate: true
+})
+
+onMounted(() => {
+    fetchAuthorOptions()
+    fetchNarratorOptions()
 })
 </script>
 <style lang="css" scoped>
@@ -217,6 +256,10 @@ watch(() => book, () => {
 .selectWrapper {
     display: flex;
     gap: 20px;
+}
+
+:deep(.ql-editor) {
+    min-height: 120px;
 }
 
 .submit {

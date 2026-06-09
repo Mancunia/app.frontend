@@ -10,6 +10,7 @@ export type SubscriptionPlan = {
   origin: string
   accent: string
   createdAt: string
+  books?: string[]
 }
 
 /** Subscriber record as returned by GET /admin/subscriptions/stats → data.recent[] */
@@ -60,11 +61,13 @@ export type CreatePlanPayload = {
   name: string
   amount: number
   duration: number   // milliseconds
+  origin: string
   users?: number
   autorenew?: boolean
   active?: boolean
   visible?: boolean
   accent?: string
+  books?: string[]
 }
 
 export type UpdatePlanPayload = Partial<CreatePlanPayload>

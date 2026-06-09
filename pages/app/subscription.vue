@@ -13,7 +13,7 @@
         <div v-else-if="subscription" class="plan-grid">
             <span v-for="(sub, index) in subscription" :key="index">
                 <input type="radio" name="radio" :id="String(index)" />
-                <UiAppSubscription :subscription="sub" :id="index" />
+                <UiAppSubscription :subscription="sub" :id="index" :origins="origins" />
             </span>
         </div>
         <div v-else class="empty-state">
@@ -38,18 +38,29 @@
 
 <script setup lang="ts">
 import { type Subscription } from '~/types/common';
+import type { OriginType } from '~/types/admin/origin';
 import { getSubscriptions, linkSubscription } from '~/services/subscription';
+import { getOrigins } from '~/services/admin/origin';
 
 const subscription = ref<Subscription[] | null>(null)
 const reference = ref<{ ref: string, loading: boolean }>({ ref: '', loading: false })
 const loading = ref(true);
+const origins = ref<OriginType[]>([])
 
 const fetchSubscriptions = async () => {
     try {
         loading.value = true;
-        const { data } = await getSubscriptions();
-        if (data) {
-            subscription.value = data;
+        const [subRes, originRes] = await Promise.all([
+            getSubscriptions(),
+            getOrigins().catch(() => null)
+        ])
+        const subData = subRes as any
+        if (subData) {
+            subscription.value = Array.isArray(subData) ? subData : subData.data ?? subData
+        }
+        const originData = originRes as any
+        if (originData) {
+            origins.value = Array.isArray(originData) ? originData : originData.data ?? originData
         }
     } catch (error: unknown) {
         console.error(error);

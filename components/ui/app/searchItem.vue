@@ -9,7 +9,7 @@
                 <span v-if="store.getPlaying.book._id === book._id"><img src="@/assets/playing.gif" width="30"
                         height="15" /></span>
             </span>
-            <p>Author: <span>{{ book.authors.toString() }}</span></p>
+            <p>Author: <span>{{ book.authors?.map(a => typeof a === 'string' ? a : a.name).join(', ') }}</span></p>
             <p>Played: <span>{{ book.meta.played }}</span></p>
             <!-- <p>Category: <span>{{ book.category.map((cate: string) => categories.find((cat) => cat.id === cate)?.name)
                     }}</span></p> -->

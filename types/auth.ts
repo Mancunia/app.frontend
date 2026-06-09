@@ -11,6 +11,7 @@ export type USER = {
   subscription: {
     active: boolean;
     id: string;
+    books?: string[];
   };
 };
 

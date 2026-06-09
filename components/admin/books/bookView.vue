@@ -18,7 +18,7 @@
                         <p><span class="title">Description:</span> <span class="description">{{ book?.description
                         }}</span></p>
                         <p><span class="title">Authors:</span> <span class="titleText">{{
-                            book?.authors?.toString()
+                            book?.authors?.map(a => typeof a === 'string' ? a : a.name).join(', ')
                                 }}</span></p>
                         <p><span class="title">Language:</span> <span class="titleText">{{ bookLanguages }}</span></p>
                         <p><span class="title">Genre:</span> <span class="titleText">{{ bookCategories }}</span></p>

@@ -1,8 +1,8 @@
 <template>
   <div>
     <div class="time-row">
-      <span>{{ secondsToMinutes(currentTime) }}</span>
-      <span>{{ secondsToMinutes(duration) }}</span>
+      <span class="time-elapsed">{{ secondsToMinutes(currentTime) }}</span>
+      <span class="time-remaining">-{{ secondsToMinutes(Math.max(0, duration - currentTime)) }}</span>
     </div>
     <div class="seek-wrap">
       <UiAseKenteWeft :progress="duration > 0 ? currentTime / duration : 0" :height="6" />
@@ -17,15 +17,16 @@
         </div>
         <div class="controls">
           <div class="player-item">
-            <button disabled class="ctrl-btn">⏮</button>
+            <button :disabled="!hasPrev" @click="playPrevInQueue" class="ctrl-btn">⏮</button>
             <button @click="rewindAudio(5)" class="ctrl-btn">⏪</button>
             <button @click="toggleAudio" class="play-btn">
               {{ store.getPlayer.playing ? '⏸' : '▶' }}
             </button>
             <button @click="fastForwardAudio(5)" class="ctrl-btn">⏩</button>
-            <button disabled class="ctrl-btn">⏭</button>
+            <button :disabled="!hasNext" @click="playNextInQueue" class="ctrl-btn">⏭</button>
           </div>
         </div>
+        <button @click="cycleSpeed" class="speed-badge">{{ playbackRate }}×</button>
       </div>
     </div>
   </div>
@@ -41,14 +42,15 @@ const chapter = computed(() => store.getPlaying);
 const {
   toggleAudio, stopAudio, setVolume, muteAudio, unmuteAudio,
   duration, currentTime, fastForwardAudio, rewindAudio, seekAudio,
-  playerDetails, init
+  playerDetails, init, playbackRate, cycleSpeed,
+  hasNext, hasPrev, playNextInQueue, playPrevInQueue
 } = usePlayer(USER_ROLES.USER);
 
 const getChapter = async () => {
   const c = chapter.value;
   if (!c?.id) return;
   const res = await playChapter(c.id);
-  if (res) await init(res);
+  if (res) await init(res, false);
 };
 
 watch(currentTime, (newTime) => { store.setPlayingSeek(newTime); });
@@ -66,9 +68,16 @@ onMounted(async () => {
   justify-content: space-between;
   font-family: var(--font-mono);
   font-size: 0.7rem;
-  color: var(--cream);
-  opacity: 0.6;
+  color: #ffffff;
   padding: 0 4px 4px;
+}
+.time-elapsed {
+  color: #ffffff;
+  opacity: 0.95;
+}
+.time-remaining {
+  color: #ffffff;
+  opacity: 0.6;
 }
 .seek-wrap { position: relative; width: 90%; margin: 0 auto 8px; }
 .seek-input {
@@ -110,11 +119,11 @@ onMounted(async () => {
 .ctrl-btn {
   background: none;
   border: none;
-  color: var(--cream);
+  color: #ffffff;
   font-size: 1rem;
   cursor: pointer;
   padding: 6px;
-  opacity: 0.8;
+  opacity: 0.85;
 }
 .ctrl-btn:hover { opacity: 1; }
 .ctrl-btn:disabled { opacity: 0.3; cursor: not-allowed; }
@@ -132,6 +141,22 @@ onMounted(async () => {
   justify-content: center;
   flex-shrink: 0;
 }
+
+.speed-badge {
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 10px;
+  color: #ffffff;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  padding: 2px 8px;
+  cursor: pointer;
+  opacity: 0.8;
+  transition: opacity 0.2s;
+  flex-shrink: 0;
+  margin-left: 4px;
+}
+.speed-badge:hover { opacity: 1; }
 
 @media only screen and (min-width: 750px) {
   .transport-bar { width: 100%; margin-left: 0; }

@@ -12,6 +12,9 @@ type ROUTES = {
     revenue: string
     languages: string
     organizations: string
+    authors: string
+    narrators: string
+    origins: string
     email: string
     quotes: string
   }
@@ -21,6 +24,8 @@ type ROUTES = {
     signup: string
     forgotPassword: string
     book: string
+    author: string
+    narrator: string
     library: string
     search: string
     profile: string
@@ -46,6 +51,9 @@ const routes: ROUTES = {
     revenue:       '/admin/revenue',
     languages:     '/admin/languages',
     organizations: '/admin/organizations',
+    authors:       '/admin/authors',
+    narrators:     '/admin/narrators',
+    origins:       '/admin/origins',
     email:         '/admin/email',
     quotes:        '/admin/quotes',
   },
@@ -55,6 +63,8 @@ const routes: ROUTES = {
     signup:         '/app/auth/signup',
     forgotPassword: '/app/auth/forgot-password',
     book:           '/app/book/',
+    author:         '/app/author/',
+    narrator:       '/app/narrator/',
     library:        '/app/library',
     search:         '/app/search',
     profile:        '/app/profile',

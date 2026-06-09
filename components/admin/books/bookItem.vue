@@ -3,7 +3,7 @@
         <img :src="checkForOldFile(book.cover)" :alt="`${book.title}_cover`">
         <div class="book-details">
             <header>{{ book.title }}</header>
-            <p>{{ book.authors?.toString() }}</p>
+            <p>{{ book.authors?.map(a => typeof a === 'string' ? a : a.name).join(', ') }}</p>
         </div>
 
     </div>
