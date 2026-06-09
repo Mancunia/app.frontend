@@ -40,7 +40,6 @@
 import { type Subscription } from '~/types/common';
 import type { OriginType } from '~/types/admin/origin';
 import { getSubscriptions, linkSubscription } from '~/services/subscription';
-import { getOrigins } from '~/services/admin/origin';
 
 const subscription = ref<Subscription[] | null>(null)
 const reference = ref<{ ref: string, loading: boolean }>({ ref: '', loading: false })
@@ -50,17 +49,10 @@ const origins = ref<OriginType[]>([])
 const fetchSubscriptions = async () => {
     try {
         loading.value = true;
-        const [subRes, originRes] = await Promise.all([
-            getSubscriptions(),
-            getOrigins().catch(() => null)
-        ])
+        const subRes = await getSubscriptions()
         const subData = subRes as any
         if (subData) {
             subscription.value = Array.isArray(subData) ? subData : subData.data ?? subData
-        }
-        const originData = originRes as any
-        if (originData) {
-            origins.value = Array.isArray(originData) ? originData : originData.data ?? originData
         }
     } catch (error: unknown) {
         console.error(error);

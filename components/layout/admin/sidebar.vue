@@ -1,7 +1,7 @@
 <template>
   <aside class="sidebar">
     <div class="brand">
-      <!-- <span class="brand-mark">◆</span> -->
+      <UiAseAnansiMark :size="24" />
       <span class="brand-name">Anansesem</span>
     </div>
 
