@@ -8,8 +8,11 @@
     <div v-if="store.getPlaying.type === 'ebook'" style="height: 100%">
       <UiAppPlayerEbookViewer />
     </div>
+    <div v-else-if="showQueue">
+      <UiAppPlayerQueue @close="showQueue = false" />
+    </div>
     <div v-else>
-      <UiAppPlayerAudioPlayer />
+      <UiAppPlayerAudioPlayer @show-queue="showQueue = true" />
     </div>
   </div>
 </template>
@@ -17,8 +20,9 @@
 <script setup lang="ts">
 const store = useAuthStore();
 const book = computed(() => store.getPlaying.book ?? null);
+const showQueue = ref(false);
 
-const { init, initPDF, playAudio, fetchChapter, player } = usePlayer(USER_ROLES.USER);
+const { init, initPDF, fetchChapter, player } = usePlayer(USER_ROLES.USER);
 
 const playReadChapter = async () => {
   if (!player.value) {
@@ -28,8 +32,7 @@ const playReadChapter = async () => {
         if (data.chapter.id !== store.getPlaying.id) await store.setPlayingPage(1);
         await initPDF(data);
       } else {
-        await init(data);
-        playAudio();
+        await init(data, false);
       }
     }
   }

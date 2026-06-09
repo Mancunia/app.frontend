@@ -1,4 +1,4 @@
-import type { PdfFileData, PLAY_CHAPTER, PLAYER } from "~/types/book";
+import type { PdfFileData, PLAY_CHAPTER, PLAYER, CHAPTER } from "~/types/book";
 import { playChapter } from "~/services/play";
 
 export const usePlayer = (app: USER_ROLES) => {
@@ -13,6 +13,12 @@ export const usePlayer = (app: USER_ROLES) => {
   const store = useAuthStore();
   const { addError } = useToast();
   const { pdfData, loading: pdfLoading, error, readPdf } = usePdfReader();
+
+  const queue = computed(() => store.getQueue);
+  const queueIndex = computed(() => store.getQueueIndex);
+  const hasNext = computed(() => queueIndex.value < queue.value.length - 1);
+  const hasPrev = computed(() => queueIndex.value > 0);
+
   const fetchChapter = async (chapterId: string) => {
     try {
       loading.value = true;
@@ -86,7 +92,21 @@ export const usePlayer = (app: USER_ROLES) => {
     
   };
 
-  const init = async (chapter: PLAY_CHAPTER) => {
+  const onEnded = async () => {
+    if (hasNext.value) {
+      await playNextInQueue();
+    } else {
+      await playerDetails({ playing: false });
+    }
+  };
+  const onPause = async () => {
+    await playerDetails({ playing: false });
+  };
+  const onPlay = async () => {
+    await playerDetails({ playing: true });
+  };
+
+  const init = async (chapter: PLAY_CHAPTER, autoPlay = true) => {
     if (!chapter) return;
     let file = checkForOldFile(chapter.chapter.content ?? "");
     stopAudio();
@@ -94,19 +114,22 @@ export const usePlayer = (app: USER_ROLES) => {
     audioFile.value = chapter;
     if (audio.value.src) {
       await audio.value.load();
-      await playAudio();
+      audio.value.playbackRate = store.getPlayer.playbackRate ?? 1;
+      audio.value.volume = store.getPlayer.volume ?? 1;
+      if (autoPlay) {
+        await playAudio();
+      } else {
+        playerDetails({ playing: false });
+      }
       await calculateTime(chapter);
     }
 
-    audio.value.addEventListener("ended", async () => {
-      await playerDetails({ playing: false });
-    });
-    audio.value.addEventListener("pause", async () => {
-      await playerDetails({ playing: false });
-    });
-    audio.value.addEventListener("play", async () => {
-      await playerDetails({ playing: true });
-    });
+    audio.value.removeEventListener("ended", onEnded);
+    audio.value.removeEventListener("pause", onPause);
+    audio.value.removeEventListener("play", onPlay);
+    audio.value.addEventListener("ended", onEnded);
+    audio.value.addEventListener("pause", onPause);
+    audio.value.addEventListener("play", onPlay);
   };
 
   const toggleAudio = async () => {
@@ -118,9 +141,9 @@ export const usePlayer = (app: USER_ROLES) => {
       await playerDetails({ playing: true });
     }
   };
-  const playAudio = () => {
+  const playAudio = async () => {
     try {
-      audio.value.play();
+      await audio.value.play();
       playerDetails({ playing: true });
     } catch (error: unknown) {
       if (error instanceof Error) {
@@ -152,9 +175,34 @@ export const usePlayer = (app: USER_ROLES) => {
   };
 
   const setVolume = (volume: number) => {
-    if (!audio.value) return; // Check for null audio element
+    if (!audio.value) return;
     const normalizedVolume = Math.max(0, Math.min(1, volume / 100));
     audio.value.volume = normalizedVolume;
+  };
+
+  const SPEED_PRESETS = [0.5, 0.75, 1, 1.25, 1.5, 2];
+  const playbackRate = ref(1);
+  const setPlaybackRate = (rate: number) => {
+    const clamped = Math.max(0.25, Math.min(4, rate));
+    audio.value.playbackRate = clamped;
+    playbackRate.value = clamped;
+    playerDetails({ playbackRate: clamped });
+  };
+  const increaseSpeed = () => {
+    const current = audio.value.playbackRate;
+    const next = SPEED_PRESETS.find(s => s > current) ?? SPEED_PRESETS[SPEED_PRESETS.length - 1];
+    setPlaybackRate(next);
+  };
+  const decreaseSpeed = () => {
+    const current = audio.value.playbackRate;
+    const prev = [...SPEED_PRESETS].reverse().find(s => s < current) ?? SPEED_PRESETS[0];
+    setPlaybackRate(prev);
+  };
+  const cycleSpeed = () => {
+    const current = audio.value.playbackRate;
+    const idx = SPEED_PRESETS.indexOf(current);
+    const next = SPEED_PRESETS[(idx + 1) % SPEED_PRESETS.length];
+    setPlaybackRate(next);
   };
 
   const fastForwardAudio = (seconds: number) => {
@@ -167,8 +215,8 @@ export const usePlayer = (app: USER_ROLES) => {
 
  const seekAudio = (position: number): void => {
    const element = audio.value;
-   const max = validTime.value;
-   const target = position > duration.value ? duration.value : position
+   if (!element || duration.value <= 0) return;
+   const target = Math.min(position, duration.value);
    element.currentTime = target;
  };
 
@@ -179,12 +227,48 @@ export const usePlayer = (app: USER_ROLES) => {
     });
   };
 
+  const loadAndPlayChapter = async (chapter: CHAPTER) => {
+    store.setPlaying(chapter);
+    const res = await fetchChapter(chapter.id ?? '');
+    if (res?.data) {
+      await init(res.data);
+    }
+  };
+
+  const playNextInQueue = async () => {
+    const nextIdx = queueIndex.value + 1;
+    if (nextIdx < queue.value.length) {
+      store.setQueueIndex(nextIdx);
+      await loadAndPlayChapter(queue.value[nextIdx].chapter);
+    }
+  };
+
+  const playPrevInQueue = async () => {
+    const prevIdx = queueIndex.value - 1;
+    if (prevIdx >= 0) {
+      store.setQueueIndex(prevIdx);
+      await loadAndPlayChapter(queue.value[prevIdx].chapter);
+    }
+  };
+
+  const playChapterAt = async (index: number) => {
+    if (index >= 0 && index < queue.value.length) {
+      store.setQueueIndex(index);
+      await loadAndPlayChapter(queue.value[index].chapter);
+    }
+  };
+
   watch(
     () => audio.value.currentTime,
     () => {
-      if (audio.value.currentTime >= validTime.value) {
+      if (audio.value.currentTime >= validTime.value && validTime.value > 0) {
         audio.value.currentTime = validTime.value;
         stopAudio();
+        if (hasNext.value) {
+          playNextInQueue();
+        } else {
+          playerDetails({ playing: false });
+        }
       }
     }
   );
@@ -201,6 +285,11 @@ export const usePlayer = (app: USER_ROLES) => {
     muteAudio,
     unmuteAudio,
     setVolume,
+    playbackRate,
+    setPlaybackRate,
+    increaseSpeed,
+    decreaseSpeed,
+    cycleSpeed,
     fastForwardAudio,
     rewindAudio,
     seekAudio,
@@ -210,5 +299,12 @@ export const usePlayer = (app: USER_ROLES) => {
     loading: computed(() => loading.value || pdfLoading.value),
     pdfData,
     error,
+    queue,
+    queueIndex,
+    hasNext,
+    hasPrev,
+    playNextInQueue,
+    playPrevInQueue,
+    playChapterAt,
   };
 };

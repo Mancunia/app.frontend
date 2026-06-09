@@ -10,27 +10,35 @@
     <!-- 2. Stats Row -->
     <div class="stats-row">
       <div class="stat-item">
-        <img src="~/assets/images/playerDetails/star.png" class="stat-icon" />
-        <span class="stat-text">4.5</span>
-      </div>
-      <div class="stat-item">
-        <img src="~/assets/images/playerDetails/language-circle.png" class="stat-icon" />
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="stat-icon">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M2 12h20"/>
+          <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+        </svg>
         <span class="stat-text">English</span>
       </div>
       <div class="stat-item">
-        <img src="~/assets/images/playerDetails/microphone-2.png" class="stat-icon" />
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="stat-icon">
+          <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+          <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+          <line x1="12" y1="19" x2="12" y2="23"/>
+          <line x1="8" y1="23" x2="16" y2="23"/>
+        </svg>
         <span class="stat-text">Owusu</span>
       </div>
       <div class="stat-item">
-        <img src="~/assets/images/book.png" class="stat-icon" style="filter: invert(1) brightness(0.8);" />
-        <span class="stat-text">ch. 4</span>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="stat-icon">
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+        </svg>
+        <span class="stat-text">{{ queueIndex >= 0 ? `ch. ${queueIndex + 1}/${queue.length}` : 'ch. —' }}</span>
       </div>
     </div>
 
     <!-- 3. Title & Author -->
     <div class="meta-section">
       <h1 class="display-title">{{ book.title }}</h1>
-      <p class="serif-author">by {{ book.authors?.join(', ') }}</p>
+      <p class="serif-author">by {{ book.authors?.map(a => typeof a === 'string' ? a : a.name).join(', ') }}</p>
     </div>
 
     <!-- 4. Progress -->
@@ -39,8 +47,8 @@
         <UiAseKenteWeft :progress="duration > 0 ? currentTime / duration : 0" :height="10" />
       </div>
       <div class="time-labels">
-        <span>{{ secondsToMinutes(currentTime) }}</span>
-        <span>-{{ secondsToMinutes(duration - currentTime) }}</span>
+        <span class="time-elapsed">{{ secondsToMinutes(currentTime) }}</span>
+        <span class="time-remaining">-{{ secondsToMinutes(Math.max(0, duration - currentTime)) }}</span>
       </div>
     </div>
 
@@ -65,8 +73,11 @@
         <span class="skip-val">15</span>
       </button>
 
-      <button class="icon-btn small-btn back-btn">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14l-5-5 5-5"/><path d="M4 9h16v11"/></svg>
+      <button @click="playPrevInQueue" class="icon-btn small-btn nav-btn" :disabled="!hasPrev">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 17l-5-5 5-5"/><path d="M18 17l-5-5 5-5"/></svg>
+      </button>
+      <button @click="playNextInQueue" class="icon-btn small-btn nav-btn" :disabled="!hasNext">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 17l5-5-5-5"/><path d="M6 17l5-5-5-5"/></svg>
       </button>
     </div>
 
@@ -92,21 +103,26 @@
 
     <!-- 6. Footer Actions -->
     <div class="footer-section">
-      <button class="footer-btn">1.0×</button>
-      <button class="footer-btn">Chapters</button>
-      <button class="footer-btn">Sleep</button>
-      <button class="footer-btn">AirPlay</button>
+      <span class="speed-group">
+        <button @click="decreaseSpeed" class="footer-btn speed-adj">−</button>
+        <button class="footer-btn speed-val">{{ playbackRate }}×</button>
+        <button @click="increaseSpeed" class="footer-btn speed-adj">+</button>
+      </span>
+      <button class="footer-btn" @click="$emit('showQueue')">Chapters</button>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+defineEmits(['showQueue'])
 const store = useAuthStore();
 const { checkForOldFile, secondsToMinutes } = useUtils();
 const book = computed(() => store.getPlaying.book ?? null);
 
 const {
-  toggleAudio, duration, currentTime, fastForwardAudio, rewindAudio
+  toggleAudio, duration, currentTime, fastForwardAudio, rewindAudio,
+  setVolume, playbackRate, increaseSpeed, decreaseSpeed,
+  hasNext, hasPrev, playNextInQueue, playPrevInQueue, queue, queueIndex
 } = usePlayer(USER_ROLES.USER);
 
 const playing = computed(() => store.getPlayer.playing);
@@ -129,7 +145,7 @@ const handleVolumeChange = (e: Event) => {
   justify-content: space-between;
   padding: 60px 24px 30px;
   background: var(--paper); /* Uses dark variant via data-dark="true" */
-  color: var(--cream);
+  color: #ffffff;
   box-sizing: border-box;
 }
 
@@ -175,9 +191,8 @@ const handleVolumeChange = (e: Event) => {
 }
 .stat-text {
   font-family: var(--font-mono);
-  font-size: 0.8rem;
-  color: var(--cream);
-  opacity: 0.7;
+  font-size: 0.85rem;
+  color: #ffffff;
 }
 
 /* 3. Meta */
@@ -190,14 +205,15 @@ const handleVolumeChange = (e: Event) => {
   font-size: 2.2rem;
   line-height: 1.1;
   margin: 0 0 10px;
-  color: var(--cream);
+  color: #ffffff;
 }
 .serif-author {
   font-family: var(--font-serif);
   font-style: italic;
   font-size: 1.1rem;
-  opacity: 0.6;
+  opacity: 0.8;
   margin: 0;
+  color: #ffffff;
 }
 
 /* 4. Progress */
@@ -215,8 +231,15 @@ const handleVolumeChange = (e: Event) => {
   justify-content: space-between;
   margin-top: 10px;
   font-family: var(--font-mono);
-  font-size: 0.75rem;
-  opacity: 0.5;
+  font-size: 0.8rem;
+}
+.time-elapsed {
+  color: #ffffff;
+  opacity: 0.95;
+}
+.time-remaining {
+  color: #ffffff;
+  opacity: 0.6;
 }
 
 /* 5. Controls */
@@ -228,20 +251,24 @@ const handleVolumeChange = (e: Event) => {
   margin-bottom: 40px;
 }
 .icon-btn {
-  background: rgba(255,255,255,0.08);
-  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.15);
+  border: 1.5px solid rgba(255,255,255,0.25);
   border-radius: 50%;
-  color: var(--cream);
+  color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   transition: all 0.2s ease;
 }
+.icon-btn:hover {
+  background: rgba(255,255,255,0.25);
+  border-color: rgba(255,255,255,0.4);
+}
 .small-btn {
   width: 44px;
   height: 44px;
-  opacity: 0.7;
+  opacity: 0.9;
 }
 .skip-btn {
   width: 56px;
@@ -256,6 +283,15 @@ const handleVolumeChange = (e: Event) => {
   top: 54%;
   left: 50%;
   transform: translate(-50%, -50%);
+}
+.nav-btn {
+  width: 44px;
+  height: 44px;
+  opacity: 0.9;
+}
+.nav-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
 }
 .play-pause-btn {
   width: 84px;
@@ -282,8 +318,8 @@ const handleVolumeChange = (e: Event) => {
 }
 
 .volume-icon {
-  color: var(--cream);
-  opacity: 0.6;
+  color: #ffffff;
+  opacity: 1;
 }
 
 .volume-bar-wrap {
@@ -325,11 +361,51 @@ const handleVolumeChange = (e: Event) => {
 .footer-btn {
   font-family: var(--font-sans);
   font-size: 0.85rem;
-  color: var(--cream);
-  opacity: 0.5;
+  font-weight: 600;
+  color: #ffffff;
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.25);
+  border-radius: 20px;
+  padding: 6px 14px;
   cursor: pointer;
+  transition: all 0.2s ease;
 }
-.footer-btn:hover { opacity: 1; }
+.footer-btn:hover {
+  background: rgba(255,255,255,0.22);
+  border-color: rgba(255,255,255,0.35);
+}
+
+.speed-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.speed-adj {
+  font-size: 1.1rem;
+  font-weight: 700;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255,255,255,0.3);
+  background: rgba(255,255,255,0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  line-height: 1;
+}
+.speed-adj:hover {
+  background: rgba(255,255,255,0.3);
+  border-color: rgba(255,255,255,0.5);
+}
+.speed-val {
+  font-variant-numeric: tabular-nums;
+  min-width: 40px;
+  text-align: center;
+  color: #ffffff;
+  background: rgba(255,255,255,0.12);
+  border-color: rgba(255,255,255,0.25);
+}
 
 @media (max-height: 700px) {
   .cover-art { width: 180px; height: 210px; }

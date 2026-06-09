@@ -120,7 +120,7 @@ const toggleDrawer = () => {
   font-family: var(--font-sans);
   font-size: 13px;
   font-weight: 600;
-  color: var(--cream);
+  color: #ffffff;
   margin: 0;
   white-space: nowrap;
   overflow: hidden;
@@ -130,7 +130,7 @@ const toggleDrawer = () => {
 .book-title {
   font-family: var(--font-sans);
   font-size: 11px;
-  color: var(--muted);
+  color: rgba(255,255,255,0.7);
   margin: 0;
   white-space: nowrap;
   overflow: hidden;

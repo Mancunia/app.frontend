@@ -27,8 +27,10 @@ export type Subscription = {
   users: number;
   autorenew: boolean;
   amount: number;
+  origin: string;
   accent: string;
   createdAt: string;
+  books?: string[];
 };
 
 export type Metrics = {

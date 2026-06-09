@@ -4,9 +4,33 @@
         <div class="story-item">
             <div class="story-thumbnail"><img :src="checkForOldFile(book.cover)" alt=""></div>
             <div class="story-title">{{ book.title }}</div>
-            <div class="writer">{{ String(book.authors) }}</div>
+            <div v-if="book.authors?.length" class="writer">
+                By: {{ book.authors.map(a => typeof a === 'string' ? a : a.name).join(', ') }}
+            </div>
+            <div v-if="book.narrators?.length" class="narrator">
+                Narrated by: {{ book.narrators.map(n => typeof n === 'string' ? n : n.name).join(', ') }}
+            </div>
+            <div class="tooltip">
+                <div class="tooltip-content">
+                    <div v-if="book.authors?.length" class="tooltip-row">
+                        <span class="tooltip-label">Authors:</span>
+                        {{ book.authors.map(a => typeof a === 'string' ? a : a.name).join(', ') }}
+                    </div>
+                    <div v-if="book.narrators?.length" class="tooltip-row">
+                        <span class="tooltip-label">Narrators:</span>
+                        {{ book.narrators.map(n => typeof n === 'string' ? n : n.name).join(', ') }}
+                    </div>
+                    <div v-if="resolvedCategories.length" class="tooltip-row">
+                        <span class="tooltip-label">Categories:</span>
+                        {{ resolvedCategories.join(', ') }}
+                    </div>
+                    <div v-if="resolvedLanguages.length" class="tooltip-row">
+                        <span class="tooltip-label">Languages:</span>
+                        {{ resolvedLanguages.join(', ') }}
+                    </div>
+                </div>
+            </div>
         </div>
-
     </NuxtLink>
 </template>
 
@@ -23,11 +47,21 @@ const props = defineProps({
 })
 const selectBook = useState<BOOK | null>('appBook', () => null)
 const { checkForOldFile } = useUtils()
+const store = useAuthStore()
+
+const resolvedCategories = computed(() => {
+    const cats = store.getCategories
+    return props.book.category?.map(id => cats.find(c => c.id === id)?.name || id) ?? []
+})
+const resolvedLanguages = computed(() => {
+    const langs = store.getLanguages
+    return props.book.languages?.map(id => langs.find(l => l.id === id)?.name || id) ?? []
+})
 </script>
 
 <style scoped>
 .book-link { text-decoration: none; color: var(--ink); }
-.story-item { display: flex; flex-direction: column; }
+.story-item { display: flex; flex-direction: column; position: relative; }
 .story-thumbnail {
   width: 100%; aspect-ratio: 3/4; height: auto;
   border-radius: var(--d-radius); overflow: hidden;
@@ -40,4 +74,41 @@ const { checkForOldFile } = useUtils()
   margin-top: 6px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
 }
 .writer { font-family: var(--font-serif); font-style: italic; font-size: 0.75rem; color: var(--muted); }
+.narrator { font-family: var(--font-sans); font-size: 0.7rem; color: var(--ochre); margin-top: 1px; }
+.tooltip {
+  display: none;
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+  margin-bottom: 8px;
+  pointer-events: none;
+}
+.story-item:hover .tooltip {
+  display: block;
+}
+.tooltip-content {
+  background: var(--ink);
+  color: var(--cream);
+  padding: 10px 14px;
+  border-radius: var(--d-radius);
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  line-height: 1.6;
+  white-space: nowrap;
+  max-width: 280px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+.tooltip-content::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-top-color: var(--ink);
+}
+.tooltip-row { white-space: normal; }
+.tooltip-label { font-weight: 600; margin-right: 3px; }
 </style>

@@ -11,11 +11,14 @@
                 <span v-else>🎤 Audio</span>
             </div>
 
-            <UiLoader v-if="loading" :theme="{ color: 'var(--ink)' }" />
-            <button v-else-if="store.getPlaying.id !== chapter.id || !store.getPlayer.playing" @click="play">
-                {{ chapter.type === 'ebook' ? 'Read' : 'Play' }}
-            </button>
-            <span v-else><img width="50" height="30" src="@/assets/playing.gif" /></span>
+            <div class="chapter-actions">
+                <UiLoader v-if="loading" :theme="{ color: 'var(--ink)' }" />
+                <button v-else-if="store.getPlaying.id !== chapter.id || !store.getPlayer.playing" @click="play" class="play-btn">
+                    {{ chapter.type === 'ebook' ? 'Read' : 'Play' }}
+                </button>
+                <span v-else><img width="50" height="30" src="@/assets/playing.gif" /></span>
+                <button v-if="chapter.type === 'audio'" class="queue-btn" @click.stop="addToQueue">+ Queue</button>
+            </div>
 
         </div>
     </div>
@@ -23,7 +26,7 @@
 
 <script setup lang="ts">
 import type { CHAPTER } from '~/types/book';
-const emits = defineEmits(['play'])
+const emits = defineEmits(['play', 'addToQueue'])
 const props = defineProps({
     chapter: {
         type: Object as PropType<CHAPTER>,
@@ -37,6 +40,7 @@ const store = useAuthStore();
 const { checkForOldFile } = useUtils()
 
 const play = async () => emits('play',)
+const addToQueue = () => emits('addToQueue')
 
 </script>
 
@@ -107,9 +111,14 @@ const play = async () => emits('play',)
     color: var(--kola);
 }
 
-.description button {
+.chapter-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
     margin-top: auto;
-    width: 100px;
+}
+.play-btn {
+    width: 80px;
     height: 32px;
     background-color: var(--ink);
     color: var(--cream);
@@ -122,8 +131,25 @@ const play = async () => emits('play',)
     cursor: pointer;
     transition: background 0.2s;
 }
-
-.description button:hover {
+.play-btn:hover {
     background: var(--kola);
+}
+.queue-btn {
+    height: 32px;
+    background: transparent;
+    color: var(--ochre);
+    border: 1px solid var(--ochre);
+    border-radius: 20px;
+    font-family: var(--font-sans);
+    font-weight: 600;
+    font-size: 0.7rem;
+    padding: 4px 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+.queue-btn:hover {
+    background: var(--ochre);
+    color: var(--cream);
 }
 </style>

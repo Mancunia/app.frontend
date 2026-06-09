@@ -1,17 +1,24 @@
 <template>
-    <div class="select-menu" :class="{ 'active': active }">
-        <div @click="toggleActive">
+    <div ref="selectRef" class="select-menu" :class="{ 'active': active }">
+        <div class="trigger" @click="toggleActive">
             <slot name="icon"></slot>
         </div>
-        <ul class="options">
-            <li @click.stop v-for="(item, index) in dataList" :key="index" @click="clicked(item.id)" class="option">
-                <span class="option-text">{{ item.name }}</span>
-            </li>
-        </ul>
+        
+        <transition name="fade">
+            <ul v-if="active" class="options">
+                <li v-for="(item, index) in dataList" :key="index" @click="clicked(item.id)" class="option">
+                    <span class="option-text">{{ item.name }}</span>
+                </li>
+                <li v-if="dataList.length === 0" class="no-results">
+                    No items available
+                </li>
+            </ul>
+        </transition>
     </div>
 </template>
 
 <script setup lang="ts">
+import { onClickOutside } from '@vueuse/core'
 
 const props = defineProps({
     dataList: {
@@ -25,153 +32,82 @@ const props = defineProps({
 });
 
 const emit = defineEmits(['selected']);
+const selectRef = ref(null);
 const active = ref<boolean>(false);
 
 const toggleActive = () => active.value = !active.value;
 
+onClickOutside(selectRef, () => {
+    active.value = false;
+});
+
 const clicked = (item: string) => {
     emit('selected', item)
-    return toggleActive()
+    active.value = false
 }
-
 </script>
 
 <style scoped>
 .select-menu {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    max-width: 330px;
-    margin: 50px auto;
-
+    position: relative;
+    display: inline-block;
 }
 
-.select-menu .select-btn {
-    height: 30px;
-    background: var(--card);
-    padding: 20px;
-    font-size: 12px;
-    font-weight: 400;
-    border-radius: 8px;
-    align-items: center;
+.trigger {
     cursor: pointer;
-    justify-content: space-between;
-    box-shadow: 0 2px 8px var(--hairline);
-    border: 1px solid var(--hairline); font-family: var(--font-sans);
 }
 
-.select-menu .options {
-    display: none;
+.options {
     position: absolute;
-    width: inherit;
-    overflow-y: auto;
-    max-height: 100px;
-    padding: 10px;
-    margin: 135px 0px 0px -66px;
-    border-radius: 8px;
+    top: calc(100% + 8px);
+    right: 0;
+    min-width: 160px;
     background: var(--card);
-    box-shadow: 0 4px 16px var(--hairline); border: 1px solid var(--hairline);
-    animation-name: fadeInDown;
-    -webkit-animation-name: fadeInDown;
-    animation-duration: 0.35s;
-    animation-fill-mode: both;
-    -webkit-animation-duration: 0.35s;
-    -webkit-animation-fill-mode: both;
+    border-radius: var(--d-radius, 12px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    border: 1px solid var(--hairline);
+    z-index: 100;
+    padding: 6px;
+    margin: 0;
+    list-style: none;
 }
 
-.select-menu .options .option {
+.option {
     display: flex;
-    cursor: pointer;
-    padding: 0 16px;
+    padding: 10px 16px;
     border-radius: 8px;
     align-items: center;
-    background: var(--card);
+    cursor: pointer;
+    transition: background 0.2s;
 }
 
-.select-menu .options .option:hover {
+.option:hover {
     background: var(--calabash);
 }
 
-.select-menu .options .option i {
-    font-size: 25px;
-    margin-right: 12px;
-}
-
-.select-menu .options .option .option-text {
-    font-size: 18px;
+.option-text {
+    font-size: 14px;
     color: var(--ink);
     font-family: var(--font-sans);
+    white-space: nowrap;
 }
 
-.select-btn i {
-    font-size: 25px;
-    transition: 0.3s;
+.no-results {
+    padding: 12px 16px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 14px;
 }
 
-.select-menu.active .select-btn i {
-    transform: rotate(-180deg);
+/* Transitions */
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity 0.2s, transform 0.2s;
 }
 
-.items {
-    display: flex;
-    flex-direction: row;
-    gap: 2px;
-    overflow: hidden;
-}
-
-.item {
-    background: var(--calabash); color: var(--ink);
-    border-radius: 5px;
-    padding: 2px 4px;
-    text-wrap: nowrap;
-}
-
-.select-menu.active .options {
-    display: block;
+.fade-enter-from,
+.fade-leave-to {
     opacity: 0;
-    z-index: 10;
-    animation-name: fadeInUp;
-    -webkit-animation-name: fadeInUp;
-    animation-duration: 0.4s;
-    animation-fill-mode: both;
-    -webkit-animation-duration: 0.4s;
-    -webkit-animation-fill-mode: both;
-}
-
-.options .option input[type="text"] {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid var(--paper);
-    border-radius: 8px;
-    margin-bottom: 10px;
-}
-
-.options .option input[type="checkbox"] {
-    border: 1px solid var(--paper);
-    border-radius: 8px;
-    accent-color: var(--kola-2);
-}
-
-@keyframes fadeInUp {
-    from {
-        transform: translate3d(0, 30px, 0);
-    }
-
-    to {
-        transform: translate3d(0, 0, 0);
-        opacity: 1;
-    }
-}
-
-@keyframes fadeInDown {
-    from {
-        transform: translate3d(0, 0, 0);
-        opacity: 1;
-    }
-
-    to {
-        transform: translate3d(0, 20px, 0);
-        opacity: 0;
-    }
+    transform: translateY(-10px);
 }
 </style>

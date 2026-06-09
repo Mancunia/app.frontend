@@ -25,8 +25,7 @@
         </div>
         <div class="field-group">
           <label class="field-label">Description *</label>
-          <textarea v-model="form.description" class="field-textarea" rows="4"
-            placeholder="What is this story about?" />
+          <QuillEditor v-model:html="form.description" placeholder="What is this story about?" />
         </div>
         <div class="field-row">
           <div class="field-group flex-1">
@@ -48,9 +47,27 @@
             <p class="field-help">Hold Ctrl/Cmd to select multiple</p>
           </div>
         </div>
-        <div class="field-group">
-          <label class="field-label">Authors (comma-separated)</label>
-          <input v-model="authorInput" class="field-input" placeholder="Author names…" />
+        <div class="field-row">
+          <div class="field-group flex-1">
+            <label class="field-label">Authors</label>
+            <UiSelectDropDown
+              :data-list="authorOptions"
+              placeHolder="Authors"
+              generic="array"
+              @selected="form.authors = $event"
+              :selected-option="form.authors as unknown as string[]"
+            />
+          </div>
+          <div class="field-group flex-1">
+            <label class="field-label">Narrators</label>
+            <UiSelectDropDown
+              :data-list="narratorOptions"
+              placeHolder="Narrators"
+              generic="array"
+              @selected="form.narrators = $event"
+              :selected-option="form.narrators as unknown as string[]"
+            />
+          </div>
         </div>
         <div class="field-group">
           <label class="field-label">Snippet (optional)</label>
@@ -95,6 +112,8 @@
             <span class="sum-lbl">Languages</span>
             <span class="sum-val">{{ selectedLanguageNames || '—' }}</span>
           </div>
+          <div class="summary-row"><span class="sum-lbl">Authors</span><span class="sum-val">{{ selectedAuthorNames || '—' }}</span></div>
+          <div class="summary-row"><span class="sum-lbl">Narrators</span><span class="sum-val">{{ selectedNarratorNames || '—' }}</span></div>
           <div class="summary-row"><span class="sum-lbl">Cover</span><span class="sum-val">{{ form.cover ? 'Uploaded' :
             'None' }}</span></div>
         </div>
@@ -117,8 +136,11 @@
 </template>
 
 <script setup lang="ts">
+import { QuillEditor } from '@vueup/vue-quill'
 import routes from '~/routes';
 import { createBook, getSignedUrl } from '@/services/admin/book';
+import { getAuthors } from '@/services/admin/author';
+import { getNarrators } from '@/services/admin/narrator';
 import { getOrgs } from '@/services/admin/organization';
 import { getUserProfiles } from '@/services/admin/users';
 import { getLanguages } from '@/services/admin/language';
@@ -143,7 +165,8 @@ const saving = ref(false);
 const errorMsg = ref('');
 const successMsg = ref('');
 
-const authorInput = ref('');
+const authorOptions = ref<{ id: string; name: string }[]>([])
+const narratorOptions = ref<{ id: string; name: string }[]>([])
 
 const orgs = ref<OrganizationType[]>([])
 const availableLanguages = ref<LanguageType[]>([])
@@ -160,6 +183,7 @@ const form = reactive<BOOK>({
   category: [],
   languages: [],
   authors: [],
+  narrators: [],
   associates: [],
   cover: 'cover',
   meta: { played: 0, views: 0, likes: 0, dislikes: 0, comments: 0 },
@@ -181,20 +205,42 @@ const selectedCategoryNames = computed(() => {
     .join(', ')
 })
 
-watch(authorInput, v => { form.authors = v.split(',').map(s => s.trim()).filter(Boolean); });
+const selectedAuthorNames = computed(() => {
+  return (form.authors as unknown as string[])
+    .map(id => authorOptions.value.find(a => a.id === id)?.name)
+    .filter(Boolean)
+    .join(', ')
+})
+
+const selectedNarratorNames = computed(() => {
+  return (form.narrators as unknown as string[])
+    .map(id => narratorOptions.value.find(n => n.id === id)?.name)
+    .filter(Boolean)
+    .join(', ')
+})
+
+
 watch(snippetInput, v => { (form as any).snippet = v })
 watch(selectedOrg, v => { (form as any).organization = v })
 
 onMounted(async () => {
-  const [orgsRes, assocRes, langsRes, catsRes] = await Promise.all([
+  const [orgsRes, assocRes, langsRes, catsRes, authorsRes, narratorsRes] = await Promise.all([
     getOrgs(),
     getUserProfiles({ search: '', account: USER_ROLES.ASSOCIATE }),
     getLanguages(),
     getCategories(USER_ROLES.ADMIN),
+    getAuthors(),
+    getNarrators(),
   ])
   if (orgsRes?.data) orgs.value = orgsRes.data as any
   if (langsRes?.data) availableLanguages.value = langsRes.data as any
   if (catsRes?.data) availableCategories.value = catsRes.data as any
+  if (authorsRes?.data) {
+    authorOptions.value = authorsRes.data.map((a: any) => ({ id: a.id ?? a._id, name: a.name }))
+  }
+  if (narratorsRes?.data) {
+    narratorOptions.value = narratorsRes.data.map((n: any) => ({ id: n.id ?? n._id, name: n.name }))
+  }
 })
 
 const onCoverPick = async (e: Event) => {
@@ -218,11 +264,13 @@ const onCoverPick = async (e: Event) => {
   }
 }
 
+const stripHtml = (html: string) => html.replace(/<[^>]*>/g, '').trim()
+
 const advance = () => {
   errorMsg.value = '';
   if (currentStep.value === 0) {
     if (!form.title.trim()) { errorMsg.value = 'Title is required.'; return; }
-    if (!form.description.trim()) { errorMsg.value = 'Description is required.'; return; }
+    if (!stripHtml(form.description)) { errorMsg.value = 'Description is required.'; return; }
   }
   currentStep.value++;
 };
@@ -230,6 +278,7 @@ const advance = () => {
 const submit = async () => {
   errorMsg.value = '';
   if (!form.title.trim()) { errorMsg.value = 'Title is required.'; currentStep.value = 0; return; }
+  if (!stripHtml(form.description)) { errorMsg.value = 'Description is required.'; currentStep.value = 0; return; }
   saving.value = true;
   try {
     const { data } = await createBook(form);
@@ -246,6 +295,9 @@ const submit = async () => {
 };
 </script>
 
+<style>
+@import '@vueup/vue-quill/dist/vue-quill.snow.css';
+</style>
 <style scoped>
 .wizard {
   display: flex;
@@ -569,5 +621,9 @@ const submit = async () => {
   object-fit: cover;
   border-radius: 6px;
   margin-top: 12px;
+}
+
+:deep(.ql-editor) {
+  min-height: 120px;
 }
 </style>

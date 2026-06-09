@@ -1,10 +1,25 @@
+export type AuthorObject = {
+  id: string;
+  name: string;
+  bio?: string;
+  active: boolean;
+};
+
+export type NarratorObject = {
+  id: string;
+  name: string;
+  bio?: string;
+  active: boolean;
+};
+
 export type BOOK = {
   id?: string;
   title: string;
   description: string;
   category: string[];
   languages: string[];
-  authors: string[];
+  authors: (AuthorObject | string)[];
+  narrators: (NarratorObject | string)[];
   associates: string[];
   cover: string;
   meta: {
@@ -39,12 +54,17 @@ export type PLAY_CHAPTER = {
   playTime: number;
   status: string;
 };
+export type QUEUE_ITEM = {
+  chapter: CHAPTER;
+};
+
 export type PLAYER = {
   showDetails: boolean;
   playing: boolean;
   autoplay: boolean;
   loop: boolean;
   volume: number;
+  playbackRate: number;
   showDrawer: boolean;
 };
 

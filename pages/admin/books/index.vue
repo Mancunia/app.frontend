@@ -39,7 +39,7 @@
                 <div v-else class="book-thumb-placeholder">◆</div>
                 <div class="book-info">
                   <span class="book-title">{{ book.title }}</span>
-                  <span class="book-authors">{{ book.authors?.join(', ') }}</span>
+                  <span class="book-authors">{{ book.authors?.map(a => typeof a === 'string' ? a : a.name).join(', ') }}</span>
                 </div>
               </div>
             </td>

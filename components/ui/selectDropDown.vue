@@ -1,36 +1,49 @@
 <template>
-    <div class="select-menu" :class="{ 'active': active }">
+    <div ref="selectRef" class="select-menu" :class="{ 'active': active }">
         <div class="select-btn" @click="toggleActive">
             <div class="items">
-                <span v-if="isAllChecked" class="item"> All {{ placeHolder }} Selected
-
-                </span>
+                <span v-if="isAllChecked" class="item"> All {{ placeHolder }} Selected </span>
                 <span v-else-if="!isAllChecked && checked.length" v-for="(item, index) in checked" :key="index"
-                    class="item">{{dataList.find((opt) => opt.id
-                        === item)?.name
-                    }}</span>
-                <span v-else>
+                    class="item">
+                    {{ dataList.find((opt) => opt.id === item)?.name }}
+                </span>
+                <span v-else class="placeholder">
                     Select {{ placeHolder }}
                 </span>
             </div>
-
-            <i class="bx bx-chevron-down"></i>
+            <i class="bx bx-chevron-down chevron"></i>
         </div>
-        <ul class="options">
-            <li class="option">
-                <input type="text" v-if="canSearch" :placeholder="`Search for ${placeHolder}`" v-model="searchTerm"
-                    class="form-control in-dropdown text-truncate" />
-            </li>
-            <li @click.stop v-for="(item, index) in currentItems" :key="index" @click="check(item.id)" class="option">
-                <input class="form-check-input" type="checkbox" id="checkbox3-0bd498f163534f0aa5e58d3aed78842e"
-                    :checked="checked?.includes(item.id)" />
-                <span class="option-text">{{ item.name }}</span>
-            </li>
-        </ul>
+        
+        <transition name="fade">
+            <div v-if="active" class="options-container">
+                <div v-if="canSearch || canCheckAll" class="options-header">
+                    <div v-if="canSearch" class="search-box">
+                        <i class="bx bx-search search-icon"></i>
+                        <input type="text" :placeholder="`Search ${placeHolder}...`" v-model="searchTerm"
+                            class="search-input" @click.stop />
+                    </div>
+                    <div v-if="canCheckAll" class="check-all" @click="checkAll">
+                        <span class="check-all-text">{{ isAllChecked ? 'Deselect All' : 'Select All' }}</span>
+                    </div>
+                </div>
+                <ul class="options-list">
+                    <li v-for="(item, index) in currentItems" :key="index" @click="check(item.id)" class="option">
+                        <div class="checkbox-wrapper">
+                            <input class="form-check-input" type="checkbox" :checked="checked?.includes(item.id)" @click.stop="check(item.id)" />
+                        </div>
+                        <span class="option-text">{{ item.name }}</span>
+                    </li>
+                    <li v-if="currentItems.length === 0" class="no-results">
+                        No {{ placeHolder.toLowerCase() }} found
+                    </li>
+                </ul>
+            </div>
+        </transition>
     </div>
 </template>
 
 <script setup lang="ts">
+import { onClickOutside } from '@vueuse/core'
 
 const props = defineProps({
     dataList: {
@@ -58,15 +71,23 @@ const props = defineProps({
         default: 'string',
     },
 });
+
 const { debounce } = useUtils()
 const emit = defineEmits(['selected', 'search']);
+
+const selectRef = ref(null);
 const checked = ref<string[]>([]);
 const searchTerm = ref<string>('');
 const active = ref<boolean>(false);
 
 const toggleActive = () => active.value = !active.value;
+
+onClickOutside(selectRef, () => {
+    active.value = false;
+});
+
 const isAllChecked = computed(() => {
-    return checked.value.length === props.dataList.length;
+    return props.dataList.length > 0 && checked.value.length === props.dataList.length;
 });
 
 const currentItems = computed(() => {
@@ -93,11 +114,11 @@ const checkAll = () => {
     }
 };
 
-watch(checked, () => {
+watch(checked, (newVal) => {
     if (props.generic === 'string') {
-        emit('selected', checked.value.join(','));
+        emit('selected', newVal.join(','));
     } else if (props.generic === 'array') {
-        emit('selected', checked.value);
+        emit('selected', newVal);
     }
 });
 
@@ -111,7 +132,6 @@ watch(searchTerm, () => {
     }
 });
 
-
 onMounted(() => {
     if (typeof props.selectedOption === 'string') {
         checked.value = props.selectedOption.split(',').filter((item: string) => item.trim() !== '');
@@ -119,148 +139,208 @@ onMounted(() => {
         checked.value = props.selectedOption.filter((item: string) => item.trim() !== '');
     }
 });
-
 </script>
 
 <style scoped>
 .select-menu {
+    position: relative;
     max-width: 330px;
-    margin: 20px auto;
+    width: 100%;
+    margin: 8px 0;
+    user-select: none;
 }
 
-.select-menu .select-btn {
+.select-btn {
     display: flex;
-    height: 30px;
+    height: 44px;
     background: var(--card);
-    padding: 20px;
-    font-size: 12px;
+    padding: 0 16px;
+    font-size: 14px;
     font-weight: 400;
-    border-radius: 8px;
+    border-radius: var(--d-radius, 12px);
     align-items: center;
     cursor: pointer;
     justify-content: space-between;
     box-shadow: 0 2px 8px var(--hairline);
-    border: 1px solid var(--hairline); font-family: var(--font-sans);
-}
-
-.select-menu .options {
-    display: none;
-    position: absolute;
-    width: inherit;
-    overflow-y: auto;
-    max-height: 295px;
-    padding: 10px;
-    margin-top: 10px;
-    border-radius: 8px;
-    background: var(--card);
-    box-shadow: 0 4px 16px var(--hairline); border: 1px solid var(--hairline);
-    animation-name: fadeInDown;
-    -webkit-animation-name: fadeInDown;
-    animation-duration: 0.35s;
-    animation-fill-mode: both;
-    -webkit-animation-duration: 0.35s;
-    -webkit-animation-fill-mode: both;
-}
-
-.select-menu .options .option {
-    display: flex;
-    height: 55px;
-    cursor: pointer;
-    padding: 0 16px;
-    border-radius: 8px;
-    align-items: center;
-    background: var(--card);
-}
-
-.select-menu .options .option:hover {
-    background: var(--calabash);
-}
-
-.select-menu .options .option i {
-    font-size: 25px;
-    margin-right: 12px;
-}
-
-.select-menu .options .option .option-text {
-    font-size: 18px;
-    color: var(--ink);
+    border: 1px solid var(--hairline);
+    transition: all 0.3s ease;
     font-family: var(--font-sans);
 }
 
-.select-btn i {
-    font-size: 25px;
-    transition: 0.3s;
+.select-btn:hover {
+    border-color: var(--ochre);
 }
 
-.select-menu.active .select-btn i {
-    transform: rotate(-180deg);
+.select-menu.active .select-btn {
+    border-color: var(--ochre);
+    box-shadow: 0 0 0 3px rgba(201, 122, 58, 0.1);
 }
 
 .items {
     display: flex;
-    flex-direction: row;
-    gap: 2px;
+    align-items: center;
+    gap: 6px;
     overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    flex: 1;
+}
+
+.placeholder {
+    color: var(--muted);
 }
 
 .item {
-    background: var(--calabash); color: var(--ink);
-    border-radius: 5px;
-    padding: 2px 4px;
-    text-wrap: nowrap;
+    background: var(--calabash);
+    color: var(--ink);
+    border-radius: 6px;
+    padding: 4px 10px;
+    font-size: 12px;
+    font-weight: 500;
 }
 
-.select-menu.active .options {
-    display: block;
-    opacity: 0;
-    z-index: 10;
-    animation-name: fadeInUp;
-    -webkit-animation-name: fadeInUp;
-    animation-duration: 0.4s;
-    animation-fill-mode: both;
-    -webkit-animation-duration: 0.4s;
-    -webkit-animation-fill-mode: both;
+.chevron {
+    font-size: 20px;
+    transition: transform 0.3s ease;
+    color: var(--paper);
 }
 
-.options .option input[type="text"] {
+.select-menu.active .chevron {
+    transform: rotate(-180deg);
+}
+
+.options-container {
+    position: absolute;
     width: 100%;
-    padding: 10px;
-    border: 1px solid var(--paper);
-    border-radius: 8px;
-    margin-bottom: 10px;
+    top: calc(100% + 8px);
+    background: var(--card);
+    border-radius: var(--d-radius, 12px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    border: 1px solid var(--hairline);
+    z-index: 100;
+    overflow: hidden;
 }
 
-.options .option input[type="checkbox"] {
-    border: 1px solid var(--paper);
+.options-header {
+    padding: 12px;
+    border-bottom: 1px solid var(--hairline);
+    background: var(--paper);
+}
+
+.search-box {
+    position: relative;
+    margin-bottom: 8px;
+}
+
+.search-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--muted);
+    font-size: 16px;
+}
+
+.search-input {
+    width: 100%;
+    height: 36px;
+    padding: 0 12px 0 36px;
     border-radius: 8px;
-    accent-color: var(--kola-2);
+    border: 1px solid var(--hairline);
+    background: var(--card);
+    font-size: 13px;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.search-input:focus {
+    border-color: var(--ochre);
+}
+
+.check-all {
+    display: flex;
+    justify-content: flex-end;
+    padding: 0 4px;
+}
+
+.check-all-text {
+    font-size: 12px;
+    color: var(--ochre);
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.check-all-text:hover {
+    text-decoration: underline;
+}
+
+.options-list {
+    max-height: 240px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--hairline) transparent;
+    padding: 8px;
+    margin: 0;
+    list-style: none;
+}
+
+.options-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.options-list::-webkit-scrollbar-thumb {
+    background-color: var(--hairline);
+    border-radius: 10px;
+}
+
+.option {
+    display: flex;
+    padding: 10px 12px;
+    border-radius: 8px;
+    align-items: center;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.option:hover {
+    background: var(--calabash);
+}
+
+.checkbox-wrapper {
+    display: flex;
+    align-items: center;
+    margin-right: 12px;
+}
+
+.form-check-input {
+    width: 16px;
+    height: 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    accent-color: var(--ochre);
 }
 
 .option-text {
-    margin-left: 10px;
-    font-family: var(--font-sans); color: var(--ink);
+    font-size: 14px;
+    color: var(--ink);
 }
 
-@keyframes fadeInUp {
-    from {
-        transform: translate3d(0, 30px, 0);
-    }
-
-    to {
-        transform: translate3d(0, 0, 0);
-        opacity: 1;
-    }
+.no-results {
+    padding: 20px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 14px;
 }
 
-@keyframes fadeInDown {
-    from {
-        transform: translate3d(0, 0, 0);
-        opacity: 1;
-    }
+/* Transitions */
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity 0.2s, transform 0.2s;
+}
 
-    to {
-        transform: translate3d(0, 20px, 0);
-        opacity: 0;
-    }
+.fade-enter-from,
+.fade-leave-to {
+    opacity: 0;
+    transform: translateY(-10px);
 }
 </style>

@@ -1,13 +1,20 @@
 <template>
     <label :for="String(id)" class="plan-card" :style="{ '--accent': subscription.accent }" @click="initSub">
+        <div v-if="subscription.books && subscription.books.length > 0" class="plan-badge">
+            Limited Access
+        </div>
         <p class="plan-name">{{ subscription.name }}</p>
         <div class="plan-accent"></div>
         <span class="plan-price">GHS{{ subscription.amount }}</span>
+        <div v-if="originName" class="plan-origin">{{ originName }}</div>
         <hr class="plan-divider" />
         <ul class="plan-details">
             <li class="plan-detail">Users: <strong>{{ subscription.users }}</strong></li>
             <li class="plan-detail">
                 Duration: <strong>{{ millisecondsToDays(subscription.duration) }} Days</strong>
+            </li>
+            <li v-if="subscription.books && subscription.books.length > 0" class="plan-detail plan-detail--limited">
+                Access to <strong>{{ subscription.books.length }}</strong> selected books
             </li>
         </ul>
         <span class="plan-cta">Subscribe</span>
@@ -29,6 +36,7 @@
 import type { PropType } from 'vue';
 import { postSubscripition } from '~/services/user';
 import type { Subscription } from '~/types/common';
+import type { OriginType } from '~/types/admin/origin';
 
 const props = defineProps({
     subscription: {
@@ -38,6 +46,10 @@ const props = defineProps({
     id: {
         type: Number,
         required: true
+    },
+    origins: {
+        type: Array as PropType<OriginType[]>,
+        default: () => []
     }
 })
 
@@ -45,6 +57,13 @@ const loading = ref(false)
 const modal = ref(false);
 
 const { millisecondsToDays } = useUtils()
+
+const originName = computed(() => {
+    if (!props.subscription.origin) return ''
+    const origin = props.origins.find(o => o.id === props.subscription.origin)
+    if (origin) return `${origin.flag} ${origin.name}`
+    return props.subscription.origin
+})
 
 const initSub = () => {
     modal.value = true;
@@ -80,6 +99,7 @@ const initSubscription = async () => {
 <style scoped>
 .plan-card {
     --accent: #ccc;
+    position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -103,6 +123,21 @@ const initSubscription = async () => {
     box-shadow:
         0 8px 24px rgba(31, 23, 20, 0.1),
         0 0 0 1px color-mix(in srgb, var(--accent) 35%, transparent);
+}
+
+.plan-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: var(--ochre);
+    color: var(--cream);
+    font-family: var(--font-sans);
+    font-size: 0.6rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 2px 8px;
+    border-radius: 999px;
 }
 
 .plan-name {
@@ -131,6 +166,13 @@ const initSubscription = async () => {
     font-weight: 700;
     color: var(--ink);
     letter-spacing: -0.01em;
+}
+
+.plan-origin {
+    font-family: var(--font-sans);
+    font-size: 0.75rem;
+    color: var(--muted);
+    text-align: center;
 }
 
 .plan-divider {

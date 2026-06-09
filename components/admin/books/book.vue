@@ -10,8 +10,9 @@
                 <p><span class="title">Title:</span> <span class="titleText">{{ selectedBook?.title }}</span></p>
                 <p><span class="title">Description:</span> <span class="titleText">{{ selectedBook?.description
                         }}</span></p>
-                <p><span class="title">Authors:</span> <span class="titleText">{{ selectedBook?.authors.toString()
+                <p><span class="title">Authors:</span> <span class="titleText">{{ selectedBook?.authors?.map(a => typeof a === 'string' ? a : a.name).join(', ')
                         }}</span></p>
+                <p><span class="title">Narrators:</span> <span class="titleText">{{ selectedBook?.narrators?.map(n => typeof n === 'string' ? n : n.name).join(', ') || 'none' }}</span></p>
                 <p><span class="title">Language:</span> <span class="titleText">{{ bookLanguages }}</span></p>
                 <p><span class="title">Genre:</span> <span class="titleText">{{ bookCategories }}</span></p>
             </div>
@@ -30,12 +31,24 @@
         <div class="details">
             <UiAdminInputField @update:model-value="selectedBook.title = $event" place-holder="Title" type="text"
                 :value="selectedBook.title" />
-            <UiAdminInputField @update:model-value="selectedBook.authors = $event" place-holder="Authors" type="text"
-                :value="selectedBook.authors.toString()" />
             <UiAdminInputField @update:model-value="selectedBook.description = $event" place-holder="Description"
                 :value="selectedBook.description" type="text" />
 
             <div class="selectWrapper">
+                <UiSelectDropDown
+                    :data-list="authorOptions"
+                    placeHolder="Authors"
+                    generic="array"
+                    @selected="selectedAuthorIds = $event; selectedBook.authors = $event"
+                    :selected-option="selectedAuthorIds"
+                />
+                <UiSelectDropDown
+                    :data-list="narratorOptions"
+                    placeHolder="Narrators"
+                    generic="array"
+                    @selected="selectedNarratorIds = $event; selectedBook.narrators = $event"
+                    :selected-option="selectedNarratorIds"
+                />
                 <UiSelectDropDown :data-list="languages ?? []" placeHolder="languages" generic="array"
                     @selected="selectedBook.languages = $event" :selected-option="selectedBook.languages" />
                 <UiLoader v-if="Langs.loading" />
@@ -62,6 +75,8 @@ import type { BOOK } from '~/types/book';
 import type { Languages, Categories } from '~/types/common';
 import { getBook } from '~/services/book';
 import { createBook, updateBook } from '~/services/admin/book';
+import { getAuthors } from '~/services/admin/author';
+import { getNarrators } from '~/services/admin/narrator';
 
 const State = {
     VIEW: 'view',
@@ -84,6 +99,7 @@ const defaultBook = {
     _id: '',
     status: 0,
     authors: [],
+    narrators: [],
     cover: '',
     moment: '',
     title: '',
@@ -106,6 +122,7 @@ const selectedBook = ref<BOOK>({
     },
     status: 0,
     authors: [],
+    narrators: [],
     cover: '',
     moment: '',
     title: '',
@@ -121,6 +138,10 @@ const selectedBook = ref<BOOK>({
     updatedAt: ''
 })
 
+const authorOptions = ref<{ id: string; name: string }[]>([])
+const narratorOptions = ref<{ id: string; name: string }[]>([])
+const selectedAuthorIds = ref<string[]>([])
+const selectedNarratorIds = ref<string[]>([])
 const loading = ref(false)
 const uploading = ref<{ progress: number, loading: boolean, message: string }>({ progress: 0, loading: false, message: '' })
 const imageData = ref()
@@ -257,7 +278,23 @@ watch(imageData, () => {
         selectedBook.value.cover = imageData.value.base64Url
     }
 })
-onMounted(() => {
+watch(selectedBook, (book) => {
+    if (book) {
+        selectedAuthorIds.value = (book.authors ?? []).map((a: any) => a.id ?? a)
+        selectedNarratorIds.value = (book.narrators ?? []).map((n: any) => n.id ?? n)
+    }
+}, { immediate: true, deep: true })
+onMounted(async () => {
+    const [authorsRes, narratorsRes] = await Promise.all([
+        getAuthors(),
+        getNarrators(),
+    ])
+    if (authorsRes?.data) {
+        authorOptions.value = authorsRes.data.map((a: any) => ({ id: a.id ?? a._id, name: a.name }))
+    }
+    if (narratorsRes?.data) {
+        narratorOptions.value = narratorsRes.data.map((n: any) => ({ id: n.id ?? n._id, name: n.name }))
+    }
     if (state.value !== State.NEW) {
         fetchBook()
     }

@@ -31,6 +31,9 @@ export const adminNavigationItems: {
   { title: 'Subscriptions',         url: routes.admin.subscriptions, hasAccess: [USER_ROLES.ADMIN] },
   { title: 'Periods',       url: routes.admin.period,        hasAccess: [USER_ROLES.ADMIN] },
   { title: 'Languages',      url: routes.admin.languages,      hasAccess: [USER_ROLES.ADMIN] },
+  { title: 'Authors',        url: routes.admin.authors,        hasAccess: [USER_ROLES.ADMIN] },
+  { title: 'Narrators',      url: routes.admin.narrators,      hasAccess: [USER_ROLES.ADMIN] },
+  { title: 'Origins',        url: routes.admin.origins,        hasAccess: [USER_ROLES.ADMIN] },
   { title: 'Organisations',  url: routes.admin.organizations,  hasAccess: [USER_ROLES.ADMIN] },
   { title: 'Quotes',         url: routes.admin.quotes,         hasAccess: [USER_ROLES.ADMIN] },
 ];
