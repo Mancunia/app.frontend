@@ -213,7 +213,7 @@ const playReadChapter = async (chapter: CHAPTER) => {
             store.setQueue(q)
             store.setQueueIndex(0)
             store.setPlaying(chapter);
-            stopAudio()
+            await stopAudio()
             const { data } = await fetchChapter(chapter.id ?? '');
             if (data) {
                 if (data.chapter.type === 'ebook') {

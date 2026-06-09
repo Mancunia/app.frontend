@@ -1,7 +1,7 @@
 import type { PdfFileData, PLAY_CHAPTER, PLAYER, CHAPTER } from "~/types/book";
 import { playChapter } from "~/services/play";
 
-export const usePlayer = (app: USER_ROLES) => {
+export const usePlayer = (app?: USER_ROLES) => {
   const audio = useState<HTMLAudioElement>("player", () => new Audio());
   const pdfFile = useState<PdfFileData | null>("pdfData", () => null);
   const audioFile = ref<PLAY_CHAPTER | null>(null);
@@ -18,6 +18,7 @@ export const usePlayer = (app: USER_ROLES) => {
   const queueIndex = computed(() => store.getQueueIndex);
   const hasNext = computed(() => queueIndex.value < queue.value.length - 1);
   const hasPrev = computed(() => queueIndex.value > 0);
+  const playPromise = useState<Promise<void> | null>("playPromise", () => null);
 
   const fetchChapter = async (chapterId: string) => {
     try {
@@ -109,7 +110,7 @@ export const usePlayer = (app: USER_ROLES) => {
   const init = async (chapter: PLAY_CHAPTER, autoPlay = true) => {
     if (!chapter) return;
     let file = checkForOldFile(chapter.chapter.content ?? "");
-    stopAudio();
+    await stopAudio();
     audio.value.src = file;
     audioFile.value = chapter;
     if (audio.value.src) {
@@ -143,22 +144,43 @@ export const usePlayer = (app: USER_ROLES) => {
   };
   const playAudio = async () => {
     try {
-      await audio.value.play();
+      const promise = audio.value.play();
+      playPromise.value = promise;
+      await promise;
       playerDetails({ playing: true });
-    } catch (error: unknown) {
+    } catch (error: any) {
+      if (error.name === "AbortError") {
+        return;
+      }
       if (error instanceof Error) {
         addError(error.message);
       } else {
         addError("An error occurred while playing the audio");
       }
+    } finally {
+      playPromise.value = null;
     }
   };
 
-  const pauseAudio = () => {
+  const pauseAudio = async () => {
+    if (playPromise.value) {
+      try {
+        await playPromise.value;
+      } catch (e) {
+        // ignore
+      }
+    }
     audio.value.pause();
   };
 
-  const stopAudio = () => {
+  const stopAudio = async () => {
+    if (playPromise.value) {
+      try {
+        await playPromise.value;
+      } catch (e) {
+        // ignore
+      }
+    }
     audio.value.pause();
     audio.value.currentTime = 0;
     audio.value.src = "";
@@ -260,10 +282,10 @@ export const usePlayer = (app: USER_ROLES) => {
 
   watch(
     () => audio.value.currentTime,
-    () => {
+    async () => {
       if (audio.value.currentTime >= validTime.value && validTime.value > 0) {
         audio.value.currentTime = validTime.value;
-        stopAudio();
+        await stopAudio();
         if (hasNext.value) {
           playNextInQueue();
         } else {

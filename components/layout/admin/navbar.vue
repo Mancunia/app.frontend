@@ -2,10 +2,10 @@
     <nav>
         <div class="nav">
             <NuxtLink href="">
-                <img class="logo" src="~/assets/images/app_logo.png" alt="logo" />
+                <img class="logo" src="/favicon.png" alt="logo" />
             </NuxtLink>
             <div>
-                <img class="logo" src="~/assets/images/app_logo.png" alt="logo" />
+                <img class="logo" src="/favicon.png" alt="logo" />
             </div>
         </div>
 

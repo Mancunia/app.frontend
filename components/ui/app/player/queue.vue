@@ -6,7 +6,10 @@
           <path d="M15 18l-6-6 6-6"/>
         </svg>
       </button>
-      <h2 class="queue-title">Up Next</h2>
+      <div class="title-wrap">
+        <h2 class="queue-title">Up Next</h2>
+        <span class="beta-label">BETA</span>
+      </div>
       <button v-if="queue.length" class="clear-btn" @click="store.clearQueue(); $emit('close')">Clear</button>
     </div>
 
@@ -79,6 +82,21 @@ const { queue, queueIndex, playChapterAt } = usePlayer(USER_ROLES.USER);
   font-family: var(--font-display);
   font-size: 1.2rem;
   margin: 0;
+}
+.title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.beta-label {
+  background: var(--ochre);
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  letter-spacing: 0.05em;
 }
 .clear-btn {
   background: none;

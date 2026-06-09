@@ -63,7 +63,7 @@ export const useAuth = () => {
     try {
       await logout(USER_ROLES.USER);
       user.logout(USER_ROLES.USER);
-      stopAudio();
+      await stopAudio();
       addSuccess("Logout successful");
       navigateTo(routes.app.login);
     } catch (error) {
