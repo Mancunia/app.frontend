@@ -7,7 +7,7 @@
           <div class="items-container">
             <slot />
           </div>
-          <div class="content-spacer"></div>
+          <div class="content-spacer" :class="{ 'has-player': isPlaying }"></div>
         </div>
         
         <div class="navigator-container">
@@ -26,6 +26,7 @@
 
 <script setup lang="ts">
 const store = useAuthStore();
+const isPlaying = computed(() => !!store.getPlaying?.id);
 </script>
 
 <style scoped>
@@ -44,29 +45,33 @@ const store = useAuthStore();
 .content {
   position: relative;
   width: 100%;
-  height: 100vh;
+  min-height: calc(100vh - 60px);
   display: flex;
   align-items: center;
   flex-direction: column;
   padding: 0 20px;
-  overflow-y: auto;
 }
 
 .items-container {
   position: relative;
   width: 100%;
   height: auto;
-  min-height: 80vh;
+  min-height: 70vh;
 }
 
 .content-spacer {
-  height: 120px; /* Space for fixed navigator and hearth card */
+  height: calc(140px + env(safe-area-inset-bottom)); /* Space for fixed navigator */
   flex-shrink: 0;
+  transition: height 0.3s ease;
+}
+
+.content-spacer.has-player {
+  height: calc(240px + env(safe-area-inset-bottom)); /* Extra space for mini player + navigator */
 }
 
 .navigator-container {
   position: fixed;
-  bottom: 20px;
+  bottom: calc(20px + env(safe-area-inset-bottom));
   left: 0;
   right: 0;
   display: flex;
@@ -87,6 +92,7 @@ const store = useAuthStore();
   height: 90vh;
   width: 100%;
   padding: 20px;
+  padding-bottom: calc(20px + env(safe-area-inset-bottom));
   border-radius: 30px 30px 0 0;
   background: var(--ink);
   transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
