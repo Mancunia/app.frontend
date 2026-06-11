@@ -11,25 +11,25 @@
     <div class="stats-row">
       <div class="stat-item">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="stat-icon">
-          <circle cx="12" cy="12" r="10"/>
-          <path d="M2 12h20"/>
-          <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+          <circle cx="12" cy="12" r="10"></circle>
+          <path d="M2 12h20"></path>
+          <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
         </svg>
         <span class="stat-text">English</span>
       </div>
       <div class="stat-item">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="stat-icon">
-          <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
-          <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
-          <line x1="12" y1="19" x2="12" y2="23"/>
-          <line x1="8" y1="23" x2="16" y2="23"/>
+          <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+          <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+          <line x1="12" y1="19" x2="12" y2="23"></line>
+          <line x1="8" y1="23" x2="16" y2="23"></line>
         </svg>
         <span class="stat-text">Owusu</span>
       </div>
       <div class="stat-item">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="stat-icon">
-          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
-          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
         </svg>
         <span class="stat-text">{{ queueIndex >= 0 ? `ch. ${queueIndex + 1}/${queue.length}` : 'ch. —' }}</span>
       </div>
@@ -52,32 +52,65 @@
       </div>
     </div>
 
+    <!-- Secondary Actions (Speed & Chapters) -->
+    <div class="secondary-actions">
+      <span class="speed-group">
+        <button @click="decreaseSpeed" class="action-btn speed-adj">−</button>
+        <button class="action-btn speed-val">{{ playbackRate }}×</button>
+        <button @click="increaseSpeed" class="action-btn speed-adj">+</button>
+      </span>
+      <button class="action-btn chapters-btn" @click="$emit('showQueue')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px;">
+          <line x1="8" y1="6" x2="21" y2="6"></line>
+          <line x1="8" y1="12" x2="21" y2="12"></line>
+          <line x1="8" y1="18" x2="21" y2="18"></line>
+          <line x1="3" y1="6" x2="3.01" y2="6"></line>
+          <line x1="3" y1="12" x2="3.01" y2="12"></line>
+          <line x1="3" y1="18" x2="3.01" y2="18"></line>
+        </svg>
+        Queue
+      </button>
+    </div>
+
     <!-- 5. Controls -->
     <div class="controls-section">
-      <button class="icon-btn small-btn loop-btn">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 2.1l4 4-4 4"/><path d="M3 12.2v-2a4 4 0 0 1 4-4h14"/><path d="M7 21.9l-4-4 4-4"/><path d="M21 11.8v2a4 4 0 0 1-4 4H3"/></svg>
+      <button @click="playPrevInQueue" class="icon-btn secondary-btn" :disabled="!hasPrev">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M11 17l-5-5 5-5M18 17l-5-5 5-5"></path>
+        </svg>
       </button>
-      
-      <button @click="rewindAudio(15)" class="icon-btn skip-btn">
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 17l-5-5 5-5M18 17l-5-5 5-5"/></svg>
+
+      <button @click="rewindAudio(15)" class="icon-btn secondary-btn skip-btn">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M11 17l-5-5 5-5"></path>
+          <path d="M18 17l-5-5 5-5"></path>
+        </svg>
         <span class="skip-val">15</span>
       </button>
 
       <button @click="toggleAudio" class="play-pause-btn">
-        <svg v-if="playing" width="32" height="32" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>
-        <svg v-else width="32" height="32" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+        <svg v-if="playing" width="36" height="36" viewBox="0 0 24 24" fill="currentColor">
+          <rect x="6" y="4" width="4" height="16" rx="1"></rect>
+          <rect x="14" y="4" width="4" height="16" rx="1"></rect>
+        </svg>
+        <svg v-else width="36" height="36" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M8 5v14l11-7z"></path>
+        </svg>
       </button>
 
-      <button @click="fastForwardAudio(15)" class="icon-btn skip-btn">
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 17l5-5-5-5M6 17l5-5-5-5"/></svg>
+      <button @click="fastForwardAudio(15)" class="icon-btn secondary-btn skip-btn">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M13 17l5-5-5-5"></path>
+          <path d="M6 17l5-5-5-5"></path>
+        </svg>
         <span class="skip-val">15</span>
       </button>
 
-      <button @click="playPrevInQueue" class="icon-btn small-btn nav-btn" :disabled="!hasPrev">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 17l-5-5 5-5"/><path d="M18 17l-5-5 5-5"/></svg>
-      </button>
-      <button @click="playNextInQueue" class="icon-btn small-btn nav-btn" :disabled="!hasNext">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 17l5-5-5-5"/><path d="M6 17l5-5-5-5"/></svg>
+      <button @click="playNextInQueue" class="icon-btn secondary-btn" :disabled="!hasNext">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M13 17l5-5-5-5"></path>
+          <path d="M6 17l5-5-5-5"></path>
+        </svg>
       </button>
     </div>
 
@@ -99,16 +132,6 @@
           class="volume-slider"
         />
       </div>
-    </div>
-
-    <!-- 6. Footer Actions -->
-    <div class="footer-section">
-      <span class="speed-group">
-        <button @click="decreaseSpeed" class="footer-btn speed-adj">−</button>
-        <button class="footer-btn speed-val">{{ playbackRate }}×</button>
-        <button @click="increaseSpeed" class="footer-btn speed-adj">+</button>
-      </span>
-      <button class="footer-btn" @click="$emit('showQueue')">Chapters</button>
     </div>
   </div>
 </template>
@@ -142,8 +165,8 @@ const handleVolumeChange = (e: Event) => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-between;
-  padding: 60px 24px 30px;
+  justify-content: flex-start;
+  padding: 40px 24px 0;
   background: var(--paper); /* Uses dark variant via data-dark="true" */
   color: #ffffff;
   box-sizing: border-box;
@@ -176,7 +199,7 @@ const handleVolumeChange = (e: Event) => {
   justify-content: space-between;
   width: 100%;
   max-width: 320px;
-  margin-bottom: 32px;
+  margin-bottom: 24px;
 }
 .stat-item {
   display: flex;
@@ -198,7 +221,7 @@ const handleVolumeChange = (e: Event) => {
 /* 3. Meta */
 .meta-section {
   text-align: center;
-  margin-bottom: 32px;
+  margin-bottom: 24px;
 }
 .display-title {
   font-family: var(--font-display);
@@ -219,7 +242,7 @@ const handleVolumeChange = (e: Event) => {
 /* 4. Progress */
 .progress-section {
   width: 100%;
-  margin-bottom: 32px;
+  margin-bottom: 24px;
 }
 .kente-wrap {
   background: rgba(255,255,255,0.1);
@@ -242,17 +265,74 @@ const handleVolumeChange = (e: Event) => {
   opacity: 0.6;
 }
 
+/* Secondary Actions */
+.secondary-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  max-width: 320px;
+  margin-bottom: 24px;
+}
+
+.action-btn {
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #ffffff;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 12px;
+  padding: 6px 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  transition: all 0.2s ease;
+}
+.action-btn:hover {
+  background: rgba(255,255,255,0.18);
+  border-color: rgba(255,255,255,0.25);
+}
+
+.speed-group {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(255,255,255,0.08);
+  padding: 3px;
+  border-radius: 14px;
+}
+.speed-adj {
+  width: 28px;
+  height: 28px;
+  border-radius: 10px;
+  justify-content: center;
+  font-size: 1.1rem;
+  padding: 0;
+}
+.speed-val {
+  background: none;
+  border: none;
+  min-width: 42px;
+  justify-content: center;
+}
+
+.chapters-btn {
+  border-radius: 14px;
+  padding: 8px 14px;
+}
+
 /* 5. Controls */
 .controls-section {
   display: flex;
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  margin-bottom: 40px;
+  margin-bottom: 32px;
 }
 .icon-btn {
-  background: rgba(255,255,255,0.15);
-  border: 1.5px solid rgba(255,255,255,0.25);
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
   border-radius: 50%;
   color: #ffffff;
   display: flex;
@@ -261,41 +341,33 @@ const handleVolumeChange = (e: Event) => {
   cursor: pointer;
   transition: all 0.2s ease;
 }
-.icon-btn:hover {
-  background: rgba(255,255,255,0.25);
-  border-color: rgba(255,255,255,0.4);
+.icon-btn:hover:not(:disabled) {
+  background: rgba(255,255,255,0.2);
+  border-color: rgba(255,255,255,0.3);
 }
-.small-btn {
-  width: 44px;
-  height: 44px;
-  opacity: 0.9;
+.icon-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+.secondary-btn {
+  width: 50px;
+  height: 50px;
 }
 .skip-btn {
-  width: 56px;
-  height: 56px;
   position: relative;
 }
 .skip-val {
   position: absolute;
   font-family: var(--font-mono);
-  font-size: 0.6rem;
+  font-size: 0.55rem;
   font-weight: 700;
-  top: 54%;
+  top: 55%;
   left: 50%;
   transform: translate(-50%, -50%);
 }
-.nav-btn {
-  width: 44px;
-  height: 44px;
-  opacity: 0.9;
-}
-.nav-btn:disabled {
-  opacity: 0.3;
-  cursor: not-allowed;
-}
 .play-pause-btn {
-  width: 84px;
-  height: 84px;
+  width: 88px;
+  height: 88px;
   background: var(--ochre);
   color: var(--ink);
   border: none;
@@ -303,8 +375,12 @@ const handleVolumeChange = (e: Event) => {
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 8px 24px rgba(201, 122, 58, 0.3);
+  box-shadow: 0 8px 32px rgba(201, 122, 58, 0.4);
   cursor: pointer;
+  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.play-pause-btn:active {
+  transform: scale(0.92);
 }
 
 /* Volume Section */
@@ -314,7 +390,7 @@ const handleVolumeChange = (e: Event) => {
   gap: 12px;
   width: 100%;
   max-width: 300px;
-  margin-bottom: 24px;
+  margin-bottom: 40px;
 }
 
 .volume-icon {
@@ -351,65 +427,12 @@ const handleVolumeChange = (e: Event) => {
   z-index: 2;
 }
 
-/* 6. Footer */
-.footer-section {
-  display: flex;
-  justify-content: space-between;
+/* Bottom Safety Spacer */
+.audio-player::after {
+  content: '';
+  display: block;
+  height: calc(80px + env(safe-area-inset-bottom));
   width: 100%;
-  padding-top: 10px;
-}
-.footer-btn {
-  font-family: var(--font-sans);
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: #ffffff;
-  background: rgba(255,255,255,0.15);
-  border: 1px solid rgba(255,255,255,0.25);
-  border-radius: 20px;
-  padding: 6px 14px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-.footer-btn:hover {
-  background: rgba(255,255,255,0.22);
-  border-color: rgba(255,255,255,0.35);
-}
-
-.speed-group {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-.speed-adj {
-  font-size: 1.1rem;
-  font-weight: 700;
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  border: 1.5px solid rgba(255,255,255,0.3);
-  background: rgba(255,255,255,0.15);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  line-height: 1;
-}
-.speed-adj:hover {
-  background: rgba(255,255,255,0.3);
-  border-color: rgba(255,255,255,0.5);
-}
-.speed-val {
-  font-variant-numeric: tabular-nums;
-  min-width: 40px;
-  text-align: center;
-  color: #ffffff;
-  background: rgba(255,255,255,0.12);
-  border-color: rgba(255,255,255,0.25);
-}
-
-@media (max-height: 700px) {
-  .cover-art { width: 180px; height: 210px; }
-  .display-title { font-size: 1.6rem; }
-  .audio-player { padding-top: 20px; }
+  flex-shrink: 0;
 }
 </style>

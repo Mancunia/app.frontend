@@ -57,7 +57,7 @@ const toggleDrawer = () => {
 <style scoped>
 .hearth-card {
   position: fixed;
-  bottom: 95px; /* Above the fixed navigator */
+  bottom: calc(95px + env(safe-area-inset-bottom)); /* Above the fixed navigator */
   left: 16px;
   right: 16px;
   background: var(--ink);

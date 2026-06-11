@@ -26,6 +26,7 @@ const errorMessage = ref('')
 
 const activateSubscription = async () => {
     try {
+      console.log({ reference, trxref })
         loading.value = true
         const { data } = await activateSubscriptionByPayStack({ reference, trxref })
         if (data) {
