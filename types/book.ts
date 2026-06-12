@@ -1,3 +1,5 @@
+import type { Categories, Languages } from "./common";
+
 export type AuthorObject = {
   id: string;
   name: string;
@@ -16,8 +18,8 @@ export type BOOK = {
   id?: string;
   title: string;
   description: string;
-  category: string[];
-  languages: string[];
+  category: (Categories | string)[];
+  languages: (Languages | string)[];
   authors: (AuthorObject | string)[];
   narrators: (NarratorObject | string)[];
   associates: string[];

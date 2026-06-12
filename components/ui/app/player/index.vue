@@ -15,15 +15,27 @@
         <div class="book-art">
           <img :src="checkForOldFile(store.getPlaying.book?.cover)" alt="book art" />
         </div>
+        <div class="book-meta">
+          <p class="meta-title">{{ store.getPlaying.book?.title }}</p>
+          <p class="meta-author">{{ store.getPlaying.book?.authors?.map(a => typeof a === 'string' ? a : a.name).join(', ') }}</p>
+        </div>
         <div class="controls">
           <div class="player-item">
-            <button :disabled="!hasPrev" @click="playPrevInQueue" class="ctrl-btn">⏮</button>
+            <button :disabled="!hasPrev" @click="playPrevInQueue" class="ctrl-btn">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M15 18l-6-6 6-6"></path>
+              </svg>
+            </button>
             <button @click="rewindAudio(5)" class="ctrl-btn">⏪</button>
             <button @click="toggleAudio" class="play-btn">
               {{ store.getPlayer.playing ? '⏸' : '▶' }}
             </button>
             <button @click="fastForwardAudio(5)" class="ctrl-btn">⏩</button>
-            <button :disabled="!hasNext" @click="playNextInQueue" class="ctrl-btn">⏭</button>
+            <button :disabled="!hasNext" @click="playNextInQueue" class="ctrl-btn">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 18l6-6-6-6"></path>
+              </svg>
+            </button>
           </div>
         </div>
         <button @click="cycleSpeed" class="speed-badge">{{ playbackRate }}×</button>
@@ -109,7 +121,38 @@ onMounted(async () => {
   overflow: hidden;
 }
 .book-art img { width: 100%; height: 100%; object-fit: cover; }
-.controls { flex: 1; }
+
+.book-meta {
+  flex: 1;
+  min-width: 0;
+  padding: 0 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.meta-title {
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  color: #ffffff;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.2;
+}
+.meta-author {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 0.7rem;
+  color: #ffffff;
+  opacity: 0.7;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.controls { flex: 0 0 auto; }
 .player-item {
   display: flex;
   align-items: center;

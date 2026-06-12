@@ -138,7 +138,7 @@ const fetchMoreByAuthor = async () => {
     try {
         const res = await filterBooks({ author: authorId, limit: 10 }, USER_ROLES.USER) as any
         if (res) {
-            const results = Array.isArray(res) ? res : res.results ?? []
+            const results = Array.isArray(res) ? res : (res.data?.data ?? res.data ?? res.results ?? [])
             moreByAuthor.value = results.filter((b: BOOK) => b.id !== id)
         }
     } catch {}
@@ -150,7 +150,7 @@ const fetchMoreByNarrator = async () => {
     try {
         const res = await filterBooks({ narrator: narratorId, limit: 10 }, USER_ROLES.USER) as any
         if (res) {
-            const results = Array.isArray(res) ? res : res.results ?? []
+            const results = Array.isArray(res) ? res : (res.data?.data ?? res.data ?? res.results ?? [])
             moreByNarrator.value = results.filter((b: BOOK) => b.id !== id)
         }
     } catch {}
