@@ -15,7 +15,7 @@
           <path d="M2 12h20"></path>
           <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
         </svg>
-        <span class="stat-text">English</span>
+        <span class="stat-text">{{ language }}</span>
       </div>
       <div class="stat-item">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="stat-icon">
@@ -24,7 +24,7 @@
           <line x1="12" y1="19" x2="12" y2="23"></line>
           <line x1="8" y1="23" x2="16" y2="23"></line>
         </svg>
-        <span class="stat-text">Owusu</span>
+        <span class="stat-text">{{ narrators }}</span>
       </div>
       <div class="stat-item">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="stat-icon">
@@ -38,7 +38,7 @@
     <!-- 3. Title & Author -->
     <div class="meta-section">
       <h1 class="display-title">{{ book.title }}</h1>
-      <p class="serif-author">by {{ book.authors?.map(a => typeof a === 'string' ? a : a.name).join(', ') }}</p>
+      <p class="serif-author">{{ authors }}</p>
     </div>
 
     <!-- 4. Progress -->
@@ -76,7 +76,7 @@
     <div class="controls-section">
       <button @click="playPrevInQueue" class="icon-btn secondary-btn" :disabled="!hasPrev">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M11 17l-5-5 5-5M18 17l-5-5 5-5"></path>
+          <path d="M15 18l-6-6 6-6"></path>
         </svg>
       </button>
 
@@ -85,7 +85,6 @@
           <path d="M11 17l-5-5 5-5"></path>
           <path d="M18 17l-5-5 5-5"></path>
         </svg>
-        <span class="skip-val">15</span>
       </button>
 
       <button @click="toggleAudio" class="play-pause-btn">
@@ -103,13 +102,11 @@
           <path d="M13 17l5-5-5-5"></path>
           <path d="M6 17l5-5-5-5"></path>
         </svg>
-        <span class="skip-val">15</span>
       </button>
 
       <button @click="playNextInQueue" class="icon-btn secondary-btn" :disabled="!hasNext">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M13 17l5-5-5-5"></path>
-          <path d="M6 17l5-5-5-5"></path>
+          <path d="M9 18l6-6-6-6"></path>
         </svg>
       </button>
     </div>
@@ -141,6 +138,16 @@ defineEmits(['showQueue'])
 const store = useAuthStore();
 const { checkForOldFile, secondsToMinutes } = useUtils();
 const book = computed(() => store.getPlaying.book ?? null);
+
+const authors = computed(()=>{
+  return book.value?.authors?.map(a => typeof a === 'string' ? a : a.name).join(', ') || 'Author'
+})
+const narrators = computed(()=>{
+  return book.value?.narrators?.map(n => typeof n === 'string' ? n : n.name).join(', ') || 'Narrator'
+})
+const language = computed(()=>{
+  return book.value?.languages[0] || 'unknown'
+})
 
 const {
   toggleAudio, duration, currentTime, fastForwardAudio, rewindAudio,
@@ -355,15 +362,6 @@ const handleVolumeChange = (e: Event) => {
 }
 .skip-btn {
   position: relative;
-}
-.skip-val {
-  position: absolute;
-  font-family: var(--font-mono);
-  font-size: 0.55rem;
-  font-weight: 700;
-  top: 55%;
-  left: 50%;
-  transform: translate(-50%, -50%);
 }
 .play-pause-btn {
   width: 88px;

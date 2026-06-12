@@ -54,8 +54,8 @@ const fetchData = async () => {
         ])
         if (narratorRes) narrator.value = narratorRes as any
         if (booksRes) {
-            const data = booksRes as any
-            books.value = Array.isArray(data) ? data : data.results ?? []
+            const res = booksRes as any
+            books.value = Array.isArray(res) ? res : (res.data?.data ?? res.data ?? res.results ?? [])
         }
     } catch (error) {
         console.error(error)

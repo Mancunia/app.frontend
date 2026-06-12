@@ -79,6 +79,7 @@ export const usePlayer = (app?: USER_ROLES) => {
 
   const initPDF = async (chapter: PLAY_CHAPTER) => {
     try{
+      store.setPlaying(chapter.chapter);
       const data = await readPdf(
       chapter.chapter.content as string,
       chapter.chapter.password ?? undefined
@@ -109,6 +110,7 @@ export const usePlayer = (app?: USER_ROLES) => {
 
   const init = async (chapter: PLAY_CHAPTER, autoPlay = true) => {
     if (!chapter) return;
+    store.setPlaying(chapter.chapter);
     let file = checkForOldFile(chapter.chapter.content ?? "");
     await stopAudio();
     audio.value.src = file;

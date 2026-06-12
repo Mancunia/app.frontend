@@ -51,11 +51,21 @@ const store = useAuthStore()
 
 const resolvedCategories = computed(() => {
     const cats = store.getCategories
-    return props.book.category?.map(id => cats.find(c => c.id === id)?.name || id) ?? []
+    return props.book.category?.map(cat => {
+        if (typeof cat === 'string') {
+            return cats.find(c => c.id === cat)?.name || cat
+        }
+        return cat.name
+    }) ?? []
 })
 const resolvedLanguages = computed(() => {
     const langs = store.getLanguages
-    return props.book.languages?.map(id => langs.find(l => l.id === id)?.name || id) ?? []
+    return props.book.languages?.map(lang => {
+        if (typeof lang === 'string') {
+            return langs.find(l => l.id === lang)?.name || lang
+        }
+        return lang.name
+    }) ?? []
 })
 </script>
 

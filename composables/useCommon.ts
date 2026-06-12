@@ -8,9 +8,9 @@ export const useCommon = (env: USER_ROLES) => {
 
   const setLanguages = async () => {
     try {
-      const { data } = await getLanguages(env);
-      if (data) {
-        store.setLanguages(data);
+      const res = await getLanguages(env) as any;
+      if (res?.data) {
+        store.setLanguages(res.data.data ?? res.data);
       }
     } catch (error: unknown) {
       if (error instanceof Error) {
@@ -20,9 +20,9 @@ export const useCommon = (env: USER_ROLES) => {
   };
   const setCategories = async () => {
     try {
-      const { data } = await getCategories(env);
-      if (data) {
-        store.setCategories(data);
+      const res = await getCategories(env) as any;
+      if (res?.data) {
+        store.setCategories(res.data.data ?? res.data);
       }
     } catch (error: unknown) {
       if (error instanceof Error) {
