@@ -78,18 +78,41 @@ const resolvedLanguages = computed(() => {
 </script>
 
 <style scoped>
-.book-link { text-decoration: none; color: var(--ink); }
-.story-item { display: flex; flex-direction: column; position: relative; }
+.book-link { text-decoration: none; color: var(--ink); display: block; min-width: 0; }
+.story-item { display: flex; flex-direction: column; position: relative; width: 100%; min-width: 0; }
 .story-thumbnail {
-  width: 100%; aspect-ratio: 3/4; height: auto;
-  border-radius: var(--d-radius); overflow: hidden;
-  box-shadow: 0 4px 14px var(--hairline); margin-bottom: 6px;
+  width: 100%;
+  position: relative;
+  height: 0;
+  padding-bottom: 133.33%; /* 3:4 Aspect Ratio */
+  border-radius: var(--d-radius);
+  overflow: hidden;
+  box-shadow: 0 4px 14px var(--hairline);
+  margin-bottom: 6px;
+  background-color: var(--calabash);
 }
-.story-thumbnail img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s; }
+
+.story-thumbnail img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.3s;
+}
 .story-thumbnail img:hover { transform: scale(1.04); }
 .story-title {
   font-family: var(--font-serif); font-weight: 600; font-size: 0.85rem; color: var(--ink);
   margin-top: 6px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
+  width: 100%;
+}
+.writer, .narrator {
+  width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 .writer { font-family: var(--font-serif); font-style: italic; font-size: 0.75rem; color: var(--muted); }
 .narrator { font-family: var(--font-sans); font-size: 0.7rem; color: var(--ochre); margin-top: 1px; }
