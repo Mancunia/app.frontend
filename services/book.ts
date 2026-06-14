@@ -70,7 +70,7 @@ export const disLikeBook = async (id: string) =>
 
 //comments
 export const postComment = async (bookID: string, text: string) =>
-  useRequest<Comment>({
+  useRequest<any>({
     url: "/book/comment",
     method: HTTP_METHODS.POST,
     data: {
@@ -80,9 +80,16 @@ export const postComment = async (bookID: string, text: string) =>
   });
 
 export const getComments = async (id: string) =>
-  useRequest<Comment[]>({
+  useRequest<any>({
     url: `/book/comment/${id}`,
     method: HTTP_METHODS.GET,
+  });
+
+export const reportComment = async (commentId: string, reason: string) =>
+  useRequest({
+    url: `/book/comment/${commentId}/report`,
+    method: HTTP_METHODS.POST,
+    data: { reason },
   });
 
 //chapters

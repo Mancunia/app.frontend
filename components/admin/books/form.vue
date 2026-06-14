@@ -29,12 +29,14 @@
                     :selected-option="form.narrators as unknown as string[]"
                     />
                 </div>
-                <QuillEditor v-model:html="form.description" placeholder="Description" />
+                <QuillEditor v-model:content="form.description" contentType="html" placeholder="Description" />
                 <div class="selectWrapper">
                     <UiSelectDropDown :data-list="languages ?? []" placeHolder="languages" generic="array"
                         @selected="form.languages = $event" :selected-option="form.languages" />
                     <UiSelectDropDown :data-list="categories ?? []" placeHolder="Categories" generic="array"
                         @selected="form.category = $event" :selected-option="form.category" />
+                    <UiSelectDropDown :data-list="genreOptions" placeHolder="Genres" generic="array"
+                        @selected="form.genres = $event" :selected-option="form.genres" />
                     <UiSelectDropDown :data-list="associates ?? [{ id: '', name: '' }]" placeHolder="Associates"
                         generic="array" @selected="form.associates = $event" @search="findAssociates" />
                 </div>
@@ -54,6 +56,7 @@ import { QuillEditor } from '@vueup/vue-quill'
 import { createBook, updateBook } from '~/services/admin/book';
 import { getAuthors } from '~/services/admin/author';
 import { getNarrators } from '~/services/admin/narrator';
+import { getGenres } from '~/services/admin/genre';
 import { getUserProfiles } from '~/services/admin/users';
 import type { USER_PROFILE } from '~/types/auth';
 import type { BOOK } from '~/types/book';
@@ -84,11 +87,13 @@ const form = ref<BOOK>({
     description: '',
     languages: [],
     category: [],
+    genres: [],
     associates: [],
 })
 const associates = ref<{ id: string, name: string }[] | null>(null)
 const authorOptions = ref<{ id: string, name: string }[]>([])
 const narratorOptions = ref<{ id: string, name: string }[]>([])
+const genreOptions = ref<{ id: string, name: string }[]>([])
 
 const { uploadFile, generateSignedUrl } = useAWS(USER_ROLES.ADMIN)
 const { languages, categories } = useCommon(USER_ROLES.ADMIN)
@@ -104,6 +109,15 @@ const fetchNarratorOptions = async () => {
     const res = await getNarrators()
     if (res?.data) {
         narratorOptions.value = res.data.map((n: any) => ({ id: n.id ?? n._id, name: n.name }))
+    }
+}
+
+const fetchGenreOptions = async () => {
+    const res = await getGenres()
+    if (res?.data) {
+        const result = res.data as any
+        const list = Array.isArray(result) ? result : (result.data ?? [])
+        genreOptions.value = list.filter((g: any) => g.active).map((g: any) => ({ id: g.id ?? g._id, name: g.name }))
     }
 }
 
@@ -192,7 +206,12 @@ const dropImage = () => {
 
 watch(() => book, () => {
     if (book) {
-        form.value = { ...book, authors: (book.authors ?? []).map((a: any) => a.id ?? a), narrators: (book.narrators ?? []).map((n: any) => n.id ?? n) }
+        form.value = {
+            ...book,
+            authors: (book.authors ?? []).map((a: any) => a.id ?? a),
+            narrators: (book.narrators ?? []).map((n: any) => n.id ?? n),
+            genres: (book.genres ?? []).map((g: any) => g.id ?? g),
+        }
     }
 }, {
     deep: true,
@@ -202,6 +221,7 @@ watch(() => book, () => {
 onMounted(() => {
     fetchAuthorOptions()
     fetchNarratorOptions()
+    fetchGenreOptions()
 })
 </script>
 <style lang="css" scoped>

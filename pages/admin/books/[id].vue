@@ -32,8 +32,7 @@
         </div>
         <div class="field-group span-2">
           <label class="field-label">Description</label>
-          <!-- <QuillEditor :key="book?.id" v-model="editForm.description" placeholder="Book description" /> -->
-          <textarea v-model="editForm.description" class="field-textarea" rows="4" placeholder="Book description (plain text)" />
+          <QuillEditor :key="book?.id" v-model:content="editForm.description" contentType="html" placeholder="Book description" />
         </div>
         <div class="field-group">
           <label class="field-label">Categories</label>
@@ -69,6 +68,16 @@
             :selected-option="editForm.narrators"
           />
         </div>
+        <div class="field-group span-2">
+          <label class="field-label">Genres</label>
+          <UiSelectDropDown
+            :data-list="availableGenres"
+            placeHolder="Genres"
+            generic="array"
+            @selected="editForm.genres = $event"
+            :selected-option="editForm.genres"
+          />
+        </div>
         <div class="field-group">
           <label class="field-label">Organisation</label>
           <select v-model="editForm.organization" class="field-input">
@@ -86,15 +95,18 @@
       <div class="section-hdr"><span class="section-title">Chapters</span></div>
       <div v-if="loadingChapters" class="loading">Loading chapters…</div>
       <div v-else class="chapters-list">
-        <div v-for="ch in chapters" :key="ch.id" class="chapter-row">
+        <div v-for="ch in chapters" :key="ch.id || (ch as any)._id" class="chapter-row">
           <span class="ch-title">{{ ch.title }}</span>
           <span class="ch-type-pill" :class="ch.type === 'audio' ? 'pill-audio' : 'pill-ebook'">{{ ch.type }}</span>
-          <button class="ch-del" @click="handleDeleteChapter(ch.id)">Delete</button>
+          <div class="ch-actions">
+            <button class="ch-edit" @click="handleEditChapter(ch)">Edit</button>
+            <button class="ch-del" @click="handleDeleteChapter(ch.id || (ch as any)._id)">Delete</button>
+          </div>
         </div>
         <p v-if="chapters.length === 0" class="empty">No chapters yet.</p>
       </div>
 
-      <button class="btn-ghost add-ch-btn" @click="showChapterForm = !showChapterForm">
+      <button class="btn-ghost add-ch-btn" @click="toggleChapterForm">
         {{ showChapterForm ? '− Cancel' : '+ Add chapter' }}
       </button>
       <div v-if="showChapterForm" class="chapter-form">
@@ -110,15 +122,16 @@
           <label class="field-label">File (audio or PDF)</label>
           <input type="file" accept="audio/*,application/pdf" @change="onChapterFilePick" :disabled="chUploading"
             class="file-input" />
+          <p v-if="chForm.id && !chUploading" class="field-help">Current: {{ chForm.file.split('/').pop()?.split('?')[0] }} (pick a new file to replace)</p>
         </div>
         <div v-if="chForm.mimetype.includes('pdf')" class="field-group">
           <label class="field-label">PDF Password (if encrypted)</label>
-          <UiPassword @password="chForm.password = $event" />
+          <UiPassword v-model="chForm.password" />
         </div>
         <div v-if="chUploading" class="upload-status">Uploading…</div>
         <p v-if="chError" class="error-msg">{{ chError }}</p>
         <button class="btn-primary" @click="submitChapter" :disabled="chSaving || chUploading">
-          {{ chSaving ? 'Adding…' : 'Add chapter' }}
+          {{ chSaving ? (chForm.id ? 'Saving...' : 'Adding…') : (chForm.id ? 'Save changes' : 'Add chapter') }}
         </button>
       </div>
     </div>
@@ -160,13 +173,14 @@ import { QuillEditor } from '@vueup/vue-quill'
 import routes from '~/routes'
 import { getBook, getChapters } from '@/services/book'
 import { updateBook, getMetrics, getSignedUrl } from '@/services/admin/book'
-import { createChapter, deleteChapter, getChapterSignedUrl } from '@/services/admin/chapter'
+import { createChapter, updateChapter, deleteChapter, getChapterSignedUrl } from '@/services/admin/chapter'
 import { getAuthors } from '@/services/admin/author'
 import { getNarrators } from '@/services/admin/narrator'
 import { getPeriods } from '@/services/admin/period'
 import { getLanguages } from '@/services/admin/language'
 import { getCategories } from '@/services/common'
 import { getOrgs } from '@/services/admin/organization'
+import { getGenres } from '@/services/admin/genre'
 import { Bar } from 'vue-chartjs'
 import type { BOOK } from '~/types/book'
 import type { OrganizationType } from '~/types/admin/organization'
@@ -184,13 +198,14 @@ const tab = ref<'edit' | 'analytics'>('edit')
 // Metadata options
 const availableLanguages = ref<LanguageType[]>([])
 const availableCategories = ref<Categories[]>([])
+const availableGenres = ref<{ id: string; name: string }[]>([])
 const orgs = ref<OrganizationType[]>([])
 
 // Edit form
 const authorOptions = ref<{ id: string; name: string }[]>([])
 const narratorOptions = ref<{ id: string; name: string }[]>([])
 
-const editForm = reactive({ title: '', description: '', category: [] as string[], languages: [] as string[], authors: [] as string[], narrators: [] as string[], organization: '' })
+const editForm = reactive({ title: '', description: '', category: [] as string[], languages: [] as string[], genres: [] as string[], authors: [] as string[], narrators: [] as string[], organization: '' })
 const saving = ref(false)
 const saveError = ref('')
 const saveSuccess = ref(false)
@@ -202,6 +217,7 @@ const coverUpdating = ref(false)
 const triggerCoverInput = () => coverInput.value?.click()
 
 const { generateSignedUrl, uploadFile } = useAWS(USER_ROLES.ADMIN)
+const { decryptJWT } = useUtils()
 
 const onCoverChange = async (e: Event) => {
   const file = (e.target as HTMLInputElement).files?.[0]
@@ -237,6 +253,7 @@ const chapters = ref<any[]>([])
 const loadingChapters = ref(false)
 const showChapterForm = ref(false)
 const chForm = reactive({
+  id: '',
   title: '',
   description: '',
   file: '',
@@ -256,10 +273,40 @@ const loadChapters = async () => {
   loadingChapters.value = false
 }
 
+const toggleChapterForm = () => {
+  if (showChapterForm.value) {
+    Object.assign(chForm, { id: '', title: '', description: '', file: '', mimetype: '', password: '', type: null })
+  }
+  showChapterForm.value = !showChapterForm.value
+}
+
 const handleDeleteChapter = async (chapterId: string) => {
   if (!window.confirm('Delete this chapter?')) return
   await deleteChapter(chapterId)
   chapters.value = chapters.value.filter(c => c.id !== chapterId)
+}
+
+const handleEditChapter = (ch: any) => {
+  let decodedPassword = ch.password || ''
+  if (decodedPassword && decodedPassword.includes('.')) {
+    try {
+      decodedPassword = decryptJWT<{ id: string }>(decodedPassword).id
+    } catch (e) {
+      console.error('Failed to decrypt chapter password:', e)
+    }
+  }
+
+  Object.assign(chForm, {
+    id: ch.id || ch._id,
+    title: ch.title,
+    description: ch.description || '',
+    file: ch.content,
+    mimetype: ch.type === 'ebook' ? 'application/pdf' : 'audio/mpeg',
+    book: id,
+    password: decodedPassword,
+    type: ch.type
+  })
+  showChapterForm.value = true
 }
 
 const onChapterFilePick = async (e: Event) => {
@@ -280,16 +327,27 @@ const submitChapter = async () => {
   if (!chForm.title || !chForm.file) { chError.value = 'Title and file are required.'; return }
   chSaving.value = true; chError.value = ''
   try {
-    const res = await createChapter({
+    const payload = {
       ...chForm,
       content: chForm.file,
       bookId: id,
-      book: null
-    } as any)
-    if (res?.data) chapters.value.push(res.data)
-    Object.assign(chForm, { title: '', description: '', file: '', mimetype: '', password: '', type: null })
+      book: id
+    }
+    
+    if (chForm.id) {
+      const res = await updateChapter(payload as any)
+      if (res?.data) {
+        const index = chapters.value.findIndex(c => (c.id || c._id) === chForm.id)
+        if (index !== -1) chapters.value[index] = res.data
+      }
+    } else {
+      const res = await createChapter(payload as any)
+      if (res?.data) chapters.value.push(res.data)
+    }
+    
+    Object.assign(chForm, { id: '', title: '', description: '', file: '', mimetype: '', password: '', type: null })
     showChapterForm.value = false
-  } catch (e) { chError.value = (e as Error).message ?? 'Failed to add chapter.' }
+  } catch (e) { chError.value = (e as Error).message ?? 'Failed to save chapter.' }
   finally { chSaving.value = false }
 }
 
@@ -320,7 +378,7 @@ const loadMetrics = async () => {
 }
 
 onMounted(async () => {
-  const [bookRes, periodsRes, langsRes, catsRes, orgsRes, authorsRes, narratorsRes] = await Promise.all([
+  const [bookRes, periodsRes, langsRes, catsRes, orgsRes, authorsRes, narratorsRes, genresRes] = await Promise.all([
     getBook(id, USER_ROLES.ADMIN),
     getPeriods(),
     getLanguages(),
@@ -328,11 +386,12 @@ onMounted(async () => {
     getOrgs(),
     getAuthors(),
     getNarrators(),
+    getGenres(),
     loadChapters(),
     loadMetrics(),
   ])
-  if (langsRes?.data) availableLanguages.value = langsRes.data as any
-  if (catsRes?.data) availableCategories.value = catsRes.data as any
+  if (langsRes?.data) availableLanguages.value = langsRes.data.map((l: any) => ({ ...l, id: l.id ?? l._id }))
+  if (catsRes?.data) availableCategories.value = catsRes.data.map((c: any) => ({ ...c, id: c.id ?? c._id }))
   if (orgsRes?.data) orgs.value = orgsRes.data as any
 
   if (authorsRes?.data) {
@@ -341,21 +400,28 @@ onMounted(async () => {
   if (narratorsRes?.data) {
     narratorOptions.value = narratorsRes.data.map((n: any) => ({ id: n.id ?? n._id, name: n.name }))
   }
+  if (genresRes?.data) {
+    const result = genresRes.data as any
+    const list = Array.isArray(result) ? result : (result.data ?? [])
+    availableGenres.value = list.map((g: any) => ({ id: g.id ?? g._id, name: g.name }))
+  }
 
   if (bookRes?.data) {
     book.value = bookRes.data as any
     editForm.title = book.value!.title
     editForm.description = book.value!.description ?? ''
-    editForm.category = (book.value!.category ?? []).map((c: any) => {
-      const cat = availableCategories.value.find(cat => cat.name === c || cat.id === c)
-      return cat?.id ?? c
-    })
-    editForm.languages = (book.value!.languages ?? []).map((l: any) => {
-      const lang = availableLanguages.value.find(lang => lang.name === l || lang.id === l)
-      return lang?.id ?? l
-    })
-    editForm.authors = (book.value!.authors ?? []).map((a: any) => a.id ?? a)
-    editForm.narrators = (book.value!.narrators ?? []).map((n: any) => n.id ?? n)
+    const findId = (val: any, list: any[]) => {
+      const idOrName = typeof val === 'string' ? val : (val.id ?? val._id)
+      const name = typeof val === 'string' ? val : val.name
+      const found = list.find(item => item.id === idOrName || item.name === name)
+      return found?.id ?? idOrName
+    }
+
+    editForm.category = (book.value!.category ?? []).map(c => findId(c, availableCategories.value))
+    editForm.languages = (book.value!.languages ?? []).map(l => findId(l, availableLanguages.value))
+    editForm.authors = (book.value!.authors ?? []).map(a => findId(a, authorOptions.value))
+    editForm.narrators = (book.value!.narrators ?? []).map(n => findId(n, narratorOptions.value))
+    editForm.genres = (book.value!.genres ?? []).map(g => findId(g, availableGenres.value))
     editForm.organization = (book.value as any).organization ?? ''
   }
   if (periodsRes?.data) periods.value = periodsRes.data as any
@@ -655,6 +721,25 @@ onMounted(async () => {
 .pill-ebook {
   background: rgba(31, 23, 20, 0.08);
   color: var(--ink);
+}
+
+.ch-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.ch-edit {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  color: var(--ochre);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.ch-edit:hover {
+  text-decoration: underline;
 }
 
 .ch-del {

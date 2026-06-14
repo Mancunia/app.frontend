@@ -27,11 +27,10 @@ export const createChapter = async (chapter: CHAPTER) =>
       USER_ROLES.ADMIN
     );
 
-  export const deleteChapter = async (chapter:string) =>{
+  export const deleteChapter = (chapter: string) =>
     useRequest({
-      url:`admin/book/deleteChapter/${chapter}`,
-      method:HTTP_METHODS.DELETE
+      url: `admin/book/deleteChapter/${chapter}`,
+      method: HTTP_METHODS.DELETE
     },
-    USER_ROLES.ADMIN
-  )
-  }
+      USER_ROLES.ADMIN
+    )

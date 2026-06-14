@@ -433,4 +433,10 @@ const handleVolumeChange = (e: Event) => {
   width: 100%;
   flex-shrink: 0;
 }
+
+@media (min-width: 750px) {
+  .audio-player::after {
+    display: none;
+  }
+}
 </style>

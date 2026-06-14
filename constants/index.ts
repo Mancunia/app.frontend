@@ -35,5 +35,7 @@ export const adminNavigationItems: {
   { title: 'Narrators',      url: routes.admin.narrators,      hasAccess: [USER_ROLES.ADMIN] },
   { title: 'Origins',        url: routes.admin.origins,        hasAccess: [USER_ROLES.ADMIN] },
   { title: 'Organisations',  url: routes.admin.organizations,  hasAccess: [USER_ROLES.ADMIN] },
-  { title: 'Quotes',         url: routes.admin.quotes,         hasAccess: [USER_ROLES.ADMIN] },
+  { title: 'Genres',        url: routes.admin.genres,        hasAccess: [USER_ROLES.ADMIN] },
+  { title: 'Quotes',        url: routes.admin.quotes,        hasAccess: [USER_ROLES.ADMIN] },
+  { title: 'Comment Reports', url: routes.admin.reports,        hasAccess: [USER_ROLES.ADMIN] },
 ];

@@ -20,6 +20,10 @@
                         <span class="tooltip-label">Narrators:</span>
                         {{ book.narrators.map(n => typeof n === 'string' ? n : n.name).join(', ') }}
                     </div>
+                    <div v-if="resolvedGenres.length" class="tooltip-row">
+                        <span class="tooltip-label">Genres:</span>
+                        {{ resolvedGenres.join(', ') }}
+                    </div>
                     <div v-if="resolvedCategories.length" class="tooltip-row">
                         <span class="tooltip-label">Categories:</span>
                         {{ resolvedCategories.join(', ') }}
@@ -48,6 +52,10 @@ const props = defineProps({
 const selectBook = useState<BOOK | null>('appBook', () => null)
 const { checkForOldFile } = useUtils()
 const store = useAuthStore()
+
+const resolvedGenres = computed(() => {
+    return props.book.genres?.map(g => typeof g === 'string' ? g : g.name) ?? []
+})
 
 const resolvedCategories = computed(() => {
     const cats = store.getCategories

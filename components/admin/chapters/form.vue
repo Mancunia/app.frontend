@@ -5,22 +5,24 @@
         <div v-else class="chapter-form">
 
             <div v-if="audioData || form.content">
-                <div v-if="extension?.toLowerCase() === 'pdf'">
+                <input v-model="form.title" type="text" placeholder="enter chapter title">
+
+                <div v-if="extension === 'pdf'">
                     <div style="display: flex; flex-direction: column; justify-content: space-evenly;">
-                        <span style="display:flex; justify-self: center;">
+                        <span style="display:flex; align-items: center;">
                             <button class="close-btn" @click="clear">✖</button>
                             <i class='bx  bx-file' style="font-size:30px"></i>
-                            <span style="padding:5px;">{{ form.title }}</span>
+                            <span v-if="!audioData" style="padding:5px; font-size: 12px; color: gray;">(Existing PDF)</span>
                         </span>
-                        <UiPassword @password="form.password = $event" />
+                        <UiPassword v-model="form.password" />
                     </div>
 
                 </div>
                 <div v-else>
-                    <input v-model="form.title" type="text" placeholder="enter chapter title">
-                    <div style="display: flex; flex-direction: row; justify-content: space-between;">
+                    <div style="display: flex; flex-direction: row; justify-content: space-between; align-items: center;">
                         <button class="close-btn" @click="clear">✖</button>
-                        <audio :src="audioData?.base64Url" controls></audio>
+                        <audio v-if="audioData" :src="audioData?.base64Url" controls style="height: 30px;"></audio>
+                        <span v-else style="padding:5px; font-size: 12px; color: gray;">(Existing Audio)</span>
                     </div>
                 </div>
 
@@ -63,7 +65,11 @@ const form = ref<CHAPTER>({
 
 const { generateSignedUrl, uploadFile } = useAWS()
 
-const extension = computed(() => form.value.title?.split('.').pop())
+const extension = computed(() => {
+    const content = audioData.value ? audioData.value.file?.name : form.value.content;
+    if (!content) return null;
+    return content.split('?')[0].split('.').pop()?.toLowerCase();
+})
 
 const clear = () => {
     if (form.value.id) {
@@ -74,26 +80,38 @@ const clear = () => {
 const save = async () => {
     const state = form.value.id ? 'updating' : 'creating'
     try {
-        if (!audioData.value) {
+        if (!audioData.value && state === 'creating') {
             throw new Error('Please select an audio file')
         }
-        let updatingFile = {}
+
         uploading.value.isUploading = true
         uploading.value.progress = 10
-        uploading.value.message = 'Uploading audio file'
-        const response = await generateSignedUrl(audioData.value.file)
-        if (response) {
-            uploading.value.progress = 20
-            const fileLoc = await uploadFile(audioData.value.file, response)
-            if (fileLoc) {
-                form.value.content = fileLoc
-                uploading.value.progress = 30
-            }
 
+        if (audioData.value) {
+            uploading.value.message = 'Uploading file'
+            const response = await generateSignedUrl(audioData.value.file)
+            if (response) {
+                uploading.value.progress = 20
+                const fileLoc = await uploadFile(audioData.value.file, response)
+                if (fileLoc) {
+                    form.value.content = fileLoc
+                    uploading.value.progress = 30
+                }
+            }
         }
+
         if (!form.value.content) {
-            throw new Error('File upload failed')
+            throw new Error('File is required')
         }
+
+        // Set type based on extension
+        const ext = extension.value
+        if (ext === 'pdf') {
+            form.value.type = 'ebook'
+        } else if (['mp3', 'wav'].includes(ext)) {
+            form.value.type = 'audio'
+        }
+
         uploading.value.progress = 40
         uploading.value.message = `${state} chapter`
         let data: unknown = null
@@ -124,13 +142,24 @@ const save = async () => {
 
 watch(audioData, () => {
     if (audioData.value) {
-        form.value.title = audioData.value?.file?.name.replace(['.', 'mp3'], '')
+        form.value.title = audioData.value?.file?.name.replace(/\.(mp3|wav|pdf)$/i, '')
     }
 
 })
 watch(() => props.chapter, () => {
     if (props.chapter) {
-        form.value = props.chapter
+        form.value = { ...props.chapter }
+    } else {
+        form.value = {
+            bookId: props.bookId,
+            content: '',
+            title: '',
+            password: null,
+            book: null,
+            type: null,
+            page: null,
+            seek: null
+        }
     }
 }, {
     deep: true,

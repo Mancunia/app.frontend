@@ -68,7 +68,7 @@ const handleInput = (event: Event) => {
 }
 
 const toggleVisibility = () => {
-  conole.log('Toggling password visibility')
+  console.log('Toggling password visibility')
   isVisible.value = !isVisible.value
 }
 </script>
