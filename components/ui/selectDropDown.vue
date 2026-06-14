@@ -87,7 +87,7 @@ onClickOutside(selectRef, () => {
 });
 
 const isAllChecked = computed(() => {
-    return props.dataList.length > 0 && checked.value.length === props.dataList.length;
+    return props.dataList.length > 0 && props.dataList.every(item => checked.value.includes(item.id));
 });
 
 const currentItems = computed(() => {

@@ -1,5 +1,4 @@
 <template>
-  {{ form.cover }}
   <div class="wizard">
     <header class="wizard-header">
       <NuxtLink :to="routes.admin.books" class="back-link">← Stories</NuxtLink>
@@ -25,7 +24,7 @@
         </div>
         <div class="field-group">
           <label class="field-label">Description *</label>
-          <QuillEditor v-model:html="form.description" placeholder="What is this story about?" />
+          <QuillEditor v-model:content="form.description" contentType="html" placeholder="What is this story about?" />
         </div>
         <div class="field-row">
           <div class="field-group flex-1">
@@ -70,11 +69,16 @@
           </div>
         </div>
         <div class="field-group">
-          <label class="field-label">Snippet (optional)</label>
-          <textarea v-model="snippetInput" class="field-textarea" rows="2" placeholder="Short teaser text…"
-            maxlength="300" />
+          <label class="field-label">Genres</label>
+          <UiSelectDropDown
+            :data-list="availableGenres"
+            placeHolder="Genres"
+            generic="array"
+            @selected="form.genres = $event"
+            :selected-option="form.genres as unknown as string[]"
+          />
         </div>
-        <div class="field-row">
+        <div v-if="false" class="field-row">
           <div class="field-group flex-1">
             <label class="field-label">Organisation</label>
             <select v-model="selectedOrg" class="field-input">
@@ -114,6 +118,7 @@
           </div>
           <div class="summary-row"><span class="sum-lbl">Authors</span><span class="sum-val">{{ selectedAuthorNames || '—' }}</span></div>
           <div class="summary-row"><span class="sum-lbl">Narrators</span><span class="sum-val">{{ selectedNarratorNames || '—' }}</span></div>
+          <div class="summary-row"><span class="sum-lbl">Genres</span><span class="sum-val">{{ selectedGenreNames || '—' }}</span></div>
           <div class="summary-row"><span class="sum-lbl">Cover</span><span class="sum-val">{{ form.cover ? 'Uploaded' :
             'None' }}</span></div>
         </div>
@@ -145,6 +150,7 @@ import { getOrgs } from '@/services/admin/organization';
 import { getUserProfiles } from '@/services/admin/users';
 import { getLanguages } from '@/services/admin/language';
 import { getCategories } from '@/services/common';
+import { getGenres } from '@/services/admin/genre';
 import type { BOOK } from '~/types/book';
 import type { OrganizationType } from '~/types/admin/organization'
 import type { LanguageType } from '~/types/admin/language'
@@ -171,6 +177,7 @@ const narratorOptions = ref<{ id: string; name: string }[]>([])
 const orgs = ref<OrganizationType[]>([])
 const availableLanguages = ref<LanguageType[]>([])
 const availableCategories = ref<Categories[]>([])
+const availableGenres = ref<{ id: string; name: string }[]>([])
 const coverFile = ref<File | null>(null)
 const coverPreview = ref('')
 const uploading = ref(false)
@@ -182,6 +189,7 @@ const form = reactive<BOOK>({
   description: '',
   category: [],
   languages: [],
+  genres: [],
   authors: [],
   narrators: [],
   associates: [],
@@ -219,27 +227,40 @@ const selectedNarratorNames = computed(() => {
     .join(', ')
 })
 
+const selectedGenreNames = computed(() => {
+  return (form.genres as unknown as string[])
+    .map(id => availableGenres.value.find(g => g.id === id)?.name)
+    .filter(Boolean)
+    .join(', ')
+})
+
 
 watch(snippetInput, v => { (form as any).snippet = v })
 watch(selectedOrg, v => { (form as any).organization = v })
 
 onMounted(async () => {
-  const [orgsRes, assocRes, langsRes, catsRes, authorsRes, narratorsRes] = await Promise.all([
+  const [orgsRes, assocRes, langsRes, catsRes, authorsRes, narratorsRes, genresRes] = await Promise.all([
     getOrgs(),
     getUserProfiles({ search: '', account: USER_ROLES.ASSOCIATE }),
     getLanguages(),
     getCategories(USER_ROLES.ADMIN),
     getAuthors(),
     getNarrators(),
+    getGenres(),
   ])
   if (orgsRes?.data) orgs.value = orgsRes.data as any
-  if (langsRes?.data) availableLanguages.value = langsRes.data as any
-  if (catsRes?.data) availableCategories.value = catsRes.data as any
+  if (langsRes?.data) availableLanguages.value = langsRes.data.map((l: any) => ({ ...l, id: l.id ?? l._id }))
+  if (catsRes?.data) availableCategories.value = catsRes.data.map((c: any) => ({ ...c, id: c.id ?? c._id }))
   if (authorsRes?.data) {
     authorOptions.value = authorsRes.data.map((a: any) => ({ id: a.id ?? a._id, name: a.name }))
   }
   if (narratorsRes?.data) {
     narratorOptions.value = narratorsRes.data.map((n: any) => ({ id: n.id ?? n._id, name: n.name }))
+  }
+  if (genresRes?.data) {
+    const result = genresRes.data as any
+    const list = Array.isArray(result) ? result : (result.data ?? [])
+    availableGenres.value = list.map((g: any) => ({ id: g.id ?? g._id, name: g.name }))
   }
 })
 

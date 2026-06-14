@@ -30,19 +30,26 @@
             </div>
         </div>
 
-        <div v-if="loading" class="book-grid">
-            <UiAppLoadersBook />
-            <UiAppLoadersBook />
-            <UiAppLoadersBook />
-            <UiAppLoadersBook />
-            <UiAppLoadersBook />
-            <UiAppLoadersBook />
-            <UiAppLoadersBook />
-            <UiAppLoadersBook />
-        </div>
-        <div v-else-if="displayedBooks.length" class="book-grid">
-            <UiAppBook v-for="(book, index) in displayedBooks" :key="index" :book="book" />
-        </div>
+        <template v-if="loading">
+            <div class="book-grid">
+                <UiAppLoadersBook />
+                <UiAppLoadersBook />
+                <UiAppLoadersBook />
+                <UiAppLoadersBook />
+                <UiAppLoadersBook />
+                <UiAppLoadersBook />
+                <UiAppLoadersBook />
+                <UiAppLoadersBook />
+            </div>
+        </template>
+        <template v-else-if="genreKeys.length">
+            <div v-for="genreName in genreKeys" :key="genreName" class="genre-section">
+                <h3 class="genre-heading">{{ genreName }}</h3>
+                <div class="book-grid">
+                    <UiAppBook v-for="book in groupedBooks[genreName]" :key="book.id || (book as any)._id" :book="book" />
+                </div>
+            </div>
+        </template>
         <div v-else-if="searchQuery" class="empty-state">
             <p class="empty-message">No books found for <strong>"{{ searchQuery }}"</strong></p>
             <NuxtLink :to="`/app/search?q=${encodeURIComponent(searchQuery)}`" class="empty-cta">
@@ -61,6 +68,7 @@
 
 <script setup lang="ts">
 import type { BOOK } from '~/types/book';
+import type { Categories } from '~/types/common';
 import { getBooks } from '~/services/book';
 
 const loading = ref<boolean>(false);
@@ -79,13 +87,53 @@ watch([books, searchQuery], () => {
         (book.category ?? []).some(c => c.toLowerCase().includes(q))
     );
 }, { immediate: true });
+
+const store = useAuthStore()
+const { setCommon, getSingleQuote } = useCommon(USER_ROLES.USER)
+
+const groupedBooks = computed(() => {
+    const all = displayedBooks.value
+    const categoryMap = new Map<string, Categories>()
+    for (const cat of store.getCategories) {
+        categoryMap.set(cat.id, cat)
+    }
+    const groups: Record<string, BOOK[]> = {}
+    for (const book of all) {
+        const genreTags = book.genres ?? []
+        if (genreTags.length > 0) {
+            const seen = new Set<string>()
+            for (const g of genreTags) {
+                const name = typeof g === 'string' ? g : g.name
+                if (seen.has(name)) continue
+                seen.add(name)
+                ;(groups[name] ??= []).push(book)
+            }
+        } else {
+            const cats = book.category ?? []
+            if (cats.length === 0) {
+                ;(groups['Uncategorized'] ??= []).push(book)
+            } else {
+                const seen = new Set<string>()
+                for (const cat of cats) {
+                    const catId = typeof cat === 'string' ? cat : cat.id
+                    if (seen.has(catId)) continue
+                    seen.add(catId)
+                    const resolved = typeof cat === 'string' ? categoryMap.get(cat) : cat
+                    const name = resolved?.name || catId
+                    ;(groups[name] ??= []).push(book)
+                }
+            }
+        }
+    }
+    return groups
+})
+
+const genreKeys = computed(() => Object.keys(groupedBooks.value).sort())
+
 const fetchingMore = ref<boolean>(false)
 const canFetchMore = ref<boolean>(true)
 
 const pagination = ref<{ page: number, limit: number, search: string }>({ page: 1, limit: 100, search: '' })
-
-const store = useAuthStore()
-const { setCommon, getSingleQuote } = useCommon(USER_ROLES.USER)
 
 const fetchBooks = async () => {
     try {
@@ -170,6 +218,20 @@ definePageMeta({
     color: var(--ink);
     font-size: 1rem;
     margin: 8px 0 4px;
+}
+
+.genre-section {
+    margin-bottom: 28px;
+}
+
+.genre-heading {
+    font-family: var(--font-serif);
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--ink);
+    margin: 0 0 10px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border, #e0ddd6);
 }
 
 .book-grid {

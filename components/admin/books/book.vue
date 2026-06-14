@@ -15,6 +15,7 @@
                 <p><span class="title">Narrators:</span> <span class="titleText">{{ selectedBook?.narrators?.map(n => typeof n === 'string' ? n : n.name).join(', ') || 'none' }}</span></p>
                 <p><span class="title">Language:</span> <span class="titleText">{{ bookLanguages }}</span></p>
                 <p><span class="title">Genre:</span> <span class="titleText">{{ bookCategories }}</span></p>
+                <p><span class="title">Genres:</span> <span class="titleText">{{ bookGenres }}</span></p>
             </div>
             <div class="btn">
                 <UiAdminButton @click="edit">EDIT</UiAdminButton>
@@ -55,6 +56,8 @@
                 <UiSelectDropDown :data-list="categories ?? []" placeHolder="Categories" generic="array"
                     @selected="selectedBook.category = $event" :selected-option="selectedBook.category" />
                 <UiLoader v-if="Cates.loading" />
+                <UiSelectDropDown :data-list="genreOptions" placeHolder="Genres" generic="array"
+                    @selected="selectedBook.genres = $event" :selected-option="selectedBook.genres" />
 
                 <div class="save-btn">
                     <UiAdminButton @click="submit">SAVE</UiAdminButton>
@@ -77,6 +80,7 @@ import { getBook } from '~/services/book';
 import { createBook, updateBook } from '~/services/admin/book';
 import { getAuthors } from '~/services/admin/author';
 import { getNarrators } from '~/services/admin/narrator';
+import { getGenres } from '~/services/admin/genre';
 
 const State = {
     VIEW: 'view',
@@ -110,6 +114,7 @@ const defaultBook = {
     collections: [],
     languages: [],
     category: [],
+    genres: [],
     createdAt: '',
     associates: [],
     updatedAt: ''
@@ -133,6 +138,7 @@ const selectedBook = ref<BOOK>({
     collections: [],
     languages: [],
     category: [],
+    genres: [],
     createdAt: '',
     associates: [],
     updatedAt: ''
@@ -140,6 +146,7 @@ const selectedBook = ref<BOOK>({
 
 const authorOptions = ref<{ id: string; name: string }[]>([])
 const narratorOptions = ref<{ id: string; name: string }[]>([])
+const genreOptions = ref<{ id: string; name: string }[]>([])
 const selectedAuthorIds = ref<string[]>([])
 const selectedNarratorIds = ref<string[]>([])
 const loading = ref(false)
@@ -165,6 +172,13 @@ const bookLanguages = computed(() => {
 const bookCategories = computed(() => {
     if (selectedBook.value.category) {
         return categories.value?.filter((cate: { id: any; }) => selectedBook.value?.category.includes(cate.id)).map((cate: { name: any; }) => cate.name).join(', ')
+    }
+    return 'none'
+})
+
+const bookGenres = computed(() => {
+    if (selectedBook.value.genres?.length) {
+        return selectedBook.value.genres.map((g: any) => typeof g === 'string' ? g : g.name).join(', ')
     }
     return 'none'
 })
@@ -285,15 +299,21 @@ watch(selectedBook, (book) => {
     }
 }, { immediate: true, deep: true })
 onMounted(async () => {
-    const [authorsRes, narratorsRes] = await Promise.all([
+    const [authorsRes, narratorsRes, genresRes] = await Promise.all([
         getAuthors(),
         getNarrators(),
+        getGenres(),
     ])
     if (authorsRes?.data) {
         authorOptions.value = authorsRes.data.map((a: any) => ({ id: a.id ?? a._id, name: a.name }))
     }
     if (narratorsRes?.data) {
         narratorOptions.value = narratorsRes.data.map((n: any) => ({ id: n.id ?? n._id, name: n.name }))
+    }
+    if (genresRes?.data) {
+        const result = genresRes.data as any
+        const list = Array.isArray(result) ? result : (result.data ?? [])
+        genreOptions.value = list.filter((g: any) => g.active).map((g: any) => ({ id: g.id ?? g._id, name: g.name }))
     }
     if (state.value !== State.NEW) {
         fetchBook()

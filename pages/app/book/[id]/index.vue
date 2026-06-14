@@ -21,6 +21,7 @@
       <p class="meta-author">{{ book.authors?.map(a => typeof a === 'string' ? a : a.name).join(', ') }}</p>
       <p v-if="book.narrators?.length" class="meta-narrator">Narrated by: {{ book.narrators.map(n => typeof n === 'string' ? n : n.name).join(', ') }}</p>
       <div class="meta-chips">
+        <span class="chip" v-for="g in resolvedGenres" :key="g" v-if="resolvedGenres.length">{{ g }}</span>
         <span class="chip" v-if="book.languages?.length">{{ book.languages.join(', ') }}</span>
         <span class="chip">{{ book.meta?.views ?? 0 }} views</span>
       </div>
@@ -52,26 +53,15 @@
       <button class="like-btn" @click="like">👍 Like</button>
     </div>
 
-    <!-- More by this author -->
-    <div v-if="moreByAuthor.length" class="more-row">
-      <h3 class="more-heading">More by this author</h3>
-      <div class="more-scroll">
-        <UiAppBook v-for="b in moreByAuthor" :key="b.id" :book="b" />
-      </div>
-    </div>
-
-    <!-- More by this narrator -->
-    <div v-if="moreByNarrator.length" class="more-row">
-      <h3 class="more-heading">More by this narrator</h3>
-      <div class="more-scroll">
-        <UiAppBook v-for="b in moreByNarrator" :key="b.id" :book="b" />
-      </div>
-    </div>
+  
 
     <!-- Tabs -->
     <div v-if="hasAccess" class="tabs">
       <button class="tab" :class="{ active: tab === TABS.CHAPTERS }" @click="tab = TABS.CHAPTERS">
         Chapters {{ tabData.chapters }}
+      </button>
+      <button class="tab" :class="{ active: tab === TABS.COMMENTS }" @click="tab = TABS.COMMENTS">
+        Comments
       </button>
     </div>
 
@@ -89,6 +79,25 @@
           @play="playReadChapter(chapter)"
           @add-to-queue="store.addToQueue({ chapter })"
         />
+      </div>
+
+      <div v-if="tab === TABS.COMMENTS">
+        <AppComments :id="id" />
+      </div>
+    </div>
+      <!-- More by this author -->
+    <div v-if="moreByAuthor.length" class="more-row">
+      <h3 class="more-heading">More by this author</h3>
+      <div class="more-scroll">
+        <UiAppBook v-for="b in moreByAuthor" :key="b.id" :book="b" />
+      </div>
+    </div>
+
+    <!-- More by this narrator -->
+    <div v-if="moreByNarrator.length" class="more-row">
+      <h3 class="more-heading">More by this narrator</h3>
+      <div class="more-scroll">
+        <UiAppBook v-for="b in moreByNarrator" :key="b.id" :book="b" />
       </div>
     </div>
   </div>
@@ -118,6 +127,11 @@ const id = useRoute().params.id as string
 
 const { checkForOldFile } = useUtils()
 const store = useAuthStore();
+
+const resolvedGenres = computed(() => {
+    if (!book.value?.genres?.length) return []
+    return book.value.genres.map((g: any) => typeof g === 'string' ? g : g.name)
+})
 const { init, initPDF, playAudio, stopAudio, fetchChapter, loading: playerLoading, player } = usePlayer(USER_ROLES.USER)
 
 const hasAccess = computed(() => {

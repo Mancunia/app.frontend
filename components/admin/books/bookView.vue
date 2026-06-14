@@ -22,6 +22,7 @@
                                 }}</span></p>
                         <p><span class="title">Language:</span> <span class="titleText">{{ bookLanguages }}</span></p>
                         <p><span class="title">Genre:</span> <span class="titleText">{{ bookCategories }}</span></p>
+                        <p><span class="title">Genres:</span> <span class="titleText">{{ bookGenres }}</span></p>
                     </div>
                 </div>
 
@@ -118,6 +119,12 @@ const bookLanguages = computed(() => {
 const bookCategories = computed(() => {
     if (book.value?.category) {
         return categories.value?.filter((cate: { id: any; }) => book.value?.category.includes(cate.id)).map((cate: { name: any; }) => cate.name).join(', ')
+    }
+    return 'none'
+})
+const bookGenres = computed(() => {
+    if (book.value?.genres?.length) {
+        return book.value.genres.map((g: any) => typeof g === 'string' ? g : g.name).join(', ')
     }
     return 'none'
 })

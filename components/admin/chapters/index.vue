@@ -16,7 +16,7 @@
         <h1>No chapters found</h1>
     </div>
 
-    <button v-if="chapters" @click="openModal('new')" class="float">
+    <button v-if="chapters" @click="InitNew" class="float">
         +
     </button>
     <CommonModal v-model="modalState.new" :closeOnBackdropClick="false">
@@ -90,6 +90,11 @@ const InitDelete = (chapter: CHAPTER) => {
 const InitEdit = (chapter: CHAPTER) => {
     selectedChapter.value = null
     selectedChapter.value = chapter
+    openModal('new')
+}
+
+const InitNew = () => {
+    selectedChapter.value = null
     openModal('new')
 }
 

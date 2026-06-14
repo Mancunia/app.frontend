@@ -128,7 +128,10 @@ const submitForm = async () => {
       }
     } else {
       const res = await createAuthor({ ...form }) as any
-      if (res) authors.value.unshift(res)
+      if (res) {
+        authors.value.unshift(res)
+      }
+
     }
     panelOpen.value = false
   } catch (e) {

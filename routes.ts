@@ -17,6 +17,8 @@ type ROUTES = {
     origins: string
     email: string
     quotes: string
+    genres: string
+    reports: string
   }
   app: {
     home: string
@@ -55,7 +57,9 @@ const routes: ROUTES = {
     narrators:     '/admin/narrators',
     origins:       '/admin/origins',
     email:         '/admin/email',
+    genres:        '/admin/genres',
     quotes:        '/admin/quotes',
+    reports:       '/admin/reports',
   },
   app: {
     home:           '/app',

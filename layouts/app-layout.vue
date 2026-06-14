@@ -32,20 +32,22 @@ const isPlaying = computed(() => !!store.getPlaying?.id);
 <style scoped>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
-.page { background: var(--paper); }
-.body { width: 100%; height: 100%; }
+.page { background: var(--paper); height: 100vh; overflow: hidden; }
+.body { width: 100%; height: 100%; display: flex; flex-direction: column; }
 
 .container {
   display: flex;
   flex-direction: column;
   width: 100%;
-  height: 100%;
+  flex: 1;
+  overflow: hidden;
 }
 
 .content {
   position: relative;
   width: 100%;
-  min-height: calc(100vh - 60px);
+  flex: 1;
+  overflow-y: auto;
   display: flex;
   align-items: center;
   flex-direction: column;
@@ -56,7 +58,6 @@ const isPlaying = computed(() => !!store.getPlaying?.id);
   position: relative;
   width: 100%;
   height: auto;
-  min-height: 70vh;
 }
 
 .content-spacer {
@@ -108,27 +109,27 @@ const isPlaying = computed(() => !!store.getPlaying?.id);
   .container {
     flex-direction: row;
     align-items: stretch;
-    height: 100vh;
   }
   .content {
     flex: 1;
-    height: 100vh;
+    height: 100%;
   }
   .items-container { padding: 10px; border-radius: 10px; margin: 10px; }
   .content-spacer { display: none; }
   .navigator-container { display: none; }
   .player {
-    position: sticky;
+    position: relative;
     top: 0;
     width: 30%;
-    height: 100vh;
+    height: 100%;
     border-radius: 0;
-    align-self: unset;
-    padding: 10px;
+    align-self: stretch;
+    padding: 0;
     background: var(--ink);
     transform: none;
     margin: 0;
     flex-shrink: 0;
+    overflow: hidden;
   }
 }
 </style>

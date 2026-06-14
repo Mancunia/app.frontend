@@ -1,4 +1,5 @@
 import type { Categories, Languages } from "./common";
+import type { GenreType } from "./admin/genre";
 
 export type AuthorObject = {
   id: string;
@@ -19,6 +20,7 @@ export type BOOK = {
   title: string;
   description: string;
   category: (Categories | string)[];
+  genres: (GenreType | string)[];
   languages: (Languages | string)[];
   authors: (AuthorObject | string)[];
   narrators: (NarratorObject | string)[];
