@@ -311,8 +311,9 @@ definePageMeta({
 .like-btn:hover { background: var(--ochre); color: var(--ink); }
 .more-row { padding: 8px var(--d-pad); }
 .more-heading { font-family: var(--font-display); font-size: 0.95rem; color: var(--ink); margin: 0 0 8px; }
-.more-scroll { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 8px; }
-.more-scroll > * { flex: 0 0 110px; }
+.more-scroll { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 8px; scrollbar-width: none; -ms-overflow-style: none; }
+.more-scroll::-webkit-scrollbar { display: none; }
+.more-scroll > * { flex: 0 0 110px; width: 110px; min-width: 0; }
 .tabs { display: flex; border-bottom: 1px solid var(--hairline); padding: 0 var(--d-pad); }
 .tab { background: none; border: none; border-bottom: 2px solid transparent; color: var(--muted); font-family: var(--font-display); font-size: 0.85rem; padding: 8px 14px; cursor: pointer; margin-bottom: -1px; }
 .tab.active { color: var(--kola); border-bottom-color: var(--kola); }

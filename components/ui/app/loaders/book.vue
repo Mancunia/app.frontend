@@ -1,7 +1,10 @@
 <template>
     <div class="card">
-        <UiSkeletonLoader width="100%" height="80%" />
-        <UiSkeletonLoader width="100%" height="10%" />
+        <div class="thumbnail-skeleton">
+            <UiSkeletonLoader width="100%" height="100%" />
+        </div>
+        <UiSkeletonLoader width="80%" height="12px" />
+        <UiSkeletonLoader width="60%" height="10px" />
     </div>
 </template>
 
@@ -11,14 +14,17 @@
 
 <style scoped>
 .card {
-    width: 12rem;
-    height: 250px;
+    width: 100%;
     display: flex;
-    align-items: center;
     flex-direction: column;
-    background-color: transparent;
-    border: none;
-    gap: 10px;
-    padding: 2%
+    gap: 8px;
+}
+.thumbnail-skeleton {
+    width: 100%;
+    position: relative;
+    height: 0;
+    padding-bottom: 133.33%;
+    border-radius: var(--d-radius);
+    overflow: hidden;
 }
 </style>
