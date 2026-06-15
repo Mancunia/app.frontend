@@ -34,11 +34,13 @@
       <p v-if="!loading && genres.length === 0" class="empty">No genres yet.</p>
     </div>
 
-    <div class="pagination-bar" v-if="totalPages > 1">
-      <button :disabled="page <= 1" @click="goTo(page - 1)" class="page-btn">←</button>
-      <span class="page-info">{{ page }} / {{ totalPages }}</span>
-      <button :disabled="page >= totalPages" @click="goTo(page + 1)" class="page-btn">→</button>
-    </div>
+    <CommonPagination
+      v-if="totalRecords > limit"
+      :page-index="page"
+      :total-pages="totalPages"
+      :total-records="totalRecords"
+      @on-page-change="handlePageChange"
+    />
 
     <div v-if="panelOpen" class="panel-overlay" @click.self="panelOpen = false">
       <div class="panel">
@@ -71,8 +73,9 @@ const genres = ref<GenreType[]>([])
 const loading = ref(false)
 const search = ref('')
 const page = ref(1)
-const totalPages = ref(1)
-const limit = 10
+const totalRecords = ref(0)
+const limit = 20
+const totalPages = computed(() => Math.ceil(totalRecords.value / limit))
 
 const panelOpen = ref(false)
 const editingGenre = ref<GenreType | null>(null)
@@ -87,10 +90,8 @@ const fetchGenres = async (p = page.value, q = search.value) => {
     if (res?.data) {
       const result = res.data as any
       genres.value = Array.isArray(result) ? result : (result.data ?? [])
-      if (result.total && result.page) {
-        page.value = result.page
-        totalPages.value = Math.ceil((result.total ?? 0) / limit)
-      }
+      totalRecords.value = result.total ?? (Array.isArray(result) ? result.length : (result.data?.length ?? 0))
+      if (result.page) page.value = result.page
     }
   } finally {
     loading.value = false
@@ -105,41 +106,7 @@ const debouncedSearch = debounce((q: string) => {
 
 watch(search, (val) => debouncedSearch(val))
 
-const openPanel = (genre: GenreType | null) => {
-  editingGenre.value = genre
-  form.name = genre?.name ?? ''
-  formError.value = ''
-  panelOpen.value = true
-}
-
-const submitForm = async () => {
-  formSaving.value = true
-  formError.value = ''
-  try {
-    if (editingGenre.value) {
-      await updateGenre(editingGenre.value.id, { title: form.name.trim() })
-    } else {
-      await createGenre({ title: form.name.trim() })
-    }
-    panelOpen.value = false
-    await fetchGenres()
-  } catch (e) {
-    formError.value = (e as Error).message ?? 'Failed to save.'
-  } finally {
-    formSaving.value = false
-  }
-}
-
-const toggleStatus = async (genre: GenreType) => {
-  try {
-    await toggleGenreActive(genre.id)
-    genre.active = !genre.active
-  } catch {
-    // silently fail — backend will surface errors if needed
-  }
-}
-
-const goTo = (p: number) => {
+const handlePageChange = (p: number) => {
   page.value = p
   fetchGenres(p)
 }

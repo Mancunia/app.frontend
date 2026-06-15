@@ -1,8 +1,8 @@
 import type { LanguageType } from '~/types/admin/language'
 
-export const getLanguages = () =>
-  useRequest<LanguageType[]>(
-    { url: 'admin/language/all', method: HTTP_METHODS.GET },
+export const getLanguages = (params?: { search?: string; page?: number; limit?: number }) =>
+  useRequest<{ data: LanguageType[]; total: number; page: number; limit: number }>(
+    { url: 'admin/language/all', method: HTTP_METHODS.GET, params },
     USER_ROLES.ADMIN
   )
 

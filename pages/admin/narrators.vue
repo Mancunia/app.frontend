@@ -31,6 +31,14 @@
       <p v-if="!loading && narrators.length === 0" class="empty">No narrators yet.</p>
     </div>
 
+    <CommonPagination
+      v-if="totalRecords > limit"
+      :page-index="page"
+      :total-pages="totalPages"
+      :total-records="totalRecords"
+      @on-page-change="handlePageChange"
+    />
+
     <div v-if="panelOpen" class="panel-overlay" @click.self="panelOpen = false">
       <div class="panel">
         <div class="panel-hdr">
@@ -83,6 +91,11 @@ definePageMeta({ title: 'Narrators', middleware: 'admin', layout: 'admin-layout'
 
 const narrators = ref<NarratorType[]>([])
 const loading = ref(false)
+const page = ref(1)
+const limit = 20
+const totalRecords = ref(0)
+const totalPages = computed(() => Math.ceil(totalRecords.value / limit))
+
 const panelOpen = ref(false)
 const editingNarrator = ref<NarratorType | null>(null)
 const form = reactive<NarratorRequest>({ name: '', bio: '', active: true })
@@ -95,11 +108,17 @@ const deleteTarget = ref<NarratorType | null>(null)
 
 const fetchNarrators = async () => {
   loading.value = true
-  const res = await getNarrators()
+  const res = await getNarrators({ page: page.value, limit })
   if (res?.data) {
-    narrators.value = res.data
+    narrators.value = (res.data as any).data ?? res.data
+    totalRecords.value = (res.data as any).total ?? narrators.value.length
   }
   loading.value = false
+}
+
+const handlePageChange = (p: number) => {
+  page.value = p
+  fetchNarrators()
 }
 
 const openPanel = (narrator: NarratorType | null) => {
