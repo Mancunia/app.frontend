@@ -37,6 +37,14 @@
       </table>
       <p v-if="!loading && languages.length === 0" class="empty">No languages yet.</p>
     </div>
+
+    <CommonPagination
+      v-if="totalRecords > limit"
+      :page-index="page"
+      :total-pages="totalPages"
+      :total-records="totalRecords"
+      @on-page-change="handlePageChange"
+    />
   </div>
 </template>
 
@@ -48,6 +56,10 @@ definePageMeta({ title: 'Languages', middleware: 'admin', layout: 'admin-layout'
 
 const languages = ref<LanguageType[]>([])
 const loading = ref(false)
+const page = ref(1)
+const limit = 20
+const totalRecords = ref(0)
+const totalPages = computed(() => Math.ceil(totalRecords.value / limit))
 const newTitle = ref('')
 const newActive = ref(true)
 const adding = ref(false)
@@ -55,9 +67,17 @@ const addError = ref('')
 
 const fetchLanguages = async () => {
   loading.value = true
-  const res = await getLanguages()
-  if (res?.data) languages.value = res.data as any
+  const res = await getLanguages({ page: page.value, limit })
+  if (res?.data) {
+    languages.value = (res.data as any).data ?? res.data
+    totalRecords.value = (res.data as any).total ?? languages.value.length
+  }
   loading.value = false
+}
+
+const handlePageChange = (p: number) => {
+  page.value = p
+  fetchLanguages()
 }
 
 const handleAdd = async () => {

@@ -31,6 +31,14 @@
       <p v-if="!loading && authors.length === 0" class="empty">No authors yet.</p>
     </div>
 
+    <CommonPagination
+      v-if="totalRecords > limit"
+      :page-index="page"
+      :total-pages="totalPages"
+      :total-records="totalRecords"
+      @on-page-change="handlePageChange"
+    />
+
     <div v-if="panelOpen" class="panel-overlay" @click.self="panelOpen = false">
       <div class="panel">
         <div class="panel-hdr">
@@ -83,6 +91,11 @@ definePageMeta({ title: 'Authors', middleware: 'admin', layout: 'admin-layout' }
 
 const authors = ref<AuthorType[]>([])
 const loading = ref(false)
+const page = ref(1)
+const limit = 20
+const totalRecords = ref(0)
+const totalPages = computed(() => Math.ceil(totalRecords.value / limit))
+
 const panelOpen = ref(false)
 const editingAuthor = ref<AuthorType | null>(null)
 const form = reactive<AuthorRequest>({ name: '', bio: '', active: true })
@@ -95,11 +108,17 @@ const deleteTarget = ref<AuthorType | null>(null)
 
 const fetchAuthors = async () => {
   loading.value = true
-  const res = await getAuthors()
+  const res = await getAuthors({ page: page.value, limit })
   if (res?.data) {
-    authors.value = res.data
+    authors.value = (res.data as any).data ?? res.data
+    totalRecords.value = (res.data as any).total ?? authors.value.length
   }
   loading.value = false
+}
+
+const handlePageChange = (p: number) => {
+  page.value = p
+  fetchAuthors()
 }
 
 const openPanel = (author: AuthorType | null) => {

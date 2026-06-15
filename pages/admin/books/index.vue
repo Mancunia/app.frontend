@@ -62,6 +62,14 @@
         </tbody>
       </table>
     </div>
+
+    <CommonPagination
+      v-if="totalBooks > limit"
+      :page-index="page"
+      :total-pages="totalPages"
+      :total-records="totalBooks"
+      @on-page-change="handlePageChange"
+    />
   </div>
 </template>
 
@@ -80,6 +88,9 @@ const search = ref('');
 const loading = ref(false);
 const books = ref<BOOK[]>([]);
 const totalBooks = ref(0);
+const page = ref(1);
+const limit = 20;
+const totalPages = computed(() => Math.ceil(totalBooks.value / limit));
 const { debounce } = useUtils();
 
 const getCategoryName = (id: string) => {
@@ -90,7 +101,7 @@ const getCategoryName = (id: string) => {
 const fetchBooks = async () => {
   loading.value = true;
   try {
-    const { data } = await getBooks(USER_ROLES.ADMIN, { page: 1, limit: 40, search: search.value });
+    const { data } = await getBooks(USER_ROLES.ADMIN, { page: page.value, limit, search: search.value });
     if (data) {
       books.value = data.results ?? [];
       totalBooks.value = data.records ?? 0;
@@ -98,6 +109,11 @@ const fetchBooks = async () => {
   } finally {
     loading.value = false;
   }
+};
+
+const handlePageChange = (p: number) => {
+  page.value = p;
+  fetchBooks();
 };
 
 const handleDelete = async (book: BOOK) => {
