@@ -31,6 +31,7 @@ export const useAuthStore = defineStore("user", {
     queueIndex: ref(-1),
     languages: useLocalStorage("languages", [] as Languages[]),
     categories: useLocalStorage("categories", [] as Categories[]),
+    genres: useLocalStorage("genres", [] as any[]),
     quotes: useLocalStorage("quotes", [] as QUOTE[]),
   }),
 
@@ -62,6 +63,9 @@ export const useAuthStore = defineStore("user", {
     },
     setCategories(categories: Categories[]) {
       this.categories = categories;
+    },
+    setGenres(genres: any[]) {
+      this.genres = genres;
     },
     setQuotes(quotes: QUOTE[]) {
       this.quotes = quotes;
@@ -137,6 +141,9 @@ export const useAuthStore = defineStore("user", {
     },
     getCategories(state) {
       return state.categories;
+    },
+    getGenres(state) {
+      return state.genres;
     },
     getQuotes(state) {
       return state.quotes;

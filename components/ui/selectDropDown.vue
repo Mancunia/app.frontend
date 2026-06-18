@@ -5,7 +5,7 @@
                 <span v-if="isAllChecked" class="item"> All {{ placeHolder }} Selected </span>
                 <span v-else-if="!isAllChecked && checked.length" v-for="(item, index) in checked" :key="index"
                     class="item">
-                    {{ dataList.find((opt) => opt.id === item)?.name }}
+                    {{ dataList.find((opt) => opt.id === item)?.name || item }}
                 </span>
                 <span v-else class="placeholder">
                     Select {{ placeHolder }}
@@ -43,6 +43,7 @@
 </template>
 
 <script setup lang="ts">
+import { PropType } from 'vue';
 import { onClickOutside } from '@vueuse/core'
 
 const props = defineProps({
@@ -91,6 +92,7 @@ const isAllChecked = computed(() => {
 });
 
 const currentItems = computed(() => {
+    if (!props.dataList) return [];
     if (!props.canSearch || searchTerm.value === '') {
         return props.dataList;
     }
@@ -132,12 +134,18 @@ watch(searchTerm, () => {
     }
 });
 
-onMounted(() => {
+const updateCheckedFromProps = () => {
     if (typeof props.selectedOption === 'string') {
-        checked.value = props.selectedOption.split(',').filter((item: string) => item.trim() !== '');
+        checked.value = props.selectedOption.split(',').map(s => s.trim()).filter(s => s !== '');
     } else if (Array.isArray(props.selectedOption)) {
-        checked.value = props.selectedOption.filter((item: string) => item.trim() !== '');
+        checked.value = props.selectedOption.map(item => String(item || '').trim()).filter(item => item !== '');
     }
+}
+
+watch(() => props.selectedOption, updateCheckedFromProps, { deep: true });
+
+onMounted(() => {
+    updateCheckedFromProps();
 });
 </script>
 
@@ -169,6 +177,10 @@ onMounted(() => {
 
 .select-btn:hover {
     border-color: var(--ochre);
+}
+
+.select-menu.active {
+    z-index: 101;
 }
 
 .select-menu.active .select-btn {

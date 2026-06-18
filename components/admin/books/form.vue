@@ -38,7 +38,22 @@
                     <UiSelectDropDown :data-list="genreOptions" placeHolder="Genres" generic="array"
                         @selected="form.genres = $event" :selected-option="form.genres" />
                     <UiSelectDropDown :data-list="associates ?? [{ id: '', name: '' }]" placeHolder="Associates"
-                        generic="array" @selected="form.associates = $event" @search="findAssociates" />
+                        generic="array" @selected="form.associates = $event" @search="findAssociates"
+                        :selected-option="form.associates" />
+                </div>
+                <div class="selectWrapper">
+                    <UiAdminInputField @update:model-value="form.edition = $event" place-holder="Edition" type="text"
+                        :value="form.edition" />
+                    <div class="custom-select-wrapper">
+                        <select v-model="form.publishedYear" class="custom-select">
+                            <option value="" disabled selected>Select Published Year</option>
+                            <option v-for="year in yearOptions" :key="year.id" :value="year.id">
+                                {{ year.name }}
+                            </option>
+                        </select>
+                    </div>
+                    <UiAdminInputField @update:model-value="form.duration = $event" place-holder="Duration" type="text"
+                        :value="form.duration" />
                 </div>
 
             </div>
@@ -89,11 +104,23 @@ const form = ref<BOOK>({
     category: [],
     genres: [],
     associates: [],
+    edition: '',
+    publishedYear: '',
+    duration: '',
 })
 const associates = ref<{ id: string, name: string }[] | null>(null)
 const authorOptions = ref<{ id: string, name: string }[]>([])
 const narratorOptions = ref<{ id: string, name: string }[]>([])
 const genreOptions = ref<{ id: string, name: string }[]>([])
+
+const yearOptions = computed(() => {
+    const years = []
+    const currentYear = new Date().getFullYear()
+    for (let i = currentYear + 5; i >= 1950; i--) {
+        years.push({ id: i.toString(), name: i.toString() })
+    }
+    return years
+})
 
 const { uploadFile, generateSignedUrl } = useAWS(USER_ROLES.ADMIN)
 const { languages, categories } = useCommon(USER_ROLES.ADMIN)
@@ -188,7 +215,7 @@ const save = async () => {
 const findAssociates = async (search: string) => {
     try {
         loading.value.associates = true
-        const response = await getUserProfiles({ account: 2, search })
+        const response = await getUserProfiles({ account: USER_ROLES.ASSOCIATE, search })
         associates.value = response.data.map((user: USER_PROFILE) => {
             return { id: user.id, name: user.email }
         })
@@ -211,6 +238,10 @@ watch(() => book, () => {
             authors: (book.authors ?? []).map((a: any) => a.id ?? a),
             narrators: (book.narrators ?? []).map((n: any) => n.id ?? n),
             genres: (book.genres ?? []).map((g: any) => g.id ?? g),
+            associates: (book.associates ?? []).map((a: any) => a.id ?? a),
+            edition: book.edition ?? '',
+            publishedYear: book.publishedYear ?? '',
+            duration: book.duration ?? '',
         }
     }
 }, {
@@ -222,6 +253,7 @@ onMounted(() => {
     fetchAuthorOptions()
     fetchNarratorOptions()
     fetchGenreOptions()
+    findAssociates('')
 })
 </script>
 <style lang="css" scoped>
@@ -276,6 +308,31 @@ onMounted(() => {
 .selectWrapper {
     display: flex;
     gap: 20px;
+}
+
+.custom-select-wrapper {
+    flex: 1;
+    display: flex;
+    align-items: center;
+}
+
+.custom-select {
+    width: 100%;
+    height: 44px;
+    background: var(--card);
+    padding: 0 16px;
+    font-size: 14px;
+    font-weight: 400;
+    border-radius: var(--d-radius, 12px);
+    border: 1px solid var(--hairline);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    outline: none;
+    cursor: pointer;
+}
+
+.custom-select:focus {
+    border-color: var(--ochre);
 }
 
 :deep(.ql-editor) {

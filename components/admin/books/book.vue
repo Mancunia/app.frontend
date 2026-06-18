@@ -81,6 +81,7 @@ import { createBook, updateBook } from '~/services/admin/book';
 import { getAuthors } from '~/services/admin/author';
 import { getNarrators } from '~/services/admin/narrator';
 import { getGenres } from '~/services/admin/genre';
+import { USER_ROLES } from '~/constants';
 
 const State = {
     VIEW: 'view',
@@ -94,54 +95,41 @@ const { languages, categories } = useCommon(USER_ROLES.ADMIN)
 const { isOpen: isModalOpen, open: openModal, close: closeModal } = useModal();
 const { checkForOldFile } = useUtils()
 
-const defaultBook = {
+const defaultBook: BOOK = {
     meta: {
         played: 0,
         views: 0,
+        likes: 0,
+        dislikes: 0,
         comments: 0
     },
-    _id: '',
-    status: 0,
     authors: [],
     narrators: [],
     cover: '',
-    moment: '',
     title: '',
     description: '',
-    folder: '',
-    uploader: '',
-    __v: 0,
-    collections: [],
     languages: [],
     category: [],
     genres: [],
-    createdAt: '',
     associates: [],
-    updatedAt: ''
 }
-const selectedBook = ref<BOOK>({
+const selectedBook = ref<BOOK & { _id?: string | null }>({
     meta: {
         played: 0,
         views: 0,
+        likes: 0,
+        dislikes: 0,
         comments: 0
     },
-    status: 0,
     authors: [],
     narrators: [],
     cover: '',
-    moment: '',
     title: '',
     description: '',
-    folder: '',
-    uploader: '',
-    __v: 0,
-    collections: [],
     languages: [],
     category: [],
     genres: [],
-    createdAt: '',
     associates: [],
-    updatedAt: ''
 })
 
 const authorOptions = ref<{ id: string; name: string }[]>([])
@@ -159,7 +147,7 @@ const { uploadFile, generateSignedUrl } = useAWS()
 
 const state = computed(() => route.query.action as string ?? State.VIEW)
 const edit = () => {
-    router.push({ query: { bookId: selectedBook.value?._id, action: 'edit' } })
+    router.push({ query: { bookId: selectedBook.value?.id || selectedBook.value?._id, action: 'edit' } })
 }
 const bookId = computed(() => route.query.bookId as string)
 const bookLanguages = computed(() => {
@@ -186,6 +174,7 @@ const bookGenres = computed(() => {
 const postBook = async () => {
     try {
         selectedBook.value._id = null
+        selectedBook.value.id = undefined
         uploading.value.loading = true
         openModal()
         if (imageData.value) {
@@ -203,12 +192,12 @@ const postBook = async () => {
         }
         uploading.value.message = 'Creating book'
         uploading.value.progress = 70
-        const { data } = await createBook(selectedBook.value)
+        const data = await createBook(selectedBook.value)
         if (data) {
             uploading.value.message = 'Book created'
             uploading.value.progress = 100
             selectedBook.value = data
-            router.push({ query: { bookId: data._id, action: 'view' } })
+            router.push({ query: { bookId: (data as any).id || (data as any)._id, action: 'view' } })
         }
     } catch (error: unknown) {
         if (error instanceof Error) {
@@ -237,11 +226,11 @@ const putBook = async () => {
         }
         uploading.value.message = 'Updating book'
         uploading.value.progress = 70
-        const { data } = await updateBook(selectedBook.value)
+        const data = await updateBook((selectedBook.value.id || selectedBook.value._id) as string, selectedBook.value)
         if (data) {
             uploading.value.message = 'Book updated'
             uploading.value.progress = 100
-            router.push({ query: { bookId: data._id, action: 'view' } })
+            router.push({ query: { bookId: (data as any).id || (data as any)._id, action: 'view' } })
         }
     } catch (error: unknown) {
         if (error instanceof Error) {
@@ -255,7 +244,7 @@ const putBook = async () => {
 }
 
 const submit = () => {
-    if (selectedBook.value._id) {
+    if (selectedBook.value.id || selectedBook.value._id) {
         putBook()
     }
     else {
@@ -270,7 +259,7 @@ const fetchBook = async () => {
             return
         }
         loading.value = true
-        const { data } = await getBook(bookId.value as string, store.getAdmin.role)
+        const data = await getBook(bookId.value as string, store.getAdmin.role)
         if (data) {
             selectedBook.value = data
         }
@@ -294,8 +283,8 @@ watch(imageData, () => {
 })
 watch(selectedBook, (book) => {
     if (book) {
-        selectedAuthorIds.value = (book.authors ?? []).map((a: any) => a.id ?? a)
-        selectedNarratorIds.value = (book.narrators ?? []).map((n: any) => n.id ?? n)
+        selectedAuthorIds.value = (book.authors ?? []).map((a: any) => a.id ?? a._id ?? a)
+        selectedNarratorIds.value = (book.narrators ?? []).map((n: any) => n.id ?? n._id ?? n)
     }
 }, { immediate: true, deep: true })
 onMounted(async () => {
@@ -304,15 +293,17 @@ onMounted(async () => {
         getNarrators(),
         getGenres(),
     ])
-    if (authorsRes?.data) {
-        authorOptions.value = authorsRes.data.map((a: any) => ({ id: a.id ?? a._id, name: a.name }))
+    if (authorsRes) {
+        const list = Array.isArray(authorsRes) ? authorsRes : (authorsRes as any).data || (authorsRes as any).results || []
+        authorOptions.value = list.map((a: any) => ({ id: a.id ?? a._id, name: a.name }))
     }
-    if (narratorsRes?.data) {
-        narratorOptions.value = narratorsRes.data.map((n: any) => ({ id: n.id ?? n._id, name: n.name }))
+    if (narratorsRes) {
+        const list = Array.isArray(narratorsRes) ? narratorsRes : (narratorsRes as any).data || (narratorsRes as any).results || []
+        narratorOptions.value = list.map((n: any) => ({ id: n.id ?? n._id, name: n.name }))
     }
-    if (genresRes?.data) {
-        const result = genresRes.data as any
-        const list = Array.isArray(result) ? result : (result.data ?? [])
+    if (genresRes) {
+        const result = genresRes as any
+        const list = Array.isArray(result) ? result : (result.data ?? result.results ?? [])
         genreOptions.value = list.filter((g: any) => g.active).map((g: any) => ({ id: g.id ?? g._id, name: g.name }))
     }
     if (state.value !== State.NEW) {

@@ -11,8 +11,8 @@
         </div>
         <div>
           <h1 class="book-title">{{ book.title }}</h1>
-          <p class="book-authors">{{ book.authors?.map(a => typeof a === 'string' ? a : a.name).join(', ') }}</p>
-          <p v-if="book.narrators?.length" class="book-narrators">Narrators: {{ book.narrators?.map(n => typeof n === 'string' ? n : n.name).join(', ') }}</p>
+          <p class="book-authors">{{ Array.isArray(book.authors) ? book.authors.map(a => typeof a === 'string' ? a : (a as any).name).join(', ') : '—' }}</p>
+          <p v-if="Array.isArray(book.narrators) && book.narrators.length" class="book-narrators">Narrators: {{ book.narrators.map(n => typeof n === 'string' ? n : (n as any).name).join(', ') }}</p>
           <div v-if="coverUpdating" class="upload-status">Updating cover…</div>
         </div>
       </div>
@@ -79,11 +79,39 @@
           />
         </div>
         <div class="field-group">
+          <label class="field-label">Edition</label>
+          <input v-model="editForm.edition" class="field-input" placeholder="e.g. 1st Edition" />
+        </div>
+        <div class="field-group">
+          <label class="field-label">Published Year</label>
+          <select v-model="editForm.publishedYear" class="field-input">
+            <option value="" disabled>Select Year</option>
+            <option v-for="year in yearOptions" :key="year.id" :value="year.id">
+              {{ year.name }}
+            </option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Duration</label>
+          <input v-model="editForm.duration" class="field-input" placeholder="e.g. 2h 30m" />
+        </div>
+        <div class="field-group">
           <label class="field-label">Organisation</label>
           <select v-model="editForm.organization" class="field-input">
             <option value="">None</option>
             <option v-for="org in orgs" :key="org.id" :value="org.id">{{ org.name }}</option>
           </select>
+        </div>
+        <div class="field-group span-2">
+          <label class="field-label">Associates</label>
+          <UiSelectDropDown
+            :data-list="associatesOptions"
+            placeHolder="Search associates..."
+            generic="array"
+            @selected="editForm.associates = $event"
+            @search="findAssociates"
+            :selected-option="editForm.associates"
+          />
         </div>
       </div>
       <p v-if="saveError" class="error-msg">{{ saveError }}</p>
@@ -181,6 +209,7 @@ import { getLanguages } from '@/services/admin/language'
 import { getCategories } from '@/services/common'
 import { getOrgs } from '@/services/admin/organization'
 import { getGenres } from '@/services/admin/genre'
+import { getUserProfiles } from '@/services/admin/users'
 import { Bar } from 'vue-chartjs'
 import type { BOOK } from '~/types/book'
 import type { OrganizationType } from '~/types/admin/organization'
@@ -204,8 +233,32 @@ const orgs = ref<OrganizationType[]>([])
 // Edit form
 const authorOptions = ref<{ id: string; name: string }[]>([])
 const narratorOptions = ref<{ id: string; name: string }[]>([])
+const associatesOptions = ref<{ id: string; name: string }[]>([])
 
-const editForm = reactive({ title: '', description: '', category: [] as string[], languages: [] as string[], genres: [] as string[], authors: [] as string[], narrators: [] as string[], organization: '' })
+const editForm = reactive({
+  title: '',
+  description: '',
+  category: [] as string[],
+  languages: [] as string[],
+  genres: [] as string[],
+  authors: [] as string[],
+  narrators: [] as string[],
+  associates: [] as string[],
+  organization: '',
+  edition: '',
+  publishedYear: '',
+  duration: '',
+})
+
+const yearOptions = computed(() => {
+  const years = []
+  const currentYear = new Date().getFullYear()
+  for (let i = currentYear + 5; i >= 1950; i--) {
+    years.push({ id: i.toString(), name: i.toString() })
+  }
+  return years
+})
+
 const saving = ref(false)
 const saveError = ref('')
 const saveSuccess = ref(false)
@@ -218,6 +271,27 @@ const triggerCoverInput = () => coverInput.value?.click()
 
 const { generateSignedUrl, uploadFile } = useAWS(USER_ROLES.ADMIN)
 const { decryptJWT } = useUtils()
+
+const extractList = (res: any) => {
+  if (!res || !res.data) return []
+  const data = res.data
+  if (Array.isArray(data)) return data
+  if (data.data && Array.isArray(data.data)) return data.data
+  if (data.results && Array.isArray(data.results)) return data.results
+  return []
+}
+
+const findAssociates = async (search: string) => {
+  try {
+    const res = await getUserProfiles({ account: USER_ROLES.ASSOCIATE, search })
+    associatesOptions.value = extractList(res).map((user: any) => ({
+      id: String(user.id || user._id),
+      name: user.email || user.name || user.username
+    }))
+  } catch (error) {
+    console.error('Error fetching associates:', error)
+  }
+}
 
 const onCoverChange = async (e: Event) => {
   const file = (e.target as HTMLInputElement).files?.[0]
@@ -269,7 +343,7 @@ const chError = ref('')
 const loadChapters = async () => {
   loadingChapters.value = true
   const res = await getChapters(id, USER_ROLES.ADMIN)
-  if (res?.data) chapters.value = (res.data as any) ?? []
+  chapters.value = extractList(res)
   loadingChapters.value = false
 }
 
@@ -283,7 +357,7 @@ const toggleChapterForm = () => {
 const handleDeleteChapter = async (chapterId: string) => {
   if (!window.confirm('Delete this chapter?')) return
   await deleteChapter(chapterId)
-  chapters.value = chapters.value.filter(c => c.id !== chapterId)
+  chapters.value = chapters.value.filter(c => (c.id || c._id) !== chapterId)
 }
 
 const handleEditChapter = (ch: any) => {
@@ -374,11 +448,11 @@ const metricsChartOptions = {
 
 const loadMetrics = async () => {
   const res = await getMetrics(id, selectedPeriod.value ? { period: selectedPeriod.value } : {})
-  if (res?.data) metrics.value = res.data as any
+  metrics.value = extractList(res)
 }
 
 onMounted(async () => {
-  const [bookRes, periodsRes, langsRes, catsRes, orgsRes, authorsRes, narratorsRes, genresRes] = await Promise.all([
+  const [bookRes, periodsRes, langsRes, catsRes, orgsRes, authorsRes, narratorsRes, genresRes, assocRes] = await Promise.all([
     getBook(id, USER_ROLES.ADMIN),
     getPeriods(),
     getLanguages(),
@@ -387,44 +461,58 @@ onMounted(async () => {
     getAuthors(),
     getNarrators(),
     getGenres(),
+    getUserProfiles({ account: USER_ROLES.ASSOCIATE, search: '' }),
     loadChapters(),
     loadMetrics(),
   ])
-  if (langsRes?.data) availableLanguages.value = langsRes.data.map((l: any) => ({ ...l, id: l.id ?? l._id }))
-  if (catsRes?.data) availableCategories.value = catsRes.data.map((c: any) => ({ ...c, id: c.id ?? c._id }))
-  if (orgsRes?.data) orgs.value = orgsRes.data as any
 
-  if (authorsRes?.data) {
-    authorOptions.value = authorsRes.data.map((a: any) => ({ id: a.id ?? a._id, name: a.name }))
+  if (langsRes) availableLanguages.value = extractList(langsRes).map((l: any) => ({ ...l, id: String(l.id ?? l._id) }))
+  if (catsRes) availableCategories.value = extractList(catsRes).map((c: any) => ({ ...c, id: String(c.id ?? c._id) }))
+  if (orgsRes) orgs.value = extractList(orgsRes).map((o: any) => ({ ...o, id: String(o.id ?? o._id) })) as any
+  if (assocRes) {
+    associatesOptions.value = extractList(assocRes).map((u: any) => ({ id: String(u.id ?? u._id), name: u.email ?? (u.name || u.username) }))
   }
-  if (narratorsRes?.data) {
-    narratorOptions.value = narratorsRes.data.map((n: any) => ({ id: n.id ?? n._id, name: n.name }))
+
+  if (authorsRes) {
+    authorOptions.value = extractList(authorsRes).map((a: any) => ({ id: String(a.id ?? a._id), name: a.name }))
   }
-  if (genresRes?.data) {
-    const result = genresRes.data as any
-    const list = Array.isArray(result) ? result : (result.data ?? [])
-    availableGenres.value = list.map((g: any) => ({ id: g.id ?? g._id, name: g.name }))
+  if (narratorsRes) {
+    narratorOptions.value = extractList(narratorsRes).map((n: any) => ({ id: String(n.id ?? n._id), name: n.name }))
+  }
+  if (genresRes) {
+    availableGenres.value = extractList(genresRes).map((g: any) => ({ id: String(g.id ?? g._id), name: g.name }))
   }
 
   if (bookRes?.data) {
     book.value = bookRes.data as any
-    editForm.title = book.value!.title
-    editForm.description = book.value!.description ?? ''
+    const b = book.value!
+    editForm.title = b.title || ''
+    editForm.description = b.description ?? ''
+    
     const findId = (val: any, list: any[]) => {
-      const idOrName = typeof val === 'string' ? val : (val.id ?? val._id)
+      if (!val) return ''
+      let idOrName = typeof val === 'string' ? val : (val.id ?? val._id)
+      if (!idOrName) return ''
+      idOrName = String(idOrName)
       const name = typeof val === 'string' ? val : val.name
-      const found = list.find(item => item.id === idOrName || item.name === name)
+      const found = list.find(item => String(item.id) === idOrName || item.name === name)
       return found?.id ?? idOrName
     }
 
-    editForm.category = (book.value!.category ?? []).map(c => findId(c, availableCategories.value))
-    editForm.languages = (book.value!.languages ?? []).map(l => findId(l, availableLanguages.value))
-    editForm.authors = (book.value!.authors ?? []).map(a => findId(a, authorOptions.value))
-    editForm.narrators = (book.value!.narrators ?? []).map(n => findId(n, narratorOptions.value))
-    editForm.genres = (book.value!.genres ?? []).map(g => findId(g, availableGenres.value))
-    editForm.organization = (book.value as any).organization ?? ''
+    const ensureArray = (val: any) => Array.isArray(val) ? val : []
+
+    editForm.category = ensureArray(b.category).map(c => findId(c, availableCategories.value)).filter(Boolean)
+    editForm.languages = ensureArray(b.languages).map(l => findId(l, availableLanguages.value)).filter(Boolean)
+    editForm.authors = ensureArray(b.authors).map(a => findId(a, authorOptions.value)).filter(Boolean)
+    editForm.narrators = ensureArray(b.narrators).map(n => findId(n, narratorOptions.value)).filter(Boolean)
+    editForm.genres = ensureArray(b.genres).map(g => findId(g, availableGenres.value)).filter(Boolean)
+    editForm.associates = ensureArray(b.associates).map(a => findId(a, associatesOptions.value)).filter(Boolean)
+    editForm.organization = String(b.organization?.id ?? b.organization?._id ?? (typeof b.organization === 'string' ? b.organization : '') ?? '')
+    editForm.edition = b.edition ?? ''
+    editForm.publishedYear = Array.isArray(b.publishedYear) ? b.publishedYear[0] : (b.publishedYear ?? '')
+    editForm.duration = b.duration ?? ''
   }
-  if (periodsRes?.data) periods.value = periodsRes.data as any
+  if (periodsRes) periods.value = extractList(periodsRes) as any
 })
 </script>
 

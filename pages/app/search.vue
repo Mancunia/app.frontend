@@ -12,7 +12,11 @@
                     place-holder="Categories" :selected-option="searchOptions.category" generic="array"
                     @selected="searchOptions.category = $event" />
 
-                <UiSelectDropDown :data-list="languages ?? [{ id: '', name: 'Select Categories' }]"
+                <UiSelectDropDown :data-list="genres ?? [{ id: '', name: 'Select Genres' }]"
+                    place-holder="Genres" :selected-option="searchOptions.genres" generic="array"
+                    @selected="searchOptions.genres = $event" />
+
+                <UiSelectDropDown :data-list="languages ?? [{ id: '', name: 'Select Languages' }]"
                     place-holder="Languages" :selected-option="searchOptions.language" generic="array"
                     @selected="searchOptions.language = $event" />
 
@@ -39,19 +43,20 @@ import { getNarrators } from '~/services/narrator';
 import type { BOOK } from '~/types/book';
 const books = ref<BOOK[] | null>(null);
 
-const { languages, categories } = useCommon(USER_ROLES.USER)
+const { languages, categories, genres, setCommon } = useCommon(USER_ROLES.USER)
 
 const route = useRoute();
 const router = useRouter();
 
-const searchOptions = ref<{ page: number, limit: number, search: string, category: string[], language: string[], author: string[], narrator: string[] }>({
+const searchOptions = ref<{ page: number, limit: number, search: string, category: string[], genres: string[], language: string[], author: string[], narrator: string[] }>({
     page: Number(route.query.page) || 1,
     limit: Number(route.query.limit) || 10,
     search: (route.query.search as string) || '',
-    category: route.query.category ? (Array.isArray(route.query.category) ? route.query.category : (route.query.category as string).split(',')) : [],
-    language: route.query.language ? (Array.isArray(route.query.language) ? route.query.language : (route.query.language as string).split(',')) : [],
-    author: route.query.author ? (Array.isArray(route.query.author) ? route.query.author : (route.query.author as string).split(',')) : [],
-    narrator: route.query.narrator ? (Array.isArray(route.query.narrator) ? route.query.narrator : (route.query.narrator as string).split(',')) : []
+    category: route.query.category ? (Array.isArray(route.query.category) ? route.query.category as string[] : (route.query.category as string).split(',')) : [],
+    genres: route.query.genres ? (Array.isArray(route.query.genres) ? route.query.genres as string[] : (route.query.genres as string).split(',')) : [],
+    language: route.query.language ? (Array.isArray(route.query.language) ? route.query.language as string[] : (route.query.language as string).split(',')) : [],
+    author: route.query.author ? (Array.isArray(route.query.author) ? route.query.author as string[] : (route.query.author as string).split(',')) : [],
+    narrator: route.query.narrator ? (Array.isArray(route.query.narrator) ? route.query.narrator as string[] : (route.query.narrator as string).split(',')) : []
 })
 
 const authorOptions = ref<{ id: string, name: string }[]>([])
@@ -63,6 +68,7 @@ const updateUrl = () => {
     const query: any = {}
     if (searchOptions.value.search) query.search = searchOptions.value.search
     if (searchOptions.value.category.length) query.category = searchOptions.value.category.join(',')
+    if (searchOptions.value.genres.length) query.genres = searchOptions.value.genres.join(',')
     if (searchOptions.value.language.length) query.language = searchOptions.value.language.join(',')
     if (searchOptions.value.author.length) query.author = searchOptions.value.author.join(',')
     if (searchOptions.value.narrator.length) query.narrator = searchOptions.value.narrator.join(',')
@@ -77,6 +83,7 @@ const filter = async () => {
         if (params.author?.length === 1) params.author = params.author[0]
         if (params.narrator?.length === 1) params.narrator = params.narrator[0]
         if (params.category?.length === 1) params.category = params.category[0]
+        if (params.genres?.length === 1) params.genres = params.genres[0]
         if (params.language?.length === 1) params.language = params.language[0]
         const res = await filterBooks(params, USER_ROLES.USER) as any;
         if (res) {
@@ -116,6 +123,7 @@ const fetchFilterOptions = async () => {
 onMounted(() => {
     filter();
     fetchFilterOptions();
+    setCommon();
 })
 
 definePageMeta({

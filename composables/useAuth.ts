@@ -1,5 +1,6 @@
 import { login, adminLogin, logout, register } from "~/services/auth";
 import type { USER_LOGIN } from "~/types/auth";
+import { USER_ROLES } from "~/constants";
 import routes from "~/routes";
 
 export const useAuth = () => {
@@ -17,7 +18,7 @@ export const useAuth = () => {
   const user_login = async (credentials: USER_LOGIN) => {
     try {
       loading.value = true;
-      const { data } = await login(credentials);
+      const data = await login(credentials);
       if (data) {
         user.setUser(data);
         addSuccess("Login successful");
@@ -35,7 +36,7 @@ export const useAuth = () => {
   }) => {
     try {
       loading.value = true;
-      const { data } = await register(credentials);
+      const data = await register(credentials);
       if (data) {
         addSuccess("Register successful");
         navigateTo(routes.app.home);
@@ -48,7 +49,7 @@ export const useAuth = () => {
   const admin_login = async (credentials: USER_LOGIN) => {
     try {
       loading.value = true;
-      const { data } = await adminLogin(credentials);
+      const data = await adminLogin(credentials);
       if (data) {
         user.setAdmin(data);
         addSuccess("Login successful");
