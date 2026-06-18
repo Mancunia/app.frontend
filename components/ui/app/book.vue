@@ -32,6 +32,18 @@
                         <span class="tooltip-label">Languages:</span>
                         {{ resolvedLanguages.join(', ') }}
                     </div>
+                    <div v-if="book.edition" class="tooltip-row">
+                        <span class="tooltip-label">Edition:</span>
+                        {{ book.edition }}
+                    </div>
+                    <div v-if="book.publishedYear" class="tooltip-row">
+                        <span class="tooltip-label">Published:</span>
+                        {{ book.publishedYear }}
+                    </div>
+                    <div v-if="book.duration" class="tooltip-row">
+                        <span class="tooltip-label">Duration:</span>
+                        {{ book.duration }}
+                    </div>
                 </div>
             </div>
         </div>
@@ -54,25 +66,34 @@ const { checkForOldFile } = useUtils()
 const store = useAuthStore()
 
 const resolvedGenres = computed(() => {
-    return props.book.genres?.map(g => typeof g === 'string' ? g : g.name) ?? []
+    const genres = store.getGenres
+    return props.book.genres?.map(g => {
+        if (typeof g === 'string') {
+            const resolved = genres.find(genre => (genre.id === g || genre._id === g))
+            return resolved?.name || resolved?.title || g
+        }
+        return g.name || g.title || (g as any).name || (g as any).title
+    }) ?? []
 })
 
 const resolvedCategories = computed(() => {
     const cats = store.getCategories
     return props.book.category?.map(cat => {
         if (typeof cat === 'string') {
-            return cats.find(c => c.id === cat)?.name || cat
+            const resolved = cats.find(c => (c.id === cat || c._id === cat))
+            return resolved?.name || resolved?.title || cat
         }
-        return cat.name
+        return cat.name || (cat as any).name
     }) ?? []
 })
 const resolvedLanguages = computed(() => {
     const langs = store.getLanguages
     return props.book.languages?.map(lang => {
         if (typeof lang === 'string') {
-            return langs.find(l => l.id === lang)?.name || lang
+            const resolved = langs.find(l => (l.id === lang || l._id === lang))
+            return resolved?.name || lang
         }
-        return lang.name
+        return lang.name || (lang as any).name
     }) ?? []
 })
 </script>

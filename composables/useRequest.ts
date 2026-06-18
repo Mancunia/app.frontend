@@ -1,6 +1,7 @@
 import type { AxiosRequestConfig, AxiosResponse } from "axios";
 import axios from "axios";
 import { useAuthStore } from "~/stores";
+import { USER_ROLES } from "~/constants";
 
 const { internet } = useUtils();
 const { notify } = useNotification();
@@ -34,9 +35,9 @@ export const useRequest = async <T>(
   let token = "";
   if (store.getUser?.token !== null || store.getAdmin?.token !== null) {
     if (app === USER_ROLES.ADMIN) {
-      token = store.getAdmin.token;
+      token = store.getAdmin?.token;
     } else if (app === USER_ROLES.USER) {
-      token = store.getUser.token;
+      token = store.getUser?.token;
     } else {
       token = "";
     }
@@ -45,8 +46,8 @@ export const useRequest = async <T>(
   }
 
   try {
-    const response = await client.request<T>(options);
-    return response.data;
+    const response = await client.request<Response<T>>(options);
+    return response.data.data;
   } catch (error) {
     useHandleError(error, { canShowModal: true });
   }

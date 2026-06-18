@@ -26,7 +26,7 @@ const fetchLikedBooks = async () => {
         loading.value = true;
         const response = await getLikedBooks(USER_ROLES.USER);
         if (response) {
-            books.value = response.data;
+            books.value = response;
         }
     } catch (error) {
         console.log(error);

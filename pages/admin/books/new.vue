@@ -78,6 +78,36 @@
             :selected-option="form.genres as unknown as string[]"
           />
         </div>
+        <div class="field-row">
+          <div class="field-group flex-1">
+            <label class="field-label">Edition</label>
+            <input v-model="form.edition" class="field-input" placeholder="e.g. 1st Edition" />
+          </div>
+          <div class="field-group flex-1">
+            <label class="field-label">Published Year</label>
+            <select v-model="form.publishedYear" class="field-input">
+              <option value="" disabled>Select Year</option>
+              <option v-for="year in yearOptions" :key="year.id" :value="year.id">
+                {{ year.name }}
+              </option>
+            </select>
+          </div>
+          <div class="field-group flex-1">
+            <label class="field-label">Duration</label>
+            <input v-model="form.duration" class="field-input" placeholder="e.g. 2h 30m" />
+          </div>
+        </div>
+        <div class="field-group">
+          <label class="field-label">Associates</label>
+          <UiSelectDropDown
+            :data-list="associatesOptions"
+            placeHolder="Search associates..."
+            generic="array"
+            @selected="form.associates = $event"
+            @search="findAssociates"
+            :selected-option="form.associates"
+          />
+        </div>
         <div v-if="false" class="field-row">
           <div class="field-group flex-1">
             <label class="field-label">Organisation</label>
@@ -119,6 +149,10 @@
           <div class="summary-row"><span class="sum-lbl">Authors</span><span class="sum-val">{{ selectedAuthorNames || '—' }}</span></div>
           <div class="summary-row"><span class="sum-lbl">Narrators</span><span class="sum-val">{{ selectedNarratorNames || '—' }}</span></div>
           <div class="summary-row"><span class="sum-lbl">Genres</span><span class="sum-val">{{ selectedGenreNames || '—' }}</span></div>
+          <div class="summary-row"><span class="sum-lbl">Edition</span><span class="sum-val">{{ form.edition || '—' }}</span></div>
+          <div class="summary-row"><span class="sum-lbl">Published</span><span class="sum-val">{{ form.publishedYear || '—' }}</span></div>
+          <div class="summary-row"><span class="sum-lbl">Duration</span><span class="sum-val">{{ form.duration || '—' }}</span></div>
+          <div class="summary-row"><span class="sum-lbl">Associates</span><span class="sum-val">{{ selectedAssociateNames || '—' }}</span></div>
           <div class="summary-row"><span class="sum-lbl">Cover</span><span class="sum-val">{{ form.cover ? 'Uploaded' :
             'None' }}</span></div>
         </div>
@@ -173,6 +207,7 @@ const successMsg = ref('');
 
 const authorOptions = ref<{ id: string; name: string }[]>([])
 const narratorOptions = ref<{ id: string; name: string }[]>([])
+const associatesOptions = ref<{ id: string; name: string }[]>([])
 
 const orgs = ref<OrganizationType[]>([])
 const availableLanguages = ref<LanguageType[]>([])
@@ -193,9 +228,21 @@ const form = reactive<BOOK>({
   authors: [],
   narrators: [],
   associates: [],
+  edition: '',
+  publishedYear: '',
+  duration: '',
   cover: 'cover',
   meta: { played: 0, views: 0, likes: 0, dislikes: 0, comments: 0 },
 });
+
+const yearOptions = computed(() => {
+  const years = []
+  const currentYear = new Date().getFullYear()
+  for (let i = currentYear + 5; i >= 1950; i--) {
+    years.push({ id: i.toString(), name: i.toString() })
+  }
+  return years
+})
 
 const { generateSignedUrl, uploadFile } = useAWS()
 
@@ -234,9 +281,37 @@ const selectedGenreNames = computed(() => {
     .join(', ')
 })
 
+const selectedAssociateNames = computed(() => {
+  return form.associates
+    .map(id => associatesOptions.value.find(a => a.id === id)?.name)
+    .filter(Boolean)
+    .join(', ')
+})
+
 
 watch(snippetInput, v => { (form as any).snippet = v })
 watch(selectedOrg, v => { (form as any).organization = v })
+
+const extractList = (res: any) => {
+  if (!res || !res.data) return []
+  const data = res.data
+  if (Array.isArray(data)) return data
+  if (data.data && Array.isArray(data.data)) return data.data
+  if (data.results && Array.isArray(data.results)) return data.results
+  return []
+}
+
+const findAssociates = async (search: string) => {
+  try {
+    const res = await getUserProfiles({ account: USER_ROLES.ASSOCIATE, search })
+    associatesOptions.value = extractList(res).map((user: any) => ({
+      id: user.id || user._id,
+      name: user.email || user.name || user.username
+    }))
+  } catch (error) {
+    console.error('Error fetching associates:', error)
+  }
+}
 
 onMounted(async () => {
   const [orgsRes, assocRes, langsRes, catsRes, authorsRes, narratorsRes, genresRes] = await Promise.all([
@@ -248,19 +323,24 @@ onMounted(async () => {
     getNarrators(),
     getGenres(),
   ])
-  if (orgsRes?.data) orgs.value = orgsRes.data as any
-  if (langsRes?.data) availableLanguages.value = langsRes.data.map((l: any) => ({ ...l, id: l.id ?? l._id }))
-  if (catsRes?.data) availableCategories.value = catsRes.data.map((c: any) => ({ ...c, id: c.id ?? c._id }))
-  if (authorsRes?.data) {
-    authorOptions.value = authorsRes.data.map((a: any) => ({ id: a.id ?? a._id, name: a.name }))
+  if (orgsRes) orgs.value = extractList(orgsRes) as any
+  if (assocRes) {
+    associatesOptions.value = extractList(assocRes).map((u: any) => ({ id: u.id ?? u._id, name: u.email ?? (u.name || u.username) }))
   }
-  if (narratorsRes?.data) {
-    narratorOptions.value = narratorsRes.data.map((n: any) => ({ id: n.id ?? n._id, name: n.name }))
+  if (langsRes) {
+    availableLanguages.value = extractList(langsRes).map((l: any) => ({ ...l, id: l.id ?? l._id }))
   }
-  if (genresRes?.data) {
-    const result = genresRes.data as any
-    const list = Array.isArray(result) ? result : (result.data ?? [])
-    availableGenres.value = list.map((g: any) => ({ id: g.id ?? g._id, name: g.name }))
+  if (catsRes) {
+    availableCategories.value = extractList(catsRes).map((c: any) => ({ ...c, id: c.id ?? c._id }))
+  }
+  if (authorsRes) {
+    authorOptions.value = extractList(authorsRes).map((a: any) => ({ id: a.id ?? a._id, name: a.name }))
+  }
+  if (narratorsRes) {
+    narratorOptions.value = extractList(narratorsRes).map((n: any) => ({ id: n.id ?? n._id, name: n.name }))
+  }
+  if (genresRes) {
+    availableGenres.value = extractList(genresRes).map((g: any) => ({ id: g.id ?? g._id, name: g.name }))
   }
 })
 
@@ -302,7 +382,7 @@ const submit = async () => {
   if (!stripHtml(form.description)) { errorMsg.value = 'Description is required.'; currentStep.value = 0; return; }
   saving.value = true;
   try {
-    const { data } = await createBook(form);
+    const data = await createBook(form);
     if (data && (data.id || (data as any)._id)) {
       successMsg.value = 'Story created!';
       const bookId = data.id || (data as any)._id

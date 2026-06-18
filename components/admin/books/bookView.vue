@@ -23,6 +23,9 @@
                         <p><span class="title">Language:</span> <span class="titleText">{{ bookLanguages }}</span></p>
                         <p><span class="title">Genre:</span> <span class="titleText">{{ bookCategories }}</span></p>
                         <p><span class="title">Genres:</span> <span class="titleText">{{ bookGenres }}</span></p>
+                        <p><span class="title">Edition:</span> <span class="titleText">{{ book?.edition || '—' }}</span></p>
+                        <p><span class="title">Published Year:</span> <span class="titleText">{{ book?.publishedYear || '—' }}</span></p>
+                        <p><span class="title">Duration:</span> <span class="titleText">{{ book?.duration || '—' }}</span></p>
                     </div>
                 </div>
 

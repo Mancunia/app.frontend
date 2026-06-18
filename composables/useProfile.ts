@@ -44,8 +44,8 @@ export const useProfile = () => {
     fetchingProfile.value = true;
     try {
       const res = await getProfile();
-      if (res?.data) {
-        const d = res.data;
+      if (res) {
+        const d = res;
         form.username = d.username ?? "";
         form.bio = d.bio ?? "";
         form.dp = d.dp ?? "";
@@ -135,8 +135,8 @@ export const useProfile = () => {
     loading.value = true;
     try {
       const res = await updateProfile(payload);
-      if (res?.data) {
-        store.setUser({ ...store.getUser, ...res.data });
+      if (res) {
+        store.setUser({ ...store.getUser, ...res });
         // Refresh snapshot so subsequent edits diff correctly
         initial = { ...form };
         addSuccess("Profile updated");

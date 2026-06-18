@@ -1,7 +1,8 @@
 import type { BOOK, CHAPTER, Comment } from "~/types/book";
+import { USER_ROLES, HTTP_METHODS } from "~/constants";
 
 export const getBooks = async (app: USER_ROLES = USER_ROLES.USER, page: {}) =>
-  useRequest<PaginatedResponse<BOOK[]>>(
+  useRequest<any>(
     {
       url: `/book?${new URLSearchParams(page).toString()}`,
       method: HTTP_METHODS.GET,

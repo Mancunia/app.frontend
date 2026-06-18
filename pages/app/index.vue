@@ -5,8 +5,8 @@
         </div>
         <div class="greeting">
             <p class="greeting-eyebrow">A wise saying</p>
-            <h1 class="greeting-headline">{{ quote?.quote }}</h1>
-            <p class="greeting-sub">~ {{ quote?.author }}</p>
+            <h1 class="greeting-headline">{{ (quote as any)?.quote }}</h1>
+            <p class="greeting-sub">~ {{ (quote as any)?.author }}</p>
         </div>
 
         <div class="section-row">
@@ -97,15 +97,22 @@ const groupedBooks = computed(() => {
     for (const cat of store.getCategories) {
         categoryMap.set(cat.id, cat)
     }
+    const genreMap = new Map<string, any>()
+    for (const genre of store.getGenres) {
+        genreMap.set(genre.id, genre)
+    }
+
     const groups: Record<string, BOOK[]> = {}
     for (const book of all) {
         const genreTags = book.genres ?? []
         if (genreTags.length > 0) {
             const seen = new Set<string>()
             for (const g of genreTags) {
-                const name = typeof g === 'string' ? g : g.name
-                if (seen.has(name)) continue
-                seen.add(name)
+                const genreId = typeof g === 'string' ? g : g.id || (g as any)._id
+                if (seen.has(genreId)) continue
+                seen.add(genreId)
+                const resolved = typeof g === 'string' ? genreMap.get(g) : g
+                const name = resolved?.name || resolved?.title || genreId
                 ;(groups[name] ??= []).push(book)
             }
         } else {
@@ -115,7 +122,7 @@ const groupedBooks = computed(() => {
             } else {
                 const seen = new Set<string>()
                 for (const cat of cats) {
-                    const catId = typeof cat === 'string' ? cat : cat.id
+                    const catId = typeof cat === 'string' ? cat : cat.id || (cat as any)._id
                     if (seen.has(catId)) continue
                     seen.add(catId)
                     const resolved = typeof cat === 'string' ? categoryMap.get(cat) : cat
@@ -137,7 +144,7 @@ const pagination = ref<{ page: number, limit: number, search: string }>({ page: 
 
 const fetchBooks = async () => {
     try {
-        const { data } = await getBooks(USER_ROLES.USER, pagination.value);
+        const data = await getBooks(USER_ROLES.USER, pagination.value);
         if (data) {
             if (data.results.length < pagination.value.limit) {
                 canFetchMore.value = false

@@ -25,6 +25,9 @@ export type BOOK = {
   authors: (AuthorObject | string)[];
   narrators: (NarratorObject | string)[];
   associates: string[];
+  edition?: string;
+  publishedYear?: string;
+  duration?: string;
   cover: string;
   meta: {
     played: number;

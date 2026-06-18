@@ -22,7 +22,10 @@
       <p v-if="book.narrators?.length" class="meta-narrator">Narrated by: {{ book.narrators.map(n => typeof n === 'string' ? n : n.name).join(', ') }}</p>
       <div class="meta-chips">
         <span class="chip" v-for="g in resolvedGenres" :key="g" v-if="resolvedGenres.length">{{ g }}</span>
-        <span class="chip" v-if="book.languages?.length">{{ book.languages.join(', ') }}</span>
+        <span class="chip" v-if="resolvedLanguages">{{ resolvedLanguages }}</span>
+        <span class="chip" v-if="book.edition">{{ book.edition }}</span>
+        <span class="chip" v-if="book.publishedYear">{{ book.publishedYear }}</span>
+        <span class="chip" v-if="book.duration">{{ book.duration }}</span>
         <span class="chip">{{ book.meta?.views ?? 0 }} views</span>
       </div>
     </div>
@@ -127,11 +130,28 @@ const id = useRoute().params.id as string
 
 const { checkForOldFile } = useUtils()
 const store = useAuthStore();
+const { languages, genres, setCommon } = useCommon(USER_ROLES.USER)
 
 const resolvedGenres = computed(() => {
     if (!book.value?.genres?.length) return []
-    return book.value.genres.map((g: any) => typeof g === 'string' ? g : g.name)
+    const genreMap = new Map(genres.value.map(g => [g.id, g]))
+    return book.value.genres.map((g: any) => {
+        const id = typeof g === 'string' ? g : g.id || (g as any)._id
+        const resolved = genreMap.get(id)
+        return resolved?.name || resolved?.title || id
+    })
 })
+
+const resolvedLanguages = computed(() => {
+    if (!book.value?.languages?.length) return ''
+    const langMap = new Map(languages.value.map(l => [l.id, l]))
+    return book.value.languages.map((l: any) => {
+        const id = typeof l === 'string' ? l : l.id || (l as any)._id
+        const resolved = langMap.get(id)
+        return resolved?.name || id
+    }).join(', ')
+})
+
 const { init, initPDF, playAudio, stopAudio, fetchChapter, loading: playerLoading, player } = usePlayer(USER_ROLES.USER)
 
 const hasAccess = computed(() => {
@@ -173,9 +193,9 @@ const fetchMoreByNarrator = async () => {
 const fetchBook = async () => {
     try {
         loading.value = true;
-        const { data } = await getBook(id);
-        if (data) {
-            book.value = data
+        const res = await getBook(id);
+        if (res) {
+            book.value = res
         }
     } finally {
         loading.value = false;
@@ -184,10 +204,10 @@ const fetchBook = async () => {
 const fetchChapters = async () => {
     try {
         chapters.value.loading = true;
-        const { data } = await getChapters(id);
-        if (data) {
-            chapters.value.chapters = data
-            tabData.value.chapters = data.length
+        const res = await getChapters(id);
+        if (res) {
+            chapters.value.chapters = res
+            tabData.value.chapters = res.length
         }
     } finally {
         chapters.value.loading = false;
@@ -228,16 +248,16 @@ const playReadChapter = async (chapter: CHAPTER) => {
             store.setQueueIndex(0)
             store.setPlaying(chapter);
             await stopAudio()
-            const { data } = await fetchChapter(chapter.id ?? '');
-            if (data) {
-                if (data.chapter.type === 'ebook') {
-                    if (data.chapter.id !== store.getPlaying.id) {
+            const res = await fetchChapter(chapter.id ?? '');
+            if (res) {
+                if (res.chapter.type === 'ebook') {
+                    if (res.chapter.id !== store.getPlaying.id) {
                         await store.setPlayingPage(1);
                     }
-                    await initPDF(data)
+                    await initPDF(res)
                 }
                 else {
-                    await init(data)
+                    await init(res)
                 }
             }
         }
@@ -256,7 +276,7 @@ const playReadChapter = async (chapter: CHAPTER) => {
 
 onMounted(() => {
     if (!id) navigateTo('/app/')
-    Promise.all([fetchChapters(), fetchBook()]).then(() => {
+    Promise.all([fetchChapters(), fetchBook(), setCommon()]).then(() => {
         fetchMoreByAuthor()
         fetchMoreByNarrator()
     })

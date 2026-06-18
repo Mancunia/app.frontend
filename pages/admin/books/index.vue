@@ -39,14 +39,14 @@
                 <div v-else class="book-thumb-placeholder">◆</div>
                 <div class="book-info">
                   <span class="book-title">{{ book.title }}</span>
-                  <span class="book-authors">{{ book.authors?.map(a => typeof a === 'string' ? a : a.name).join(', ') }}</span>
+                  <span class="book-authors">{{ Array.isArray(book.authors) ? book.authors.map(a => typeof a === 'string' ? a : (a as any).name).join(', ') : '—' }}</span>
                 </div>
               </div>
             </td>
             <td>
               <div class="tags">
-                <span v-for="catId in book.category?.slice(0, 2)" :key="catId" class="tag">
-                  {{ getCategoryName(catId) }}
+                <span v-for="cat in book.category?.slice(0, 2)" :key="typeof cat === 'string' ? cat : cat.id" class="tag">
+                  {{ getCategoryName(typeof cat === 'string' ? cat : cat.id) }}
                 </span>
               </div>
             </td>
@@ -79,6 +79,7 @@ import { getBooks } from '@/services/book';
 import { deleteBook } from '@/services/admin/book';
 import type { BOOK } from '~/types/book';
 import { useAuthStore } from '~/stores';
+import { USER_ROLES } from '~/constants';
 
 definePageMeta({ title: 'Stories', middleware: 'admin', layout: 'admin-layout' });
 
@@ -101,10 +102,10 @@ const getCategoryName = (id: string) => {
 const fetchBooks = async () => {
   loading.value = true;
   try {
-    const { data } = await getBooks(USER_ROLES.ADMIN, { page: page.value, limit, search: search.value });
-    if (data) {
-      books.value = data.results ?? [];
-      totalBooks.value = data.records ?? 0;
+    const res = await getBooks(USER_ROLES.ADMIN, { page: page.value, limit, search: search.value });
+    if (res) {
+      books.value = res.results ?? [];
+      totalBooks.value = res.records ?? 0;
     }
   } finally {
     loading.value = false;
