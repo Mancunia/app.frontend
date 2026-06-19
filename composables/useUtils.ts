@@ -41,7 +41,7 @@ export const useUtils = () => {
   const filterArray = (
     parentArray: any[],
     childArray: any[],
-    filterKey: any
+    filterKey: any,
   ) => {
     const childSet = new Set(childArray?.map((obj) => obj[filterKey]));
 
@@ -65,7 +65,7 @@ export const useUtils = () => {
 
   const formatDate = (
     date: string | undefined,
-    format: string = "DD/MM/YYYY"
+    format: string = "DD/MM/YYYY",
   ) => {
     dayjs.locale("en");
     const formatted = dayjs(date).format(format);
@@ -104,7 +104,7 @@ export const useUtils = () => {
   const truncateText = (
     str: string,
     length: number,
-    enableEllipsis: boolean = true
+    enableEllipsis: boolean = true,
   ): string => {
     let truncatedStr = str?.substring(0, length)?.trim();
     if (enableEllipsis) {
@@ -116,7 +116,7 @@ export const useUtils = () => {
   function debounce<T extends (...args: any[]) => any>(
     a: T,
     b: number,
-    c?: boolean
+    c?: boolean,
   ) {
     let d: ReturnType<typeof setTimeout> | null, e: ReturnType<T> | undefined;
     return function (this: any, ...args: Parameters<T>) {
@@ -179,7 +179,7 @@ export const useUtils = () => {
   const validateFile = (
     file: File | null,
     allowedExtensions: string[] = [],
-    maxSize: number = 0
+    maxSize: number = 0,
   ): string | null => {
     // Check if file is null or undefined
     if (!file) {
@@ -211,7 +211,7 @@ export const useUtils = () => {
   const reduceImageSize = async (
     file: File,
     maxWidth: number,
-    maxHeight: number
+    maxHeight: number,
   ): Promise<{ file: File; base64Url: string }> => {
     const img = new Image();
     const reader = new FileReader();
@@ -232,7 +232,7 @@ export const useUtils = () => {
       canvas: HTMLCanvasElement,
       ctx: CanvasRenderingContext2D,
       width: number,
-      height: number
+      height: number,
     ) => {
       return new Promise<Blob>((resolve, reject) => {
         canvas.toBlob(
@@ -244,7 +244,7 @@ export const useUtils = () => {
             }
           },
           file.type,
-          0.8 // Adjust the quality here (0.0 - 1.0)
+          0.8, // Adjust the quality here (0.0 - 1.0)
         );
       });
     };
@@ -253,7 +253,7 @@ export const useUtils = () => {
       canvas: HTMLCanvasElement,
       ctx: CanvasRenderingContext2D,
       width: number,
-      height: number
+      height: number,
     ) => {
       canvas.width = width;
       canvas.height = height;
@@ -308,21 +308,21 @@ export const useUtils = () => {
    * @returns The equivalent time in days.
    */
   function millisecondsToDays(milliseconds: number): number {
-    if (!milliseconds || isNaN(milliseconds) || milliseconds < 0) {
+    const mSeconds = Number(milliseconds);
+    if (!mSeconds || isNaN(mSeconds) || mSeconds < 0) {
       return 0;
     }
 
     const MS_IN_A_DAY = 86_400_000; // 24 * 60 * 60 * 1000
-    return Math.floor(milliseconds / MS_IN_A_DAY);
+    return Math.floor(mSeconds / MS_IN_A_DAY);
   }
 
-
   function secondsToMinutes(seconds: number): string {
-   const totalSeconds = Math.round(seconds); // round to nearest second
-   const mins = Math.floor(totalSeconds / 60);
-   const secs = totalSeconds % 60;
-   const paddedSecs = secs.toString().padStart(2, "0");
-   return `${mins}:${paddedSecs}`;
+    const totalSeconds = Math.round(seconds); // round to nearest second
+    const mins = Math.floor(totalSeconds / 60);
+    const secs = totalSeconds % 60;
+    const paddedSecs = secs.toString().padStart(2, "0");
+    return `${mins}:${paddedSecs}`;
   }
 
   function hasSpecialCharacters(text: string): boolean {
@@ -368,9 +368,9 @@ export const useUtils = () => {
             `%${
               // biome-ignore lint/style/useTemplate: <explanation>
               ("00" + c.charCodeAt(0).toString(16)).slice(-2)
-            }`
+            }`,
         )
-        .join("")
+        .join(""),
     );
     const decodedToken = JSON.parse(jsonPayload);
     return decodedToken;
