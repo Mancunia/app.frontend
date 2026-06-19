@@ -68,9 +68,9 @@ const addError = ref('')
 const fetchLanguages = async () => {
   loading.value = true
   const res = await getLanguages({ page: page.value, limit })
-  if (res?.data) {
-    languages.value = (res.data as any).data ?? res.data
-    totalRecords.value = (res.data as any).total ?? languages.value.length
+  if (res) {
+    languages.value = res
+    totalRecords.value = res.total ?? languages.value.length
   }
   loading.value = false
 }
@@ -85,7 +85,7 @@ const handleAdd = async () => {
   adding.value = true
   try {
     const res = await addLanguage({ title: newTitle.value.trim(), active: newActive.value })
-    if (res?.data) languages.value.unshift(res.data as any)
+    if (res) languages.value.unshift(res as any)
     newTitle.value = ''
     newActive.value = true
   } catch (e) {

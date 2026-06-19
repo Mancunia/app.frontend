@@ -109,9 +109,9 @@ const deleteTarget = ref<NarratorType | null>(null)
 const fetchNarrators = async () => {
   loading.value = true
   const res = await getNarrators({ page: page.value, limit })
-  if (res?.data) {
-    narrators.value = (res.data as any).data ?? res.data
-    totalRecords.value = (res.data as any).total ?? narrators.value.length
+  if (res) {
+    narrators.value = res
+    totalRecords.value = res.total ?? narrators.value.length
   }
   loading.value = false
 }

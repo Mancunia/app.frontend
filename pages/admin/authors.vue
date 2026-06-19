@@ -109,9 +109,9 @@ const deleteTarget = ref<AuthorType | null>(null)
 const fetchAuthors = async () => {
   loading.value = true
   const res = await getAuthors({ page: page.value, limit })
-  if (res?.data) {
-    authors.value = (res.data as any).data ?? res.data
-    totalRecords.value = (res.data as any).total ?? authors.value.length
+  if (res) {
+    authors.value = res
+    totalRecords.value = res.total ?? authors.value.length
   }
   loading.value = false
 }

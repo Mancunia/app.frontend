@@ -273,10 +273,10 @@ const { generateSignedUrl, uploadFile } = useAWS(USER_ROLES.ADMIN)
 const { decryptJWT } = useUtils()
 
 const extractList = (res: any) => {
-  if (!res || !res.data) return []
-  const data = res.data
+  if (!res) return []
+  const data = res
   if (Array.isArray(data)) return data
-  if (data.data && Array.isArray(data.data)) return data.data
+  if (data && Array.isArray(data)) return data
   if (data.results && Array.isArray(data.results)) return data.results
   return []
 }
@@ -410,13 +410,13 @@ const submitChapter = async () => {
     
     if (chForm.id) {
       const res = await updateChapter(payload as any)
-      if (res?.data) {
+      if (res) {
         const index = chapters.value.findIndex(c => (c.id || c._id) === chForm.id)
-        if (index !== -1) chapters.value[index] = res.data
+        if (index !== -1) chapters.value[index] = res
       }
     } else {
       const res = await createChapter(payload as any)
-      if (res?.data) chapters.value.push(res.data)
+      if (res) chapters.value.push(res)
     }
     
     Object.assign(chForm, { id: '', title: '', description: '', file: '', mimetype: '', password: '', type: null })
@@ -483,8 +483,8 @@ onMounted(async () => {
     availableGenres.value = extractList(genresRes).map((g: any) => ({ id: String(g.id ?? g._id), name: g.name }))
   }
 
-  if (bookRes?.data) {
-    book.value = bookRes.data as any
+  if (bookRes) {
+    book.value = bookRes
     const b = book.value!
     editForm.title = b.title || ''
     editForm.description = b.description ?? ''

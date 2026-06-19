@@ -8,7 +8,7 @@ export const useAWS = (app: USER_ROLES = USER_ROLES.USER) => {
       file: file.name,
       fileType: file.type,
     };
-    const { data } = await getSignedUrl(request, app);
+    const data = await getSignedUrl(request, app);
     return data?.signedURL;
   };
 

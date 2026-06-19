@@ -307,14 +307,15 @@ export const useUtils = () => {
    * @param milliseconds - The time in milliseconds to convert.
    * @returns The equivalent time in days.
    */
-  function millisecondsToDays(milliseconds: number): number {
-    if (typeof milliseconds !== "number" || milliseconds < 0) {
-      throw new Error("Input must be a non-negative number.");
-    }
+ function millisecondsToDays(milliseconds: number): number {
+   if (milliseconds < 0) {
+     throw new Error("Input must be a non-negative number.");
+   }
 
-    const msInADay = 24 * 60 * 60 * 1000;
-    return Math.ceil(milliseconds / msInADay);
-  }
+   const MS_IN_A_DAY = 86_400_000; // 24 * 60 * 60 * 1000
+   return Math.floor(milliseconds / MS_IN_A_DAY);
+ }
+
 
   function secondsToMinutes(seconds: number): string {
    const totalSeconds = Math.round(seconds); // round to nearest second

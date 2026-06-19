@@ -116,9 +116,9 @@ onMounted(async () => {
     getDashboardPulse(14),
     getBooks(USER_ROLES.ADMIN, { page: 1, limit: 5 }),
   ])
-  if (statsRes?.data) stats.value = statsRes.data
-  if (pulseRes?.data) pulse.value = pulseRes.data
-  if (booksRes?.data) topStories.value = (booksRes.data as any).results ?? []
+  if (statsRes) stats.value = statsRes
+  if (pulseRes) pulse.value = pulseRes
+  if (booksRes) topStories.value = booksRes.results ?? []
 })
 
 const kpis = computed(() => [

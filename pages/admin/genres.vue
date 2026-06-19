@@ -87,10 +87,10 @@ const fetchGenres = async (p = page.value, q = search.value) => {
   loading.value = true
   try {
     const res = await getGenres({ page: p, limit, search: q })
-    if (res?.data) {
-      const result = res.data as any
-      genres.value = Array.isArray(result) ? result : (result.data ?? [])
-      totalRecords.value = result.total ?? (Array.isArray(result) ? result.length : (result.data?.length ?? 0))
+    if (res) {
+      const result = res
+      genres.value = Array.isArray(result) ? result : (result ?? [])
+      totalRecords.value = result.total ?? (Array.isArray(result) ? result.length : (result.length ?? 0))
       if (result.page) page.value = result.page
     }
   } finally {

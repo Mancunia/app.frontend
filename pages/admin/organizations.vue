@@ -70,7 +70,7 @@ const formError = ref('')
 const fetchOrgs = async () => {
   loading.value = true
   const res = await getOrgs()
-  if (res?.data) orgs.value = res.data as any
+  if (res) orgs.value = res
   loading.value = false
 }
 
@@ -92,13 +92,13 @@ const submitForm = async () => {
   try {
     if (editingOrg.value) {
       const res = await updateOrg(editingOrg.value.id, { ...form })
-      if (res?.data) {
+      if (res) {
         const idx = orgs.value.findIndex(o => o.id === editingOrg.value!.id)
-        if (idx !== -1) orgs.value[idx] = res.data as any
+        if (idx !== -1) orgs.value[idx] = res
       }
     } else {
       const res = await createOrg({ ...form })
-      if (res?.data) orgs.value.unshift(res.data as any)
+      if (res) orgs.value.unshift(res)
     }
     panelOpen.value = false
   } catch (e) {

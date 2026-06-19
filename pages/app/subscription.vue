@@ -1,58 +1,104 @@
 <template>
+  
     <div class="subscription-page">
         <div class="page-header">
             <p class="page-eyebrow">Your listening plan</p>
             <h1 class="page-headline">Unlock the stories.</h1>
         </div>
-
         <div v-if="loading" class="plan-grid">
             <UiAppLoadersSubscription />
             <UiAppLoadersSubscription />
             <UiAppLoadersSubscription />
         </div>
-        <div v-else-if="subscription" class="plan-grid">
-            <span v-for="(sub, index) in subscription" :key="index">
-                <input type="radio" name="radio" :id="String(index)" />
-                <UiAppSubscription :subscription="sub" :id="index" :origins="origins" />
-            </span>
+        <div v-else >
+            <div v-if="!subscriptions || subscriptions.length === 0" class="empty-state">
+                <p class="no-subs">No plans available right now.</p>
+            </div>
+            <div v-else class="plan-grid">
+                <span v-for="(sub, index) in subscriptions" :key="index">
+                    <input type="radio" name="radio" :id="String(index)" />
+                    <UiAppSubsCard :subscription="sub" :id="String(index)" @click="initSub(sub)" />
+                     <!-- <button @click="initSub(sub)"> Select Plan </button> -->
+                </span>
+            </div>
+
         </div>
-        <div v-else class="empty-state">
-            <p class="no-subs">No plans available right now.</p>
-        </div>
+
 
         <div class="ref-section">
             <p class="ref-label">Have a reference code?</p>
             <form class="ref-form" @submit.prevent="linkSub">
                 <span class="ref-at">@</span>
-                <input
-                    class="ref-input"
-                    type="text"
-                    placeholder="Enter subscription reference…"
-                    v-model="reference.ref"
-                />
+                <input class="ref-input" type="text" placeholder="Enter subscription reference…"
+                    v-model="reference.ref" />
                 <button class="ref-submit" type="submit">Apply</button>
             </form>
         </div>
     </div>
+
+    <CommonModal v-model="modal">
+        <div class="confirm-form">
+            <h2 class="confirm-title">Confirm subscription</h2>
+            <p class="confirm-plan">{{ subscription.name }} — GHS{{ subscription.amount }}</p>
+            <div class="confirm-buttons">
+                <button class="confirm-btn confirm-btn--ghost" @click="modal = false">Cancel</button>
+                <button class="confirm-btn" @click="initSubscription">Confirm</button>
+            </div>
+        </div>
+    </CommonModal>
 </template>
 
 <script setup lang="ts">
 import { type Subscription } from '~/types/common';
-import type { OriginType } from '~/types/admin/origin';
+import { postSubscripition } from '~/services/user';
 import { getSubscriptions, linkSubscription } from '~/services/subscription';
 
-const subscription = ref<Subscription[] | null>(null)
+const subscriptions = ref<Subscription[] | null>(null)
+const subscription = ref<Subscription | null>(null)
 const reference = ref<{ ref: string, loading: boolean }>({ ref: '', loading: false })
 const loading = ref(true);
-const origins = ref<OriginType[]>([])
+const modal = ref(false);
 
+
+const initSub = (sub: Subscription) => {
+    subscription.value = sub;
+    modal.value = true;
+}
+
+const openLink = (url: string) => {
+    if (window.open(url, '_blank', 'noopener,noreferrer')) {
+        return;
+    }
+    const link = document.createElement('a');
+    link.href = url;
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+    link.click();
+}
+
+const initSubscription = async () => {
+    try {
+        loading.value = true;
+        const data = await postSubscripition({ subscription: subscription.value?.id });
+        if (data) {
+            openLink(data.authorization_url);
+            modal.value = false;
+        }
+    } catch (error: unknown) {
+        console.error(error);
+    } finally {
+        loading.value = false;
+        modal.value = false;
+        subscription.value = null;
+    }
+}
 const fetchSubscriptions = async () => {
     try {
         loading.value = true;
-        const subRes = await getSubscriptions()
-        const subData = subRes as any
-        if (subData) {
-            subscription.value = Array.isArray(subData) ? subData : subData.data ?? subData
+        const res = await getSubscriptions()
+        if (res) {
+            console.log('subs',res);
+            subscriptions.value = res
         }
     } catch (error: unknown) {
         console.error(error);
@@ -128,7 +174,7 @@ input[type="radio"] {
     display: none;
 }
 
-input[type="radio"]:checked + label {
+input[type="radio"]:checked+label {
     transform: translateY(-4px);
     box-shadow: 0 8px 24px rgba(31, 23, 20, 0.16);
     border-color: var(--ochre);
@@ -213,5 +259,63 @@ input[type="radio"]:checked + label {
 
 .ref-submit:hover {
     background: var(--kola-2);
+}
+
+.confirm-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: var(--d-pad);
+    gap: 12px;
+}
+
+.confirm-title {
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--ink);
+    margin: 0;
+    text-align: center;
+}
+
+.confirm-plan {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: 0.9rem;
+    color: var(--muted);
+    margin: 0;
+}
+
+.confirm-buttons {
+    display: flex;
+    gap: 12px;
+    margin-top: 8px;
+}
+
+.confirm-btn {
+    font-family: var(--font-display);
+    font-size: 0.9rem;
+    color: var(--cream);
+    background: var(--ink);
+    border: none;
+    padding: 8px 22px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.confirm-btn:hover {
+    background: var(--kola-2);
+}
+
+.confirm-btn--ghost {
+    background: none;
+    color: var(--muted);
+    border: 1px solid var(--hairline);
+}
+
+.confirm-btn--ghost:hover {
+    background: var(--calabash);
+    color: var(--ink);
 }
 </style>

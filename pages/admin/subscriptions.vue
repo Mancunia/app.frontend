@@ -547,7 +547,7 @@ const subStatusFilter = ref('all')
 // ── Lifecycle ──────────────────────────────────────────────────────
 onMounted(async () => {
   await Promise.all([
-    getSubscriptionStats().then((res: any) => { if (res?.data) stats.value = res.data }),
+    getSubscriptionStats().then((res: any) => { if (res) stats.value = res }),
     fetchPlans(),
     fetchAllBooks(),
   ])
@@ -560,10 +560,10 @@ const fetchPlans = async () => {
   loadingPlans.value = true
   try {
     const res: any = await getAdminPlans()
-    if (res?.data) {
+    if (res) {
       // Normalize MongoDB _id → id so downstream update/delete calls
       // always have a defined id, regardless of backend serialisation.
-      plans.value = (res.data as (SubscriptionPlan & { _id?: string })[]).map(
+      plans.value = (res as (SubscriptionPlan & { _id?: string })[]).map(
         (p) => ({ ...p, id: p.id ?? p._id ?? '' })
       )
     }
@@ -575,8 +575,8 @@ const fetchPlans = async () => {
 const fetchAllBooks = async () => {
   try {
     const res = await getBooks(USER_ROLES.ADMIN, { limit: 1000 })
-    if (res?.data?.results) {
-      allBooks.value = res.data.results
+    if (res) {
+      allBooks.value = res.results
     }
   } catch (err) {
     console.error('Failed to fetch books', err)
@@ -593,8 +593,8 @@ const fetchSubscribers = async () => {
       page:    subPage.value,
       limit:   20,
     })
-    if (res?.data) {
-      const d = res.data
+    if (res) {
+      const d = res
       subscribers.value = d.results ?? (Array.isArray(d) ? d : [])
       subTotal.value     = d.total    ?? subscribers.value.length
       subPages.value     = d.pages    ?? 1

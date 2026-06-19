@@ -188,7 +188,7 @@ const fetchPeriods = async () => {
   loadingPeriods.value = true;
   try {
     const res = await getPeriods();
-    if (res) periods.value = res.data ?? [];
+    if (res) periods.value = res ?? [];
   } finally {
     loadingPeriods.value = false;
   }
@@ -198,7 +198,7 @@ const fetchActive = async () => {
   loadingActive.value = true;
   try {
     const res = await getActivePeriod();
-    activePeriod.value = res?.data ?? null;
+    activePeriod.value = res ?? null;
   } finally {
     loadingActive.value = false;
   }
@@ -208,7 +208,7 @@ const fetchConfig = async () => {
   loadingConfig.value = true;
   try {
     const res = await getAppConfig();
-    if (res?.data) autoPeriodCreation.value = res.data.autoPeriodCreation;
+    if (res) autoPeriodCreation.value = res.autoPeriodCreation;
   } finally {
     loadingConfig.value = false;
   }

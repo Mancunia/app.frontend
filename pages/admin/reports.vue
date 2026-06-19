@@ -83,8 +83,8 @@ const fetchReports = async () => {
   loading.value = true
   try {
     const res = await getReports() as any
-    if (res?.data) {
-      reports.value = res.data.results || res.data || []
+    if (res) {
+      reports.value = res.results || res || []
     }
   } catch (error) {
     console.error('Failed to fetch reports', error)

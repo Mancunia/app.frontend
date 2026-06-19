@@ -293,8 +293,8 @@ watch(snippetInput, v => { (form as any).snippet = v })
 watch(selectedOrg, v => { (form as any).organization = v })
 
 const extractList = (res: any) => {
-  if (!res || !res.data) return []
-  const data = res.data
+  if (!res) return []
+  const data = res
   if (Array.isArray(data)) return data
   if (data.data && Array.isArray(data.data)) return data.data
   if (data.results && Array.isArray(data.results)) return data.results

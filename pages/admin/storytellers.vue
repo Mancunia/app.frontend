@@ -70,8 +70,9 @@ const addError = ref('')
 const fetchStorytellers = async () => {
   loading.value = true
   const res = await getUserProfiles({ search: search.value, account: USER_ROLES.ASSOCIATE })
-  if (res?.data) { users.value = res.data as any; total.value = users.value.length }
-  loading.value = false
+  if (res) { users.value = res; 
+    total.value = users.value.length }
+    loading.value = false
 }
 
 const debouncedFetch = debounce(fetchStorytellers, 400)
