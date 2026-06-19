@@ -144,15 +144,15 @@ const fetchQuotes = async () => {
   try {
     const res = await getQuotes({ page: pagination.value.page, limit: pagination.value.limit });
    
-    if (res?.data) {
-      if (Array.isArray(res.data)) {
-        quotes.value = res.data;
-        pagination.value.totalRecords = res.data.length;
+    if (res) {
+      if (Array.isArray(res)) {
+        quotes.value = res;
+        pagination.value.totalRecords = res.length;
         pagination.value.totalPages = 1;
       } else {
-        quotes.value = res.data.results || [];
-        pagination.value.totalRecords = res.data.records || 0;
-        pagination.value.totalPages = Math.ceil((res.data.records || 0) / pagination.value.limit);
+        quotes.value = res.results || [];
+        pagination.value.totalRecords = res.records || 0;
+        pagination.value.totalPages = Math.ceil((res.records || 0) / pagination.value.limit);
       }
     } else {
       quotes.value = [];

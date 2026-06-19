@@ -38,8 +38,7 @@ export const useHandleError = (
       logout(link);
       return;
     }
-    if (statusCode === 403 && route.path.includes("/app/")) {
-        // Redirect to subscription page for restricted access
+    if (statusCode === 403 && route.path.startsWith("/app/") && route.path !== "/app/subscription") {
         navigateTo("/app/subscription");
         return;
     }

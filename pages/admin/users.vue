@@ -99,7 +99,7 @@ const fetchUsers = async () => {
       search: search.value,
       account: accountFilter.value as any,
     })
-    if (res?.data) users.value = res.data as any
+    if (res) users.value = res as any
   } finally { loading.value = false }
 }
 

@@ -135,10 +135,16 @@ watch(searchTerm, () => {
 });
 
 const updateCheckedFromProps = () => {
+    let newChecked: string[];
     if (typeof props.selectedOption === 'string') {
-        checked.value = props.selectedOption.split(',').map(s => s.trim()).filter(s => s !== '');
+        newChecked = props.selectedOption.split(',').map(s => s.trim()).filter(s => s !== '');
     } else if (Array.isArray(props.selectedOption)) {
-        checked.value = props.selectedOption.map(item => String(item || '').trim()).filter(item => item !== '');
+        newChecked = props.selectedOption.map(item => String(item || '').trim()).filter(item => item !== '');
+    } else {
+        return
+    }
+    if (JSON.stringify(checked.value) !== JSON.stringify(newChecked)) {
+        checked.value = newChecked;
     }
 }
 

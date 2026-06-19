@@ -1,17 +1,25 @@
 <template>
-    <label :for="String(id)" class="plan-card" :style="{ '--accent': subscription.accent }" @click="initSub">
+    <label :for="id" class="plan-card" :style="{ '--accent': subscription.accent }">
         <div v-if="subscription.books && subscription.books.length > 0" class="plan-badge">
             Limited Access
         </div>
-        <p class="plan-name">{{ subscription.name }}</p>
+        <p class="plan-name">
+            {{ subscription.name }}
+        </p>
         <div class="plan-accent"></div>
-        <span class="plan-price">GHS{{ subscription.amount }}</span>
-        <div v-if="originName" class="plan-origin">{{ originName }}</div>
+        <span class="plan-price">
+            GHS{{ subscription.amount }}
+        </span>
+       
         <hr class="plan-divider" />
         <ul class="plan-details">
-            <li class="plan-detail">Users: <strong>{{ subscription.users }}</strong></li>
+            <li class="plan-detail">Users: <strong>
+                {{ subscription.users }}
+            </strong></li>
             <li class="plan-detail">
-                Duration: <strong>{{ millisecondsToDays(subscription.duration) }} Days</strong>
+                Duration: <strong>
+                    {{ millisecondsToDays(subscription.duration) }} Days
+                </strong>
             </li>
             <li v-if="subscription.books && subscription.books.length > 0" class="plan-detail plan-detail--limited">
                 Access to <strong>{{ subscription.books.length }}</strong> selected books
@@ -19,24 +27,11 @@
         </ul>
         <span class="plan-cta">Subscribe</span>
     </label>
-
-    <CommonModal v-model="modal">
-        <div class="confirm-form">
-            <h2 class="confirm-title">Confirm subscription</h2>
-            <p class="confirm-plan">{{ subscription.name }} — GHS{{ subscription.amount }}</p>
-            <div class="confirm-buttons">
-                <button class="confirm-btn confirm-btn--ghost" @click="modal = false">Cancel</button>
-                <button class="confirm-btn" @click="initSubscription">Confirm</button>
-            </div>
-        </div>
-    </CommonModal>
 </template>
 
 <script setup lang="ts">
 import type { PropType } from 'vue';
-import { postSubscripition } from '~/services/user';
 import type { Subscription } from '~/types/common';
-import type { OriginType } from '~/types/admin/origin';
 
 const props = defineProps({
     subscription: {
@@ -46,54 +41,10 @@ const props = defineProps({
     id: {
         type: Number,
         required: true
-    },
-    origins: {
-        type: Array as PropType<OriginType[]>,
-        default: () => []
     }
 })
-
-const loading = ref(false)
-const modal = ref(false);
 
 const { millisecondsToDays } = useUtils()
-
-const originName = computed(() => {
-    if (!props.subscription.origin) return ''
-    const origin = props.origins.find(o => o.id === props.subscription.origin)
-    if (origin) return `${origin.flag} ${origin.name}`
-    return props.subscription.origin
-})
-
-const initSub = () => {
-    modal.value = true;
-}
-
-const openLink = (url: string) => {
-    if (window.open(url, '_blank', 'noopener,noreferrer')) {
-        return;
-    }
-    const link = document.createElement('a');
-    link.href = url;
-    link.target = '_blank';
-    link.rel = 'noopener noreferrer';
-    link.click();
-}
-
-const initSubscription = async () => {
-    try {
-        loading.value = true;
-        const { data } = await postSubscripition({ subscription: props.subscription.id });
-        if (data) {
-            openLink(data.data.authorization_url);
-            modal.value = false;
-        }
-    } catch (error: unknown) {
-        console.error(error);
-    } finally {
-        loading.value = false;
-    }
-}
 </script>
 
 <style scoped>
@@ -224,63 +175,5 @@ const initSubscription = async () => {
     background: color-mix(in srgb, var(--accent) 18%, var(--ink));
     border-color: color-mix(in srgb, var(--accent) 18%, var(--ink));
     color: var(--cream);
-}
-
-.confirm-form {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: var(--d-pad);
-    gap: 12px;
-}
-
-.confirm-title {
-    font-family: var(--font-display);
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: var(--ink);
-    margin: 0;
-    text-align: center;
-}
-
-.confirm-plan {
-    font-family: var(--font-serif);
-    font-style: italic;
-    font-size: 0.9rem;
-    color: var(--muted);
-    margin: 0;
-}
-
-.confirm-buttons {
-    display: flex;
-    gap: 12px;
-    margin-top: 8px;
-}
-
-.confirm-btn {
-    font-family: var(--font-display);
-    font-size: 0.9rem;
-    color: var(--cream);
-    background: var(--ink);
-    border: none;
-    padding: 8px 22px;
-    border-radius: 999px;
-    cursor: pointer;
-    transition: background 0.2s;
-}
-
-.confirm-btn:hover {
-    background: var(--kola-2);
-}
-
-.confirm-btn--ghost {
-    background: none;
-    color: var(--muted);
-    border: 1px solid var(--hairline);
-}
-
-.confirm-btn--ghost:hover {
-    background: var(--calabash);
-    color: var(--ink);
 }
 </style>

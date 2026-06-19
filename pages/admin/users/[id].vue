@@ -53,9 +53,9 @@ const roleError = ref('')
 
 onMounted(async () => {
   const res = await getUser(id)
-  if (res?.data) {
-    user.value = res.data
-    selectedRole.value = (res.data as any).account
+  if (res) {
+    user.value = res
+    selectedRole.value = (res as any).account
   }
   loading.value = false
 })

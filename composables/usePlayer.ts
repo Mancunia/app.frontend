@@ -254,8 +254,8 @@ export const usePlayer = (app?: USER_ROLES) => {
   const loadAndPlayChapter = async (chapter: CHAPTER) => {
     store.setPlaying(chapter);
     const res = await fetchChapter(chapter.id ?? '');
-    if (res?.data) {
-      await init(res.data);
+    if (res) {
+      await init(res.chapter);
     }
   };
 

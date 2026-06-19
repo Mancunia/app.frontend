@@ -67,7 +67,7 @@ const chartOptions = {
 
 onMounted(async () => {
   const res = await getRevenueSummary()
-  if (res?.data) summary.value = res.data
+  if (res) summary.value = res
 })
 </script>
 

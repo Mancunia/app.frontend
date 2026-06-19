@@ -19,11 +19,9 @@
                 <UiSelectDropDown :data-list="languages ?? [{ id: '', name: 'Select Languages' }]"
                     place-holder="Languages" :selected-option="searchOptions.language" generic="array"
                     @selected="searchOptions.language = $event" />
-
                 <UiSelectDropDown :data-list="authorOptions" place-holder="Authors"
                     :selected-option="searchOptions.author" generic="array"
                     @selected="searchOptions.author = $event" />
-
                 <UiSelectDropDown :data-list="narratorOptions" place-holder="Narrators"
                     :selected-option="searchOptions.narrator" generic="array"
                     @selected="searchOptions.narrator = $event" />
@@ -87,7 +85,7 @@ const filter = async () => {
         if (params.language?.length === 1) params.language = params.language[0]
         const res = await filterBooks(params, USER_ROLES.USER) as any;
         if (res) {
-            books.value = Array.isArray(res) ? res : (res.data?.data ?? res.data ?? res.results ?? res)
+            books.value = Array.isArray(res) ? res : (res.data  ?? res.results ?? res)
         }
     } catch (error) {
         console.log(error);
@@ -110,13 +108,13 @@ const fetchFilterOptions = async () => {
         getAuthors({ limit: 100 }),
         getNarrators({ limit: 100 })
     ]) as any
-    if (authorRes?.data) {
-        const authors = authorRes.data.data ?? authorRes.data
-        authorOptions.value = authors.map((a: any) => ({ id: a.id ?? a._id, name: a.name }))
+    if (authorRes) {
+        const authors = authorRes
+        authorOptions.value = authors.map((a: any) => ({ id: a.id, name: a.name }))
     }
-    if (narratorRes?.data) {
-        const narrators = narratorRes.data.data ?? narratorRes.data
-        narratorOptions.value = narrators.map((n: any) => ({ id: n.id ?? n._id, name: n.name }))
+    if (narratorRes) {
+        const narrators = narratorRes
+        narratorOptions.value = narrators.map((n: any) => ({ id: n.id , name: n.name }))
     }
 }
 
