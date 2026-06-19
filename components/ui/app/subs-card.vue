@@ -18,7 +18,8 @@
             </strong></li>
             <li class="plan-detail">
                 Duration: <strong>
-                    {{ millisecondsToDays(subscription.duration) }} Days
+                    <template v-if="subscription.duration <= 0">Unlimited</template>
+                    <template v-else>{{ millisecondsToDays(subscription.duration) }} Days</template>
                 </strong>
             </li>
             <li v-if="subscription.books && subscription.books.length > 0" class="plan-detail plan-detail--limited">

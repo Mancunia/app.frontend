@@ -18,7 +18,6 @@
                 <span v-for="(sub, index) in subscriptions" :key="index">
                     <input type="radio" name="radio" :id="String(index)" />
                     <UiAppSubsCard :subscription="sub" :id="String(index)" @click="initSub(sub)" />
-                     <!-- <button @click="initSub(sub)"> Select Plan </button> -->
                 </span>
             </div>
 
