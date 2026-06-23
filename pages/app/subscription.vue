@@ -78,9 +78,9 @@ const openLink = (url: string) => {
 const initSubscription = async () => {
     try {
         loading.value = true;
-        const data = await postSubscripition({ subscription: subscription.value?.id });
+        const data = await postSubscripition({ subscription: subscription.value?.id as string });
         if (data) {
-            openLink(data.authorization_url);
+            openLink(data.data.authorization_url);
             modal.value = false;
         }
     } catch (error: unknown) {
