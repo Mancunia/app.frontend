@@ -44,6 +44,7 @@ export default defineNuxtConfig({
 
   routeRules: {
   "/": { redirect: "/app" },
+  "/api/v1/subscribers/callback**": { redirect: "/callback/subscribe" },
   "/**": {
     headers: {
       "Cross-Origin-Embedder-Policy": "unsafe-none",
