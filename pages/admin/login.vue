@@ -49,7 +49,7 @@ definePageMeta({
     height: 100vh;
     background-color: var(--paper);
     background-image: url('@/assets/images/bookShelve.png');
-    padding: 15% 5%;
+    padding: 24px;
 }
 
 .auth-login {
@@ -58,19 +58,22 @@ definePageMeta({
     width: 100%;
     max-width: 400px;
     align-items: center;
-    padding: 5%;
+    padding: 32px 24px;
     background-color: rgba(255, 255, 255, 1);
     box-shadow: 1px 1px 1px 1px var(--ink);
     border-radius: 10px;
 }
 
 form {
-    padding: 10% 5%;
-    width: 80%;
+    padding: 24px 0 0 0;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
 }
 
 .link {
-    margin-top: 10%;
+    margin-top: 24px;
     color: var(--kola);
     font-family: var(--font-display);
     font-size: 16px;
@@ -83,11 +86,11 @@ form {
 
 @media (min-width: 768px) {
     .admin-container {
-        padding: 5%;
+        padding: 40px;
     }
 
     .auth-login {
-        padding: 5% 5%;
+        padding: 40px 32px;
     }
 
     form {
