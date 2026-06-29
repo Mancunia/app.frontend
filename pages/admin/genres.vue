@@ -111,6 +111,40 @@ const handlePageChange = (p: number) => {
   fetchGenres(p)
 }
 
+const openPanel = (genre: GenreType | null) => {
+  editingGenre.value = genre
+  form.name = genre?.name ?? ''
+  formError.value = ''
+  panelOpen.value = true
+}
+
+const submitForm = async () => {
+  formSaving.value = true
+  formError.value = ''
+  try {
+    if (editingGenre.value) {
+      await updateGenre(editingGenre.value.id, { title: form.name.trim() })
+    } else {
+      await createGenre({ title: form.name.trim() })
+    }
+    panelOpen.value = false
+    await fetchGenres()
+  } catch (e) {
+    formError.value = (e as Error).message ?? 'Failed to save.'
+  } finally {
+    formSaving.value = false
+  }
+}
+
+const toggleStatus = async (genre: GenreType) => {
+  try {
+    await toggleGenreActive(genre.id)
+    genre.active = !genre.active
+  } catch {
+    // silently fail — backend will surface errors if needed
+  }
+}
+
 onMounted(() => fetchGenres())
 </script>
 
