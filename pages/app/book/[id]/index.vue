@@ -80,7 +80,7 @@
           :chapter="chapter"
           :loading="loadingChapter === chapter.id"
           @play="playReadChapter(chapter)"
-          @add-to-queue="store.addToQueue({ chapter })"
+          @add-to-queue="queueChapter(chapter)"
         />
       </div>
 
@@ -129,6 +129,7 @@ const moreByNarrator = ref<BOOK[]>([])
 const id = useRoute().params.id as string
 
 const { checkForOldFile } = useUtils()
+const { addSuccess } = useToast()
 const store = useAuthStore();
 const { languages, genres, setCommon } = useCommon(USER_ROLES.USER)
 
@@ -229,6 +230,24 @@ const buildQueueFromChapters = (fromChapterId?: string): QUEUE_ITEM[] => {
     ]
 }
 
+// Point the queue at this chapter without discarding chapters the user queued.
+// An empty queue is seeded with the rest of the book so playback continues.
+const positionInQueue = (chapter: CHAPTER) => {
+    if (chapter.type !== 'audio') return
+    if (!store.getQueue.length) {
+        store.setQueue(buildQueueFromChapters(chapter.id))
+        store.setQueueIndex(0)
+        return
+    }
+    const existing = store.getQueue.findIndex(q => q.chapter.id === chapter.id)
+    store.setQueueIndex(existing !== -1 ? existing : store.insertNext({ chapter }))
+}
+
+const queueChapter = (chapter: CHAPTER) => {
+    if (store.addToQueue({ chapter })) addSuccess('Added to queue')
+    else addSuccess('Already in queue')
+}
+
 const playAllChapters = async () => {
     const audioChapters = buildQueueFromChapters()
     if (!audioChapters.length) return
@@ -243,9 +262,7 @@ const playReadChapter = async (chapter: CHAPTER) => {
         await store.clearPageAndSeek();
         const playerEle = document.getElementById('player')
         if (store.getPlaying.id !== chapter.id || !player.value) {
-            const q = buildQueueFromChapters(chapter.id)
-            store.setQueue(q)
-            store.setQueueIndex(0)
+            positionInQueue(chapter)
             store.setPlaying(chapter);
             await stopAudio()
             const res = await fetchChapter(chapter.id ?? '');

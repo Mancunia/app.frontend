@@ -1,5 +1,4 @@
 import { defineStore } from "pinia";
-import { ref } from "vue";
 import { set, useLocalStorage } from "@vueuse/core";
 import { type USER } from "@/types/auth";
 import type { CHAPTER, PLAYER, QUEUE_ITEM } from "~/types/book";
@@ -27,8 +26,8 @@ export const useAuthStore = defineStore("user", {
       playbackRate: 1,
       showDrawer: false,
     } as Partial<PLAYER>),
-    queue: ref([] as QUEUE_ITEM[]),
-    queueIndex: ref(-1),
+    queue: useLocalStorage("queue", [] as QUEUE_ITEM[]),
+    queueIndex: useLocalStorage("queueIndex", -1),
     languages: useLocalStorage("languages", [] as Languages[]),
     categories: useLocalStorage("categories", [] as Categories[]),
     genres: useLocalStorage("genres", [] as any[]),
@@ -77,25 +76,41 @@ export const useAuthStore = defineStore("user", {
     setQueue(items: QUEUE_ITEM[]) {
       this.queue = items;
     },
-    addToQueue(item: QUEUE_ITEM) {
+    addToQueue(item: QUEUE_ITEM): boolean {
+      if (this.queue.some((q) => q.chapter.id === item.chapter.id)) return false;
       this.queue = [...this.queue, item];
+      return true;
+    },
+    insertNext(item: QUEUE_ITEM) {
+      // Places the chapter right after the current one (or moves it there if
+      // already queued) and returns its new index.
+      const q = this.queue.filter((i) => i.chapter.id !== item.chapter.id);
+      const currentId = this.queue[this.queueIndex]?.chapter.id;
+      const currentIdx = q.findIndex((i) => i.chapter.id === currentId);
+      const at = currentIdx + 1;
+      q.splice(at, 0, item);
+      this.queue = q;
+      this.queueIndex = currentIdx;
+      return at;
     },
     removeFromQueue(index: number) {
       const q = [...this.queue];
       q.splice(index, 1);
       this.queue = q;
-      if (this.queueIndex >= index) {
+      // queueIndex is the last-played position, so removing it (or anything
+      // before it) steps back one; "next" then plays whatever slid into place.
+      if (index <= this.queueIndex) {
         this.queueIndex = this.queueIndex - 1;
       }
     },
     reorderQueue(from: number, to: number) {
+      if (to < 0 || to >= this.queue.length || from === to) return;
+      const currentId = this.queue[this.queueIndex]?.chapter.id;
       const q = [...this.queue];
       const [moved] = q.splice(from, 1);
       q.splice(to, 0, moved);
       this.queue = q;
-      if (this.queueIndex === from) {
-        this.queueIndex = to;
-      }
+      this.queueIndex = q.findIndex((i) => i.chapter.id === currentId);
     },
     clearQueue() {
       this.queue = [];
@@ -110,6 +125,7 @@ export const useAuthStore = defineStore("user", {
         this.clearLocalStorage(users.admin);
       } else {
         this.user = {} as USER;
+        this.clearQueue();
         this.clearLocalStorage(users.user);
       }
     },
