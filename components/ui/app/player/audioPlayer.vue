@@ -1,10 +1,16 @@
 <template>
-  <div v-if="book" class="audio-player ase-paper" data-dark="true">
+  <div class="audio-player ase-paper" :class="{ idle }" data-dark="true">
     <UiAseFireMotes :count="8" style="opacity: 0.1" />
 
     <!-- 1. Cover Art -->
     <div class="cover-section">
-      <img :src="checkForOldFile(book.cover)" class="cover-art" alt="Book cover" />
+      <img v-if="book" :src="checkForOldFile(book.cover)" class="cover-art" alt="Book cover" />
+      <div v-else class="cover-art cover-placeholder">
+        <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 18v-6a9 9 0 0 1 18 0v6"></path>
+          <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"></path>
+        </svg>
+      </div>
     </div>
 
     <!-- 2. Stats Row -->
@@ -15,7 +21,7 @@
           <path d="M2 12h20"></path>
           <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
         </svg>
-        <span class="stat-text">{{ language }}</span>
+        <span class="stat-text">{{ idle ? '—' : language }}</span>
       </div>
       <div class="stat-item">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="stat-icon">
@@ -24,42 +30,45 @@
           <line x1="12" y1="19" x2="12" y2="23"></line>
           <line x1="8" y1="23" x2="16" y2="23"></line>
         </svg>
-        <span class="stat-text">{{ narrators }}</span>
+        <span class="stat-text">{{ idle ? '—' : narrators }}</span>
       </div>
       <div class="stat-item">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="stat-icon">
           <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
           <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
         </svg>
-        <span class="stat-text">{{ queueIndex >= 0 ? `ch. ${queueIndex + 1}/${queue.length}` : 'ch. —' }}</span>
+        <span class="stat-text">{{ !idle && queueIndex >= 0 ? `ch. ${queueIndex + 1}/${queue.length}` : 'ch. —' }}</span>
       </div>
     </div>
 
     <!-- 3. Title & Author -->
     <div class="meta-section">
-      <h1 class="display-title">{{ book.title }}</h1>
-      <p class="serif-author">{{ authors }}</p>
+      <h1 class="display-title">{{ book?.title ?? 'Nothing playing' }}</h1>
+      <p v-if="book" class="serif-author">{{ authors }}</p>
+      <p v-else class="serif-author">
+        Pick a story from the <NuxtLink :to="routes.app.library" class="idle-link">library</NuxtLink> to start listening.
+      </p>
     </div>
 
     <!-- 4. Progress -->
     <div class="progress-section">
       <div class="kente-wrap">
-        <UiAseKenteWeft :progress="duration > 0 ? currentTime / duration : 0" :height="10" />
+        <UiAseKenteWeft :progress="!idle && duration > 0 ? currentTime / duration : 0" :height="10" />
       </div>
       <div class="time-labels">
-        <span class="time-elapsed">{{ secondsToMinutes(currentTime) }}</span>
-        <span class="time-remaining">-{{ secondsToMinutes(Math.max(0, duration - currentTime)) }}</span>
+        <span class="time-elapsed">{{ idle ? '0:00' : secondsToMinutes(currentTime) }}</span>
+        <span class="time-remaining">-{{ idle ? '0:00' : secondsToMinutes(Math.max(0, duration - currentTime)) }}</span>
       </div>
     </div>
 
     <!-- Secondary Actions (Speed & Chapters) -->
     <div class="secondary-actions">
       <span class="speed-group">
-        <button @click="decreaseSpeed" class="action-btn speed-adj">−</button>
+        <button @click="decreaseSpeed" class="action-btn speed-adj" :disabled="idle">−</button>
         <button class="action-btn speed-val">{{ playbackRate }}×</button>
-        <button @click="increaseSpeed" class="action-btn speed-adj">+</button>
+        <button @click="increaseSpeed" class="action-btn speed-adj" :disabled="idle">+</button>
       </span>
-      <button class="action-btn chapters-btn" @click="$emit('showQueue')">
+      <button class="action-btn chapters-btn" :disabled="idle" @click="$emit('showQueue')">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px;">
           <line x1="8" y1="6" x2="21" y2="6"></line>
           <line x1="8" y1="12" x2="21" y2="12"></line>
@@ -74,21 +83,21 @@
 
     <!-- 5. Controls -->
     <div class="controls-section">
-      <button @click="playPrevInQueue" class="icon-btn secondary-btn" :disabled="!hasPrev">
+      <button @click="playPrevInQueue" class="icon-btn secondary-btn" :disabled="idle || !hasPrev">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M15 18l-6-6 6-6"></path>
         </svg>
       </button>
 
-      <button @click="rewindAudio(15)" class="icon-btn secondary-btn skip-btn">
+      <button @click="rewindAudio(15)" class="icon-btn secondary-btn skip-btn" :disabled="idle">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M11 17l-5-5 5-5"></path>
           <path d="M18 17l-5-5 5-5"></path>
         </svg>
       </button>
 
-      <button @click="toggleAudio" class="play-pause-btn">
-        <svg v-if="playing" width="36" height="36" viewBox="0 0 24 24" fill="currentColor">
+      <button @click="toggleAudio" class="play-pause-btn" :disabled="idle">
+        <svg v-if="playing && !idle" width="36" height="36" viewBox="0 0 24 24" fill="currentColor">
           <rect x="6" y="4" width="4" height="16" rx="1"></rect>
           <rect x="14" y="4" width="4" height="16" rx="1"></rect>
         </svg>
@@ -97,14 +106,14 @@
         </svg>
       </button>
 
-      <button @click="fastForwardAudio(15)" class="icon-btn secondary-btn skip-btn">
+      <button @click="fastForwardAudio(15)" class="icon-btn secondary-btn skip-btn" :disabled="idle">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M13 17l5-5-5-5"></path>
           <path d="M6 17l5-5-5-5"></path>
         </svg>
       </button>
 
-      <button @click="playNextInQueue" class="icon-btn secondary-btn" :disabled="!hasNext">
+      <button @click="playNextInQueue" class="icon-btn secondary-btn" :disabled="idle || !hasNext">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M9 18l6-6-6-6"></path>
         </svg>
@@ -134,10 +143,13 @@
 </template>
 
 <script setup lang="ts">
+import routes from '~/routes';
+
 defineEmits(['showQueue'])
 const store = useAuthStore();
 const { checkForOldFile, secondsToMinutes } = useUtils();
 const book = computed(() => store.getPlaying.book ?? null);
+const idle = computed(() => !book.value);
 
 const authors = computed(()=>{
   return book.value?.authors?.map(a => typeof a === 'string' ? a : a.name).join(', ') || 'Author'
@@ -169,6 +181,7 @@ const handleVolumeChange = (e: Event) => {
   position: relative;
   overflow-y: auto;
   height: 100%;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -190,14 +203,30 @@ const handleVolumeChange = (e: Event) => {
   width: 100%;
   display: flex;
   justify-content: center;
-  margin-bottom: 24px;
+  margin-bottom: clamp(12px, 2.5vh, 24px);
 }
 .cover-art {
-  width: 240px;
-  height: 280px;
+  height: clamp(140px, 30vh, 280px);
+  width: auto;
+  max-width: 100%;
+  aspect-ratio: 6 / 7;
   object-fit: cover;
   border-radius: 40px;
   box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+}
+
+.cover-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: rgba(255,255,255,0.4);
+  box-shadow: none;
+}
+.idle-link {
+  color: var(--ochre);
+  text-decoration: underline;
 }
 
 /* 2. Stats Row */
@@ -206,7 +235,7 @@ const handleVolumeChange = (e: Event) => {
   justify-content: space-between;
   width: 100%;
   max-width: 320px;
-  margin-bottom: 24px;
+  margin-bottom: clamp(12px, 2.5vh, 24px);
 }
 .stat-item {
   display: flex;
@@ -228,13 +257,17 @@ const handleVolumeChange = (e: Event) => {
 /* 3. Meta */
 .meta-section {
   text-align: center;
-  margin-bottom: 24px;
+  margin-bottom: clamp(12px, 2.5vh, 24px);
 }
 .display-title {
   font-family: var(--font-display);
-  font-size: 2.2rem;
+  font-size: clamp(1.4rem, 3.6vh, 2.2rem);
   line-height: 1.1;
   margin: 0 0 10px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
   color: #ffffff;
 }
 .serif-author {
@@ -249,7 +282,7 @@ const handleVolumeChange = (e: Event) => {
 /* 4. Progress */
 .progress-section {
   width: 100%;
-  margin-bottom: 24px;
+  margin-bottom: clamp(12px, 2.5vh, 24px);
 }
 .kente-wrap {
   background: rgba(255,255,255,0.1);
@@ -279,7 +312,7 @@ const handleVolumeChange = (e: Event) => {
   align-items: center;
   width: 100%;
   max-width: 320px;
-  margin-bottom: 24px;
+  margin-bottom: clamp(12px, 2.5vh, 24px);
 }
 
 .action-btn {
@@ -296,7 +329,13 @@ const handleVolumeChange = (e: Event) => {
   align-items: center;
   transition: all 0.2s ease;
 }
-.action-btn:hover {
+.action-btn:disabled,
+.play-pause-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+.action-btn:hover:not(:disabled) {
   background: rgba(255,255,255,0.18);
   border-color: rgba(255,255,255,0.25);
 }
@@ -335,7 +374,7 @@ const handleVolumeChange = (e: Event) => {
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  margin-bottom: 32px;
+  margin-bottom: clamp(16px, 3.5vh, 32px);
 }
 .icon-btn {
   background: rgba(255,255,255,0.1);
@@ -377,7 +416,7 @@ const handleVolumeChange = (e: Event) => {
   cursor: pointer;
   transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
-.play-pause-btn:active {
+.play-pause-btn:active:not(:disabled) {
   transform: scale(0.92);
 }
 
@@ -388,7 +427,7 @@ const handleVolumeChange = (e: Event) => {
   gap: 12px;
   width: 100%;
   max-width: 300px;
-  margin-bottom: 40px;
+  margin-bottom: clamp(16px, 4vh, 40px);
 }
 
 .volume-icon {
@@ -423,6 +462,21 @@ const handleVolumeChange = (e: Event) => {
   opacity: 0;
   cursor: pointer;
   z-index: 2;
+}
+
+/* Short viewports (laptops at 100% zoom) */
+@media (max-height: 760px) {
+  .audio-player {
+    padding-top: 24px;
+  }
+  .play-pause-btn {
+    width: 68px;
+    height: 68px;
+  }
+  .secondary-btn {
+    width: 44px;
+    height: 44px;
+  }
 }
 
 /* Bottom Safety Spacer */

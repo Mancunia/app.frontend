@@ -5,9 +5,10 @@ export const usePlayer = (app?: USER_ROLES) => {
   const audio = useState<HTMLAudioElement>("player", () => new Audio());
   const pdfFile = useState<PdfFileData | null>("pdfData", () => null);
   const audioFile = ref<PLAY_CHAPTER | null>(null);
-  const validTime = ref(0);
-  const duration = ref(0);
-  const currentTime = ref(0);
+  const duration = useState<number>("playerDuration", () => 0);
+  const currentTime = useState<number>("playerCurrentTime", () => 0);
+  const listenersBound = useState<boolean>("playerListenersBound", () => false);
+  const advancing = useState<boolean>("playerAdvancing", () => false);
   const loading = ref<boolean>(false);
   const { checkForOldFile } = useUtils();
   const store = useAuthStore();
@@ -36,47 +37,6 @@ export const usePlayer = (app?: USER_ROLES) => {
     }
   };
 
-  if (audio.value) {
-    const getCurrentTime = (): number => audio.value.currentTime;
-    audio.value.addEventListener("timeupdate", () => {
-      const time = getCurrentTime();
-      currentTime.value = time;
-    });
-
-    audio.value.addEventListener("loadedmetadata", () => {
-      duration.value = audio.value.duration;
-    });
-  }
-
-  const calculateTime = async (chapter: PLAY_CHAPTER) => {
-    if (!chapter) return;
-
-    await new Promise<void>((resolve) => {
-      const element = audio.value;
-
-      if (element.readyState >= 1) {
-        resolve();
-        return;
-      }
-
-      const onLoaded = () => {
-        element.removeEventListener("loadedmetadata", onLoaded);
-        resolve();
-      };
-
-      element.addEventListener("loadedmetadata", onLoaded);
-    });
-
-    const d = audio.value.duration;
-    console.log({ d });
-
-    duration.value = d;
-
-    const ratio = chapter.playTime === 0 ? 0 : d / chapter.playTime;
-
-    validTime.value = ratio;
-  };
-
   const initPDF = async (chapter: PLAY_CHAPTER) => {
     try{
       store.setPlaying(chapter.chapter);
@@ -94,19 +54,28 @@ export const usePlayer = (app?: USER_ROLES) => {
     
   };
 
-  const onEnded = async () => {
-    if (hasNext.value) {
-      await playNextInQueue();
-    } else {
-      await playerDetails({ playing: false });
-    }
-  };
-  const onPause = async () => {
-    await playerDetails({ playing: false });
-  };
-  const onPlay = async () => {
-    await playerDetails({ playing: true });
-  };
+  // Bind audio element listeners once for the whole app. Every component
+  // calling usePlayer() shares the same Audio element, so per-instance
+  // listeners would stack up and advance the queue multiple times.
+  if (import.meta.client && audio.value && !listenersBound.value) {
+    listenersBound.value = true;
+    const el = audio.value;
+    el.addEventListener("timeupdate", () => {
+      currentTime.value = el.currentTime;
+    });
+    el.addEventListener("loadedmetadata", () => {
+      duration.value = el.duration;
+    });
+    el.addEventListener("pause", () => playerDetails({ playing: false }));
+    el.addEventListener("play", () => playerDetails({ playing: true }));
+    el.addEventListener("ended", async () => {
+      if (store.getQueueIndex + 1 < store.getQueue.length) {
+        await playNextInQueue();
+      } else {
+        playerDetails({ playing: false });
+      }
+    });
+  }
 
   const init = async (chapter: PLAY_CHAPTER, autoPlay = true) => {
     if (!chapter) return;
@@ -124,15 +93,7 @@ export const usePlayer = (app?: USER_ROLES) => {
       } else {
         playerDetails({ playing: false });
       }
-      await calculateTime(chapter);
     }
-
-    audio.value.removeEventListener("ended", onEnded);
-    audio.value.removeEventListener("pause", onPause);
-    audio.value.removeEventListener("play", onPlay);
-    audio.value.addEventListener("ended", onEnded);
-    audio.value.addEventListener("pause", onPause);
-    audio.value.addEventListener("play", onPlay);
   };
 
   const toggleAudio = async () => {
@@ -254,16 +215,25 @@ export const usePlayer = (app?: USER_ROLES) => {
   const loadAndPlayChapter = async (chapter: CHAPTER) => {
     store.setPlaying(chapter);
     const res = await fetchChapter(chapter.id ?? '');
-    if (res) {
-      await init(res.chapter);
+    if (!res) return;
+    if (res.chapter.type === "ebook") {
+      await stopAudio();
+      await initPDF(res);
+    } else {
+      await init(res);
     }
   };
 
   const playNextInQueue = async () => {
-    const nextIdx = queueIndex.value + 1;
-    if (nextIdx < queue.value.length) {
+    if (advancing.value) return;
+    const nextIdx = store.getQueueIndex + 1;
+    if (nextIdx >= store.getQueue.length) return;
+    advancing.value = true;
+    try {
       store.setQueueIndex(nextIdx);
-      await loadAndPlayChapter(queue.value[nextIdx].chapter);
+      await loadAndPlayChapter(store.getQueue[nextIdx].chapter);
+    } finally {
+      advancing.value = false;
     }
   };
 
@@ -281,21 +251,6 @@ export const usePlayer = (app?: USER_ROLES) => {
       await loadAndPlayChapter(queue.value[index].chapter);
     }
   };
-
-  watch(
-    () => audio.value.currentTime,
-    async () => {
-      if (audio.value.currentTime >= validTime.value && validTime.value > 0) {
-        audio.value.currentTime = validTime.value;
-        await stopAudio();
-        if (hasNext.value) {
-          playNextInQueue();
-        } else {
-          playerDetails({ playing: false });
-        }
-      }
-    }
-  );
 
   return {
     init,

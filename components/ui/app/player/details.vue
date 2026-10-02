@@ -1,17 +1,18 @@
 <template>
-  <div v-if="book" class="player-details">
+  <div class="player-details">
     <button class="close-drawer-btn" @click="store.toggleDrawer(false)">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M7 13l5 5 5-5M7 6l5 5 5-5"/>
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round">
+        <path d="M7 13l5 5 5-5M7 6l5 5 5-5" />
       </svg>
     </button>
-    <div v-if="store.getPlaying.type === 'ebook'" style="height: 100%">
+    <div v-if="book && store.getPlaying.type === 'ebook'" class="player-view">
       <UiAppPlayerEbookViewer />
     </div>
-    <div v-else-if="showQueue">
+    <div v-else-if="book && showQueue" class="player-view">
       <UiAppPlayerQueue @close="showQueue = false" />
     </div>
-    <div v-else>
+    <div v-else class="player-view">
       <UiAppPlayerAudioPlayer @show-queue="showQueue = true" />
     </div>
   </div>
@@ -26,13 +27,15 @@ const { init, initPDF, fetchChapter, player } = usePlayer(USER_ROLES.USER);
 
 const playReadChapter = async () => {
   if (!player.value) {
-    const { data } = await fetchChapter(store.getPlaying.id ?? '');
-    if (data) {
-      if (data.chapter.type === 'ebook') {
-        if (data.chapter.id !== store.getPlaying.id) await store.setPlayingPage(1);
-        await initPDF(data);
-      } else {
-        await init(data, false);
+    if (store.getPlaying.id) {
+      const res = await fetchChapter(store.getPlaying.id ?? '');
+      if (res) {
+        if (res.chapter.type === 'ebook') {
+          if (res.chapter.id !== store.getPlaying.id) await store.setPlayingPage(1);
+          await initPDF(res);
+        } else {
+          await init(res, false);
+        }
       }
     }
   }
@@ -47,6 +50,13 @@ onMounted(() => { playReadChapter(); });
   display: flex;
   flex-direction: column;
   position: relative;
+}
+
+.player-view {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 .close-drawer-btn {

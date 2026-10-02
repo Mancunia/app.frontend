@@ -8,7 +8,6 @@
       </button>
       <div class="title-wrap">
         <h2 class="queue-title">Up Next</h2>
-        <span class="beta-label">BETA</span>
       </div>
       <button v-if="queue.length" class="clear-btn" @click="store.clearQueue(); $emit('close')">Clear</button>
     </div>
@@ -22,16 +21,28 @@
         v-for="(item, index) in queue"
         :key="item.chapter.id ?? index"
         class="queue-item"
-        :class="{ active: index === queueIndex, playing: index === queueIndex && store.getPlayer.playing }"
+        :class="{ active: isCurrent(item), playing: isCurrent(item) && store.getPlayer.playing }"
         @click="playChapterAt(index)"
       >
         <div class="item-index">
-          <span v-if="index === queueIndex && store.getPlayer.playing" class="playing-indicator">▶</span>
+          <span v-if="isCurrent(item) && store.getPlayer.playing" class="playing-indicator">▶</span>
           <span v-else class="index-num">{{ index + 1 }}</span>
         </div>
         <div class="item-info">
           <span class="item-title">{{ item.chapter.title }}</span>
           <span class="item-type">{{ item.chapter.type === 'ebook' ? '📖' : '🎤' }}</span>
+        </div>
+        <div class="reorder-btns">
+          <button class="reorder-btn" :disabled="index === 0" @click.stop="store.reorderQueue(index, index - 1)" title="Move up">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M18 15l-6-6-6 6"/>
+            </svg>
+          </button>
+          <button class="reorder-btn" :disabled="index === queue.length - 1" @click.stop="store.reorderQueue(index, index + 1)" title="Move down">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M6 9l6 6 6-6"/>
+            </svg>
+          </button>
         </div>
         <button class="remove-btn" @click.stop="store.removeFromQueue(index)" title="Remove">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -39,14 +50,22 @@
           </svg>
         </button>
       </div>
+      <p v-if="queueFinished" class="queue-finished">End of queue</p>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import type { QUEUE_ITEM } from '~/types/book';
+
 defineEmits(['close'])
 const store = useAuthStore();
-const { queue, queueIndex, playChapterAt } = usePlayer(USER_ROLES.USER);
+const { queue, queueIndex, hasNext, playChapterAt } = usePlayer(USER_ROLES.USER);
+
+// Match on the playing chapter rather than queueIndex, which points at the
+// previous slot after the current item is removed.
+const isCurrent = (item: QUEUE_ITEM) => item.chapter.id === store.getPlaying.id;
+const queueFinished = computed(() => !hasNext.value && queueIndex.value >= 0);
 </script>
 
 <style scoped>
@@ -87,16 +106,6 @@ const { queue, queueIndex, playChapterAt } = usePlayer(USER_ROLES.USER);
   display: flex;
   align-items: center;
   gap: 8px;
-}
-.beta-label {
-  background: var(--ochre);
-  color: var(--ink);
-  font-family: var(--font-mono);
-  font-size: 0.6rem;
-  font-weight: 700;
-  padding: 2px 6px;
-  border-radius: 4px;
-  letter-spacing: 0.05em;
 }
 .clear-btn {
   background: none;
@@ -179,6 +188,35 @@ const { queue, queueIndex, playChapterAt } = usePlayer(USER_ROLES.USER);
 }
 .item-type {
   font-size: 0.7rem;
+  opacity: 0.5;
+}
+.reorder-btns {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+.reorder-btn {
+  background: none;
+  border: none;
+  color: var(--cream);
+  opacity: 0.4;
+  cursor: pointer;
+  padding: 2px 4px;
+  line-height: 0;
+}
+.reorder-btn:hover:not(:disabled) {
+  opacity: 0.9;
+}
+.reorder-btn:disabled {
+  opacity: 0.1;
+  cursor: default;
+}
+.queue-finished {
+  text-align: center;
+  margin: 12px 0 0;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 0.85rem;
   opacity: 0.5;
 }
 .remove-btn {
